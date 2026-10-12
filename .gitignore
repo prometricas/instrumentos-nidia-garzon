@@ -4,3 +4,5 @@ node_modules/
 .blobs/
 test/*.png
 test/*.xlsx
+test/*.json
+test/*.csv
