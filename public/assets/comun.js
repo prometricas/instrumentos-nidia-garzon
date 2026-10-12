@@ -87,10 +87,11 @@ function columnasRespuestas() {
   const cols = [];
   for (const P of PRUEBAS) {
     const ins = INS[P.key];
-    const c = (campo, tipo, corto, texto) => cols.push({ id: `${P.pre}_${campo}`, key: P.key, prueba: P.nombre, panel: P.panel, campo, tipo, corto, texto });
-    if (P.key === 'CFF') c('informante', 'meta', 'Informante', 'Quién respondió el cuestionario');
-    ins.items.forEach((it) => c(it.codigo, 'item', it.codigo, `${it.dimension}: ${it.texto}${it.inverso ? ' (inverso)' : ''}`));
-    ins.puntajes.forEach((p) => c(p.variable, 'dim', p.variable, p.etiqueta));
+    // id = nombre de la columna en la tabla y en el Excel (corto y específico); campo = clave interna del registro
+    const c = (campo, tipo, id, texto) => cols.push({ id, key: P.key, prueba: P.nombre, panel: P.panel, campo, tipo, texto });
+    if (P.key === 'CFF') c('informante', 'meta', 'Fam_Informante', 'Quién respondió el cuestionario');
+    ins.items.forEach((it) => c(it.codigo, 'item', it.col, `${it.codigo} · ${it.dimension}: ${it.texto}${it.inverso ? ' (inverso)' : ''}`));
+    ins.puntajes.forEach((p) => c(p.variable, 'dim', p.col, p.etiqueta));
   }
   return cols;
 }

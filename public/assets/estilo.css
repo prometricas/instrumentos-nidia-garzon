@@ -230,6 +230,7 @@ table.resp-ancha .r-nom{left:var(--l2,70px)}
 table.resp-ancha .r-ape{left:var(--l3,150px)}
 table.resp-ancha .r-mom{left:var(--l4,230px);border-right:2px solid #C3CCDC}
 table.resp-ancha td.izq{text-align:left}
+table.resp-ancha td.num,table.resp-ancha th.r2{text-align:center} /* todas las respuestas y dimensiones centradas, en ambas filas */
 table.resp-ancha tbody tr.pre > td{border-top:2px solid #E3E8F0}
 table.resp-ancha a[data-ficha]{text-decoration:none;font-weight:600}
 table.resp-ancha a[data-ficha]:hover{text-decoration:underline}
