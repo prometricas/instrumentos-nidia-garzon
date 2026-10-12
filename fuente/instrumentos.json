@@ -6,8 +6,11 @@
     "titulo": "Inventario de inteligencia emocional (EQ-i:YV(S), versión colombiana de 21 reactivos)",
     "variable": "Factores socioemocionales",
     "fuente": "Bar-On y Parker (2000); Navarro-Roldán et al. (2023)",
-    "instruccion_aplicador": "Diga al niño o niña: «Te voy a leer unas frases que hablan de cómo eres tú. No hay respuestas buenas ni malas. Para cada frase me vas a decir qué tan cierta es para ti: muy rara vez, rara vez, a menudo o muy cierto. Primero vamos a practicar.» Lea cada frase en voz alta, señale los cuatro botones y espere a que el niño toque uno. Si duda, repita la frase; no sugiera la respuesta.",
     "pregunta": "¿Qué tan cierto es esto para ti?",
+    "guion": {
+      "diga": "Te voy a leer unas frases que hablan de cómo eres tú. No hay respuestas buenas ni malas. Para cada frase me vas a decir qué tan cierta es para ti: muy rara vez, rara vez, a menudo o muy cierto. Primero vamos a practicar.",
+      "haga": "Lea cada frase en voz alta, señale todos los botones y espere a que el niño escoja uno. Si duda, repita la frase; no sugiera la respuesta."
+    },
     "escala": [
       {
         "valor": 1,
@@ -206,8 +209,11 @@
     "titulo": "Escala de motivación escolar, dominios de lectura y escritura (ESMS-E, 18 reactivos)",
     "variable": "Motivación hacia la lectoescritura",
     "fuente": "Guay et al. (2010); Ramos et al. (2022)",
-    "instruccion_aplicador": "Diga al niño o niña: «Ahora te voy a leer unas frases sobre leer y escribir. Me vas a decir si tú piensas o haces lo que dice cada frase. Mira las caritas: nunca, a veces no, no lo sé, a veces sí, siempre sí. No hay respuestas buenas ni malas. Vamos a practicar primero.» Lea cada frase en voz alta y espere a que el niño toque una carita. Repita la frase si lo pide; no explique ni sugiera la respuesta.",
     "pregunta": "¿Tú piensas o haces esto?",
+    "guion": {
+      "diga": "Ahora te voy a leer unas frases sobre leer y escribir. Me vas a decir si tú piensas o haces lo que dice cada frase. Mira las caritas: nunca, a veces no, no lo sé, a veces sí, siempre sí. No hay respuestas buenas ni malas. Primero vamos a practicar.",
+      "haga": "Lea cada frase en voz alta, señale todas las caritas y espere a que el niño escoja una. Si duda, repita la frase; no sugiera la respuesta."
+    },
     "escala": [
       {
         "valor": 1,

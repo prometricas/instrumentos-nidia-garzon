@@ -163,7 +163,7 @@ function ir(v) {
 document.querySelectorAll('nav.menu button').forEach((b) => b.addEventListener('click', () => ir(b.dataset.v)));
 async function recargar() { try { await cargar(); ir(vista); } catch (e) { toast(e.message, true); } }
 function seg(id, onChange) { const el = $(id); el.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { el.querySelectorAll('button').forEach((x) => x.classList.toggle('activo', x === b)); onChange && onChange(b.dataset.m); })); return () => el.querySelector('.activo').dataset.m; }
-function guionHtml(ins) { return `<h4>Guion · ${esc(ins.corto)}</h4>${esc(ins.instruccion_aplicador)}<p>Teclas: 1-${ins.escala.length} marcan la respuesta, Enter avanza.</p>`; }
+function guionHtml(ins) { return `<h4>Guion · ${esc(ins.corto)}</h4><p>Diga al niño(a): <i>«${esc(ins.guion.diga)}»</i></p><p>${esc(ins.guion.haga)}</p><p class="teclas">Teclas: 1-${ins.escala.length} marcan la respuesta, tecla Enter avanza.</p>`; }
 
 /* ---------- estudiantes ---------- */
 function verEstudiantes() {
@@ -335,6 +335,9 @@ $('#kNext').addEventListener('click', () => { if (K.i < K.seq.length - 1) { K.i+
 $('#kBack').addEventListener('click', () => { if (K.i > 0) { K.i--; renderKid(); } });
 $('#kExit').addEventListener('click', () => { if (K && K.i > 0 && !$('#kBody').querySelector('.kid-fin') && !confirm('Se perderán las respuestas de esta aplicación. ¿Salir?')) return; cerrarKid(); });
 $('#kAyudaBtn').addEventListener('click', () => $('#kAyudaPanel').classList.toggle('oculto'));
+document.addEventListener('click', (e) => { // el guion se cierra al pulsar fuera de él
+  for (const [panel, btn] of [['#ayudaPanel', '#ayudaBtn'], ['#kAyudaPanel', '#kAyudaBtn']]) if (!e.target.closest(panel) && !e.target.closest(btn)) $(panel).classList.add('oculto');
+});
 document.addEventListener('keydown', (e) => {
   if (!K || e.target.tagName === 'TEXTAREA') return;
   if (/^[1-5]$/.test(e.key)) { const b = $('#kBody').querySelector(`.opt[data-v="${e.key}"]`); if (b) b.click(); }
