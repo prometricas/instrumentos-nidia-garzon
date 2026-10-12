@@ -81,7 +81,8 @@ function iconFace(v) {
 const STORE = { EQI: 'eqi', ESMS: 'esms', CFF: 'cff' };
 const GRUPOS = ['Piloto', 'Experimental', 'Control'];
 const MOMENTOS = ['Pretest', 'Postest'];
-const PRUEBAS = [{ key: 'EQI', nombre: 'Emocional', pre: 'Emo', panel: true }, { key: 'ESMS', nombre: 'Lectoescritura', pre: 'Lec', panel: true }, { key: 'CFF', nombre: 'Familiar', pre: 'Fam', panel: false }];
+// pre = prefijo de las columnas de metadatos (fecha y hora, aplicador, duración); css = clase del bloque en la tabla
+const PRUEBAS = [{ key: 'EQI', nombre: 'Emocional', pre: 'Em', css: 'emo', panel: true }, { key: 'ESMS', nombre: 'Lectoescritura', pre: 'LecEsc', css: 'lec', panel: true }, { key: 'CFF', nombre: 'Familiar', pre: 'Familiar', css: 'fam', panel: false }];
 const FIJAS = [['grupo', 'Grupo'], ['codigo', 'Codigo'], ['nombre', 'Nombre'], ['apellido', 'Apellido'], ['momento', 'Momento'], ['sexo', 'Sexo'], ['edad', 'Edad'], ['consentimiento', 'Consentimiento']]; // Consentimiento = fecha en que el acudiente lo aceptó en su enlace
 // meta = true añade fecha y hora, aplicador y duración de cada aplicación (y quién respondió en Familiar)
 function columnasRespuestas(meta = false) {
@@ -90,10 +91,10 @@ function columnasRespuestas(meta = false) {
     const ins = INS[P.key];
     // id = nombre de la columna en la tabla y en el Excel (corto y específico); campo = clave interna del registro
     const c = (campo, tipo, id, texto) => cols.push({ id, key: P.key, prueba: P.nombre, panel: P.panel, campo, tipo, texto });
-    if (P.key === 'CFF') c('informante', 'meta', 'Fam_Informante', 'Quién respondió el cuestionario');
+    if (P.key === 'CFF') c('informante', 'meta', 'Informante', 'Quién respondió el cuestionario familiar');
     if (meta) {
       c('fecha_hora', 'meta', `${P.pre}_FechaHora`, 'Fecha y hora de la aplicación');
-      if (P.panel) { c('aplicador', 'meta', `${P.pre}_Aplicador`, 'Quién aplicó el instrumento'); c('duracion_seg', 'meta', `${P.pre}_Dur`, 'Duración de la aplicación en segundos'); }
+      if (P.panel) { c('aplicador', 'meta', `${P.pre}_Aplicador`, 'Quién aplicó el instrumento'); c('duracion_seg', 'meta', `${P.pre}_Duracion`, 'Duración de la aplicación en segundos'); }
     }
     ins.items.forEach((it) => c(it.codigo, 'item', it.col, `${it.codigo} · ${it.dimension}: ${it.texto}${it.inverso ? ' (inverso)' : ''}`));
     ins.puntajes.forEach((p) => c(p.variable, 'dim', p.col, p.etiqueta));

@@ -1,7 +1,7 @@
 let D = null; // datos: {participantes, eqi, esms, cff, bitacora}
 let vista = 'estudiantes';
 const porGrupo = (lista) => GRUPOS.map((g) => [g, lista.filter((x) => x.grupo === g)]).filter(([, l]) => l.length);
-const DESC = { Piloto: 'Prueba de los instrumentos; sus datos no entran en el análisis.', Experimental: 'Recibe la intervención; medición antes (pretest) y después (postest).', Control: 'Sin intervención; se mide en los mismos momentos, para comparar.' };
+const DESC = { Piloto: 'Grupo de prueba de los instrumentos; sus datos no entran en el análisis.', Experimental: 'Grupo que recibe la intervención; medición antes (pretest) y después (postest).', Control: 'Grupo sin intervención; se mide en los mismos momentos, para comparar.' };
 let grupoActivo = localStorage.getItem('grupoActivo') || 'Piloto';
 function tabsGrupo(lista, cuenta, extra = '') {
   return `<div class="gbar"><div class="gtabs">${GRUPOS.map((g) => `<button data-g="${g}" class="g-${g.toLowerCase()} ${g === grupoActivo ? 'activo' : ''}">${g}<b>${cuenta(lista.filter((x) => x.grupo === g))}</b></button>`).join('')}</div><p class="gdesc g-${grupoActivo.toLowerCase()}" title="${DESC[grupoActivo]}">${DESC[grupoActivo]}</p>${extra}</div>`;
@@ -377,9 +377,9 @@ function verRespuestas() {
   const ps = D.participantes, lista = ps.filter((p) => p.grupo === grupoActivo).sort((a, b) => a.codigo.localeCompare(b.codigo));
   const dims = todas.filter((c) => c.tipo === 'dim');
   const completo = (p) => dims.every((c) => MOMENTOS.every((m) => { const r = buscarReg(D, c.key, p.codigo, m); return r && r[c.campo] !== ''; }));
-  $('#resumenR').textContent = ps.length ? `${ps.filter(completo).length} de ${ps.length} estudiantes con las cinco aplicaciones` : '';
+  $('#resumenR').textContent = ps.length ? `${ps.filter(completo).length} de ${ps.length} completos` : ''; $('#resumenR').title = 'Estudiantes con las cinco aplicaciones guardadas (pretest y postest de las dos pruebas, y el cuestionario familiar)';
   const bloques = PRUEBAS.map((P) => ({ P, cols: cols.filter((c) => c.key === P.key) })).filter((b) => b.cols.length);
-  const clase = (P) => 'p-' + P.pre.toLowerCase();
+  const clase = (P) => 'p-' + P.css;
   const celdas = (b, p, m) => { const r = buscarReg(D, b.P.key, p.codigo, m); return r ? b.cols.map((c, i) => `<td class="num ${c.tipo !== 'item' ? 'dim' : ''} ${i === 0 ? 'ini' : ''}">${esc(r[c.campo] ?? '')}</td>`).join('') : `<td colspan="${b.cols.length}" class="vacio ini" ${b.P.panel ? '' : 'rowspan="2"'}><span>${b.P.panel ? 'Sin aplicar' : 'Pendiente'}</span></td>`; };
   const filaEst = (p) => `<tr class="pre"><td rowspan="2" class="fijo r-cod"><b>${esc(p.codigo)}</b></td><td rowspan="2" class="fijo r-nom"><a href="#" data-ficha="${esc(p.codigo)}">${esc(nom(p))}</a></td><td class="fijo r-mom mom">Pretest</td><td rowspan="2" class="izq">${esc(p.sexo === 'Femenino' ? 'F' : p.sexo === 'Masculino' ? 'M' : '')}</td><td rowspan="2" class="izq">${esc(p.edad)}</td>${bloques.map((b) => b.P.panel ? celdas(b, p, 'Pretest') : (buscarReg(D, 'CFF', p.codigo) ? b.cols.map((c, i) => `<td rowspan="2" class="num ${c.tipo !== 'item' ? 'dim' : ''} ${i === 0 ? 'ini' : ''}">${esc(buscarReg(D, 'CFF', p.codigo)[c.campo] ?? '')}</td>`).join('') : celdas(b, p))).join('')}</tr>
     <tr class="post"><td class="fijo r-mom mom">Postest</td>${bloques.filter((b) => b.P.panel).map((b) => celdas(b, p, 'Postest')).join('')}</tr>`;

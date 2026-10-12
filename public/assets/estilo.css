@@ -20,7 +20,7 @@ header.top .titulo b{color:var(--azul);font-weight:600;display:block;font-size:1
 .lnk:hover{background:var(--azul-suave)}
 /* menú lateral */
 #app{min-height:100vh;display:flex;flex-direction:column} /* sin cabecera: el cuerpo ocupa toda la altura, sin desplazamiento obligado */
-.marca{padding:16px 18px 12px;border-bottom:1px solid var(--linea);margin:0 0 6px;line-height:1.3}
+.marca{padding:18px 18px 14px;border-bottom:1px solid var(--linea);margin:0 0 6px;line-height:1.3}
 .marca img{display:block;height:40px;width:auto;margin:0 0 10px}
 .marca b{display:block;color:var(--azul);font-size:.92em;font-weight:600}
 .marca span{display:block;color:var(--tinta-2);font-size:.76em}
@@ -35,20 +35,20 @@ nav.menu.secundario button.activo::before{display:none}
 aside.lateral .credito{text-align:left;padding:10px 24px 14px;line-height:1.4}
 table.datos.bit td{white-space:normal;font-size:.92em} table.datos.bit td:first-child{white-space:nowrap;color:var(--tinta-2)}
 .credito-movil{display:none}
-nav.menu{position:sticky;top:0;display:flex;flex-direction:column;gap:3px;padding:8px 12px}
+nav.menu{position:sticky;top:0;display:flex;flex-direction:column;gap:4px;padding:12px 12px}
 nav.menu button{display:flex;align-items:center;gap:13px;background:none;border:0;border-radius:12px;padding:13px 14px;color:var(--tinta-2);font-weight:600;font-size:1.02em;text-align:left;line-height:1.2;position:relative}
 nav.menu button svg{width:28px;height:28px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;color:#8A94A8}
 nav.menu button:hover{color:var(--azul);background:var(--fondo)} nav.menu button:hover svg{color:var(--azul)}
 nav.menu button.activo{color:var(--azul);background:var(--azul-suave)} nav.menu button.activo svg{color:var(--naranja)}
 nav.menu button.activo::before{content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:4px;border-radius:0 4px 4px 0;background:var(--naranja)}
-main{width:min(1500px, 100% - 2*clamp(16px,2.4vw,36px));margin:0 auto;padding:18px 0 40px}
-h2{font-size:1.35em;font-weight:600;margin:0 0 2px;color:var(--azul)}
-p.guia{color:var(--tinta-2);margin:0 0 16px;max-width:96ch;font-size:.95em;line-height:1.45}
-.cabeza{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:4px}
+main{width:min(1500px, 100% - 2*clamp(16px,2.4vw,36px));margin:0 auto;padding:24px 0 56px}
+h2{font-size:1.42em;font-weight:600;margin:0 0 4px;color:var(--azul)}
+p.guia{color:var(--tinta-2);margin:0 0 18px;max-width:96ch;font-size:.96em;line-height:1.5}
+.cabeza{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
 .cabeza .resumen{color:var(--tinta-2);font-size:.92em;text-align:right}
 
 /* componentes */
-.tarjeta{background:var(--blanco);border:1px solid var(--linea);border-radius:14px;padding:16px 20px;margin-bottom:14px}
+.tarjeta{background:var(--blanco);border:1px solid var(--linea);border-radius:14px;padding:18px 22px;margin-bottom:16px}
 .fila{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
 .campo{flex:1;min-width:130px}
 .campo label{display:block;font-size:.82em;color:var(--tinta-2);margin-bottom:4px}
@@ -192,14 +192,14 @@ table.datos tr:last-child td{border-bottom:0}
 }
 
 /* pestañas por grupo, con la explicación del grupo al lado */
-.gbar{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin:4px 0 10px}
+.gbar{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin:6px 0 12px}
 .gtabs{display:flex;gap:8px;flex-wrap:wrap;flex:0 1 auto;min-width:0;max-width:100%}
 .gtabs button{background:#fff;border:2px solid var(--c,#6B7280);color:var(--c,#6B7280);border-radius:999px;padding:8px 18px;font-weight:600;display:inline-flex;gap:8px;align-items:center}
 .gtabs button b{font-weight:600;background:var(--c,#6B7280);color:#fff;border-radius:999px;padding:1px 9px;font-size:.85em;opacity:.85}
 .gtabs button.activo{background:var(--c,#6B7280);color:#fff}
 .gtabs button.activo b{background:#fff;color:var(--c,#6B7280)}
 .g-piloto{--c:#6B7280} .g-control{--c:#1E8E4A} .g-experimental{--c:#F36A00}
-.gdesc{flex:1 1 300px;min-width:0;margin:0;padding:4px 0 4px 12px;border-left:4px solid var(--c,#6B7280);color:var(--tinta-2);font-size:.86em;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gdesc{flex:1 1 300px;min-width:0;margin:0;padding:6px 0 6px 12px;border-left:4px solid var(--c,#6B7280);color:var(--tinta-2);font-size:.86em;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* ficha del estudiante */
 .modal{position:fixed;inset:0;background:rgba(28,36,51,.45);display:flex;align-items:center;justify-content:center;padding:20px 16px;z-index:45;overflow:auto}
@@ -233,7 +233,7 @@ table.datos a[data-ficha]{text-decoration:none;font-weight:600}
 table.datos a[data-ficha]:hover{text-decoration:underline}
 
 /* tabla de respuestas (formato panel: dos filas por estudiante) */
-.barra-r{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0 10px}
+.barra-r{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0 14px}
 .barra-r .eti{color:var(--tinta-2);font-size:.88em} .barra-r .sep{flex:1}
 .barra-r .seg button{padding:7px 14px;min-height:38px;font-size:.95em} .barra-r .btn{padding:8px 16px;min-height:38px;font-size:.95em}
 .tabla-r{overflow:auto;max-height:calc(100vh - 250px);min-height:240px;background:#fff;border:1px solid var(--linea);border-radius:12px}

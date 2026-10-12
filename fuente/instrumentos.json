@@ -46,147 +46,147 @@
     "items": [
       {
         "codigo": "IE1",
-        "col": "Emo1",
+        "col": "Em01",
         "dimension": "Interpersonal",
         "inverso": false,
         "texto": "Me importa lo que les sucede a las personas."
       },
       {
         "codigo": "IE2",
-        "col": "Emo2",
+        "col": "Em02",
         "dimension": "Intrapersonal",
         "inverso": false,
         "texto": "Es fácil decirle a la gente cómo me siento."
       },
       {
         "codigo": "IE5R",
-        "col": "Emo5R",
+        "col": "Em05R",
         "dimension": "Manejo del estrés",
         "inverso": true,
         "texto": "Me molesto demasiado de cualquier cosa."
       },
       {
         "codigo": "IE6",
-        "col": "Emo6",
+        "col": "Em06",
         "dimension": "Intrapersonal",
         "inverso": false,
         "texto": "Puedo hablar fácilmente sobre mis sentimientos."
       },
       {
         "codigo": "IE8R",
-        "col": "Emo8R",
+        "col": "Em08R",
         "dimension": "Manejo del estrés",
         "inverso": true,
         "texto": "Peleo con la gente."
       },
       {
         "codigo": "IE9R",
-        "col": "Emo9R",
+        "col": "Em09R",
         "dimension": "Manejo del estrés",
         "inverso": true,
         "texto": "Tengo mal genio."
       },
       {
         "codigo": "IE10",
-        "col": "Emo10",
+        "col": "Em10",
         "dimension": "Adaptabilidad",
         "inverso": false,
         "texto": "Puedo comprender preguntas difíciles."
       },
       {
         "codigo": "IE13",
-        "col": "Emo13",
+        "col": "Em13",
         "dimension": "Adaptabilidad",
         "inverso": false,
         "texto": "Puedo dar buenas respuestas a preguntas difíciles."
       },
       {
         "codigo": "IE14",
-        "col": "Emo14",
+        "col": "Em14",
         "dimension": "Intrapersonal",
         "inverso": false,
         "texto": "Puedo fácilmente describir mis sentimientos."
       },
       {
         "codigo": "IE16",
-        "col": "Emo16",
+        "col": "Em16",
         "dimension": "Adaptabilidad",
         "inverso": false,
         "texto": "Puedo tener muchas maneras de responder una pregunta difícil cuando yo quiero."
       },
       {
         "codigo": "IE17R",
-        "col": "Emo17R",
+        "col": "Em17R",
         "dimension": "Manejo del estrés",
         "inverso": true,
         "texto": "Me molesto fácilmente."
       },
       {
         "codigo": "IE18",
-        "col": "Emo18",
+        "col": "Em18",
         "dimension": "Interpersonal",
         "inverso": false,
         "texto": "Me agrada hacer las cosas para los demás."
       },
       {
         "codigo": "IE19",
-        "col": "Emo19",
+        "col": "Em19",
         "dimension": "Adaptabilidad",
         "inverso": false,
         "texto": "Puedo usar fácilmente diversos modos de resolver los problemas."
       },
       {
         "codigo": "IE21",
-        "col": "Emo21",
+        "col": "Em21",
         "dimension": "Intrapersonal",
         "inverso": false,
         "texto": "Para mí es fácil decirle a las personas cómo me siento."
       },
       {
         "codigo": "IE22",
-        "col": "Emo22",
+        "col": "Em22",
         "dimension": "Adaptabilidad",
         "inverso": false,
         "texto": "Cuando respondo preguntas difíciles, trato de pensar en muchas soluciones."
       },
       {
         "codigo": "IE23",
-        "col": "Emo23",
+        "col": "Em23",
         "dimension": "Interpersonal",
         "inverso": false,
         "texto": "Me siento mal cuando las personas son heridas en sus sentimientos."
       },
       {
         "codigo": "IE24",
-        "col": "Emo24",
+        "col": "Em24",
         "dimension": "Adaptabilidad",
         "inverso": false,
         "texto": "Soy bueno(a) resolviendo problemas."
       },
       {
         "codigo": "IE27R",
-        "col": "Emo27R",
+        "col": "Em27R",
         "dimension": "Manejo del estrés",
         "inverso": true,
         "texto": "Me siento triste fácilmente."
       },
       {
         "codigo": "IE28",
-        "col": "Emo28",
+        "col": "Em28",
         "dimension": "Interpersonal",
         "inverso": false,
         "texto": "Puedo darme cuenta cuando mi amigo se siente triste."
       },
       {
         "codigo": "IE29R",
-        "col": "Emo29R",
+        "col": "Em29R",
         "dimension": "Manejo del estrés",
         "inverso": true,
         "texto": "Cuando me molesto actúo sin pensar."
       },
       {
         "codigo": "IE30",
-        "col": "Emo30",
+        "col": "Em30",
         "dimension": "Interpersonal",
         "inverso": false,
         "texto": "Sé cuando la gente está molesta aun cuando no lo dice."
@@ -195,35 +195,35 @@
     "puntajes": [
       {
         "variable": "Intrapersonal",
-        "col": "Emo_Intra",
+        "col": "Intrapersonal",
         "corto": "Intrapersonal",
         "etiqueta": "Intrapersonal (4 reactivos, 4-16)",
         "dimension": "Intrapersonal"
       },
       {
         "variable": "Interpersonal",
-        "col": "Emo_Inter",
+        "col": "Interpersonal",
         "corto": "Interpersonal",
         "etiqueta": "Interpersonal (5 reactivos, 5-20)",
         "dimension": "Interpersonal"
       },
       {
         "variable": "Adaptabilidad",
-        "col": "Emo_Adapt",
+        "col": "Adaptabilidad",
         "corto": "Adaptabilidad",
         "etiqueta": "Adaptabilidad (6 reactivos, 6-24)",
         "dimension": "Adaptabilidad"
       },
       {
         "variable": "Manejo_estres",
-        "col": "Emo_Estres",
+        "col": "ManejoEstres",
         "corto": "Manejo del estrés",
         "etiqueta": "Manejo del estrés (6 reactivos recodificados, 6-24)",
         "dimension": "Manejo del estrés"
       },
       {
         "variable": "Total_EQi",
-        "col": "Emo_Total",
+        "col": "TotalEQi",
         "corto": "Total EQ-i",
         "etiqueta": "Suma de las cuatro dimensiones (21-84)",
         "dimension": "*"
@@ -413,42 +413,42 @@
     "puntajes": [
       {
         "variable": "Lect_intrinseca",
-        "col": "Lec_Intrin",
+        "col": "Lec_Intrinseca",
         "corto": "Lectura intrínseca",
         "etiqueta": "Lectura, motivación intrínseca (3-15)",
         "dimension": "Lectura · intrínseca"
       },
       {
         "variable": "Lect_identificada",
-        "col": "Lec_Ident",
+        "col": "Lec_Identificada",
         "corto": "Lectura identificada",
         "etiqueta": "Lectura, motivación identificada (3-15)",
         "dimension": "Lectura · identificada"
       },
       {
         "variable": "Lect_controlada",
-        "col": "Lec_Contr",
+        "col": "Lec_Controlada",
         "corto": "Lectura controlada",
         "etiqueta": "Lectura, motivación controlada (3-15)",
         "dimension": "Lectura · controlada"
       },
       {
         "variable": "Escr_intrinseca",
-        "col": "Esc_Intrin",
+        "col": "Esc_Intrinseca",
         "corto": "Escritura intrínseca",
         "etiqueta": "Escritura, motivación intrínseca (3-15)",
         "dimension": "Escritura · intrínseca"
       },
       {
         "variable": "Escr_identificada",
-        "col": "Esc_Ident",
+        "col": "Esc_Identificada",
         "corto": "Escritura identificada",
         "etiqueta": "Escritura, motivación identificada (3-15)",
         "dimension": "Escritura · identificada"
       },
       {
         "variable": "Escr_controlada",
-        "col": "Esc_Contr",
+        "col": "Esc_Controlada",
         "corto": "Escritura controlada",
         "etiqueta": "Escritura, motivación controlada (3-15)",
         "dimension": "Escritura · controlada"
@@ -498,84 +498,84 @@
     "items": [
       {
         "codigo": "F311",
-        "col": "Fam1",
+        "col": "F01",
         "dimension": "3.1 Ambiente alfabetizador del hogar",
         "inverso": false,
         "texto": "En mi casa hay libros o revistas al alcance de mi hijo o hija."
       },
       {
         "codigo": "F312",
-        "col": "Fam2",
+        "col": "F02",
         "dimension": "3.1 Ambiente alfabetizador del hogar",
         "inverso": false,
         "texto": "En mi casa se destina un momento del día para actividades de lectura."
       },
       {
         "codigo": "F313",
-        "col": "Fam3",
+        "col": "F03",
         "dimension": "3.1 Ambiente alfabetizador del hogar",
         "inverso": false,
         "texto": "En mi casa hay lápices, cuadernos u hojas disponibles para que mi hijo o hija escriba."
       },
       {
         "codigo": "F314",
-        "col": "Fam4",
+        "col": "F04",
         "dimension": "3.1 Ambiente alfabetizador del hogar",
         "inverso": false,
         "texto": "En mi casa los adultos leen delante de mi hijo o hija."
       },
       {
         "codigo": "F321",
-        "col": "Fam5",
+        "col": "F05",
         "dimension": "3.2 Lectura compartida y mediación familiar",
         "inverso": false,
         "texto": "Leo cuentos u otros textos junto con mi hijo o hija."
       },
       {
         "codigo": "F322",
-        "col": "Fam6",
+        "col": "F06",
         "dimension": "3.2 Lectura compartida y mediación familiar",
         "inverso": false,
         "texto": "Le hago preguntas a mi hijo o hija sobre lo que leímos."
       },
       {
         "codigo": "F323",
-        "col": "Fam7",
+        "col": "F07",
         "dimension": "3.2 Lectura compartida y mediación familiar",
         "inverso": false,
         "texto": "Converso con mi hijo o hija sobre las palabras nuevas que aparecen en los textos."
       },
       {
         "codigo": "F324",
-        "col": "Fam8",
+        "col": "F08",
         "dimension": "3.2 Lectura compartida y mediación familiar",
         "inverso": false,
         "texto": "Animo a mi hijo o hija a escribir mensajes, listas o notas en casa."
       },
       {
         "codigo": "F331",
-        "col": "Fam9",
+        "col": "F09",
         "dimension": "3.3 Apoyo emocional ante las dificultades",
         "inverso": false,
         "texto": "Cuando a mi hijo o hija le cuesta leer, lo animo a seguir intentándolo."
       },
       {
         "codigo": "F332",
-        "col": "Fam10",
+        "col": "F10",
         "dimension": "3.3 Apoyo emocional ante las dificultades",
         "inverso": false,
         "texto": "Reconozco el esfuerzo de mi hijo o hija aunque todavía se equivoque al leer."
       },
       {
         "codigo": "F333",
-        "col": "Fam11",
+        "col": "F11",
         "dimension": "3.3 Apoyo emocional ante las dificultades",
         "inverso": true,
         "texto": "Me molesto con mi hijo o hija cuando se equivoca al escribir."
       },
       {
         "codigo": "F334",
-        "col": "Fam12",
+        "col": "F12",
         "dimension": "3.3 Apoyo emocional ante las dificultades",
         "inverso": false,
         "texto": "Le permito a mi hijo o hija decidir cómo organizar su tiempo de tarea de lectura."
@@ -584,28 +584,28 @@
     "puntajes": [
       {
         "variable": "S31_Ambiente",
-        "col": "Fam_Ambiente",
+        "col": "Ambiente",
         "corto": "Ambiente del hogar",
         "etiqueta": "3.1 Ambiente alfabetizador del hogar (4-16)",
         "dimension": "3.1 Ambiente alfabetizador del hogar"
       },
       {
         "variable": "S32_Lectura",
-        "col": "Fam_Lectura",
+        "col": "Lectura",
         "corto": "Lectura compartida",
         "etiqueta": "3.2 Lectura compartida y mediación familiar (4-16)",
         "dimension": "3.2 Lectura compartida y mediación familiar"
       },
       {
         "variable": "S33_Apoyo",
-        "col": "Fam_Apoyo",
+        "col": "Apoyo",
         "corto": "Apoyo emocional",
         "etiqueta": "3.3 Apoyo emocional ante las dificultades (4-16)",
         "dimension": "3.3 Apoyo emocional ante las dificultades"
       },
       {
         "variable": "Total_CFCSAL_F",
-        "col": "Fam_Total",
+        "col": "TotalCFCSAL",
         "corto": "Total CFCSAL-F",
         "etiqueta": "Total Forma Familia (12-48)",
         "dimension": "*"

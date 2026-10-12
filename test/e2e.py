@@ -100,7 +100,7 @@ async def main():
         d = await dl.value; await d.save_as("test/descarga.xlsx"); print("excel:", d.suggested_filename)
         await pg.check("#rMeta")
         async with pg.expect_download() as dl: await pg.click("#btnExcel")
-        d = await dl.value; await d.save_as("test/descarga_meta.xlsx"); wbm = openpyxl.load_workbook("test/descarga_meta.xlsx"); print("excel con metadatos:", [c.value for c in wbm["Experimental"][1] if c.value and (c.value.endswith("_FechaHora") or c.value.endswith("_Dur") or c.value.endswith("_Aplicador"))])
+        d = await dl.value; await d.save_as("test/descarga_meta.xlsx"); wbm = openpyxl.load_workbook("test/descarga_meta.xlsx"); print("excel con metadatos:", [c.value for c in wbm["Experimental"][1] if c.value and ("FechaHora" in c.value or "Duracion" in c.value or "Aplicador" in c.value)])
         async with pg.expect_download() as dl: await pg.click("#btnCopia")
         d = await dl.value; await d.save_as("test/copia.json"); copia = json.load(open("test/copia.json")); print("copia:", d.suggested_filename, "|", {k: len(v) for k, v in copia.items() if isinstance(v, list)})
         await pg.click("#btnBitacora"); await pg.wait_for_selector("#bitacora:not(.oculto)"); print("bitácora:", len(await pg.query_selector_all("#bitacora tbody tr")), "eventos | último:", await pg.text_content("#bitacora tbody tr:first-child td:nth-child(2)")); await pg.keyboard.press("Escape")
