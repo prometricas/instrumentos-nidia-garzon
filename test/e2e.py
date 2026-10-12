@@ -28,7 +28,17 @@ async def main():
         print("add:", await pg.text_content("#pMsg"), "| pestañas:", [await g.text_content() for g in await pg.query_selector_all("#tablaP .gtabs button")])
         await pg.click("#tablaP .gtabs button[data-g=Experimental]"); await pg.wait_for_timeout(200)
         await pg.screenshot(path="test/w3_estudiantes.png")
+        # --- sin consentimiento del acudiente no se puede aplicar
         await pg.click("nav.menu button[data-v=aplicar]"); await pg.click("#opIns button[data-k=ESMS]"); await pg.select_option("#aCod", "E03"); await pg.fill("#aApl", "Nidia Garzón")
+        await pg.click("#btnStart"); await pg.wait_for_timeout(300); print("sin consentimiento:", (await pg.text_content("#aMsg")).strip()[:70], "| pantalla del niño abierta:", not await pg.evaluate("document.querySelector('#kid').classList.contains('oculto')"))
+        async def consentir(codigo):  # el acudiente responde su enlace y acepta el consentimiento (por la API)
+            r = await pg.evaluate("""async (c) => { const H = { 'content-type': 'application/json', 'x-clave': sessionStorage.getItem('clave') };
+              const e = (await fetch('/api/enlaces', { headers: H }).then(r => r.json())).enlaces.find(x => x.codigo === c);
+              const items = Object.fromEntries(INS.CFF.items.map(it => [it.codigo, 3]));
+              return fetch('/api/familia', { method: 'POST', headers: H, body: JSON.stringify({ e: c, t: e.t, acepta: true, informante: 'Madre', items, observaciones: '' }) }).then(r => r.status); }""", codigo)
+            return r
+        print("acudientes de E03 y E04 aceptan por la API:", await consentir("E03"), await consentir("E04"))
+        await pg.click("nav.menu button[data-v=estudiantes]"); await pg.wait_for_timeout(300); await pg.click("nav.menu button[data-v=aplicar]"); await pg.wait_for_timeout(600); await pg.click("#opIns button[data-k=ESMS]"); await pg.select_option("#aCod", "E03")
         await pg.click("#btnStart"); await pg.wait_for_selector("#kid:not(.oculto)"); await pg.click(".opt[data-v='4']"); await pg.screenshot(path="test/w5_kid_esms.png")
         while True:
             await pg.keyboard.press(str(random.randint(1,5))); t = await pg.text_content("#kNext"); await pg.keyboard.press("Enter")
@@ -57,16 +67,16 @@ async def main():
         await fp.goto(link[:-3] + "abc"); await fp.wait_for_timeout(500); print("alterado:", (await fp.text_content("#main"))[:40])
         await pg.click("nav.menu button[data-v=familias]"); await pg.wait_for_timeout(800); await pg.click("#tablaF .gtabs button[data-g=Piloto]"); await pg.wait_for_timeout(300); print("estado E01:", await pg.text_content("#tablaF tbody tr:first-child td:nth-child(3)"), "| resumen:", await pg.text_content("#resumenF"))
         await pg.click("nav.menu button[data-v=estudiantes]"); await pg.wait_for_timeout(300); await pg.click("#tablaP .gtabs button[data-g=Experimental]"); await pg.wait_for_timeout(200)
-        print("chips verdes (Experimental):", len(await pg.query_selector_all("#tablaP .estado.si")))
+        print("chips verdes (Experimental):", len(await pg.query_selector_all("#tablaP .estado.si")))  # E03 y E04 tienen Fam ✓ y una aplicación cada uno
         await pg.click("#tablaP .estado.si[data-s=esms][data-c=E03]"); await pg.wait_for_selector("#ficha:not(.oculto)"); await pg.screenshot(path="test/w13_ficha.png")
         print("ficha:", (await pg.text_content("#ficha h2")).strip(), "| pruebas:", len(await pg.query_selector_all("#ficha .prueba")), "| tablas de dimensiones:", len(await pg.query_selector_all("#ficha table.dims")), "| filas de ítems:", len(await pg.query_selector_all("#ficha table.resp")))
-        print("consentimiento antes:", (await pg.text_content("#ficha .consent")).strip())
-        await pg.click("#ficha h2 a[data-editar]"); await pg.wait_for_selector("#fichaEdit:not(.oculto)"); await pg.fill("#eApellido", "Pato Lucas"); await pg.fill("#eObs", "usa gafas"); await pg.fill("#eCons", "2026-10-01"); await pg.fill("#eAsen", "2026-10-02"); await pg.click("#eGuardar"); await pg.wait_for_timeout(1200)
-        print("consentimiento después:", (await pg.text_content("#ficha .consent")).strip())
+        print("consentimiento E03 (aceptado):", (await pg.text_content("#ficha .consent")).strip()[:60])
+        await pg.click("#ficha h2 a[data-editar]"); await pg.wait_for_selector("#fichaEdit:not(.oculto)"); await pg.fill("#eApellido", "Pato Lucas"); await pg.fill("#eObs", "usa gafas"); await pg.click("#eGuardar"); await pg.wait_for_timeout(1200)
         print("editado:", (await pg.text_content("#ficha h2")).strip(), "|", (await pg.text_content("#ficha p.guia")).strip()[-30:], "| en tabla:", await pg.text_content("#tablaP tbody tr:first-child td:nth-child(2)"))
         await pg.screenshot(path="test/w13_ficha.png")
         await pg.click("#ficha [data-borrar][data-s=esms]"); await confirmar(); await pg.wait_for_timeout(1200)
         print("chips tras borrar ESMS E03 desde la ficha:", len(await pg.query_selector_all("#tablaP .estado.si")), "| ficha abierta:", not await pg.evaluate("document.querySelector('#ficha').classList.contains('oculto')"))
+        await pg.keyboard.press("Escape"); await pg.click("#tablaP a[data-ficha=E02]"); await pg.wait_for_selector("#ficha:not(.oculto)"); print("consentimiento E02 (pendiente):", (await pg.text_content("#ficha .consent")).strip()[:60], "| chips sin consentimiento:", len(await pg.query_selector_all("#tablaP .estado.pend.sin-consent[data-c=E02]"))); await pg.keyboard.press("Escape"); await pg.click("#tablaP .estado.si[data-s=esms][data-c=E03], #tablaP a[data-ficha=E03]"); await pg.wait_for_selector("#ficha:not(.oculto)")
         await pg.click("#ficha [data-aplicar][data-m=Postest][data-k=ESMS]"); await pg.wait_for_timeout(300)
         print("aplicar ahora desde la ficha:", await pg.evaluate("[document.querySelector('#v-aplicar').classList.contains('oculto'), document.querySelector('#opIns .activo').dataset.k, document.querySelector('#aCod').value, document.querySelector('#aMom .activo').dataset.m]"), "| volver visible:", await pg.evaluate("!document.querySelector('#v-aplicar [data-volver]').classList.contains('oculto')"), "| hash:", await pg.evaluate("location.hash"))
         await pg.click("#v-aplicar [data-volver]"); await pg.wait_for_timeout(200); print("volver:", await pg.evaluate("[location.hash, !document.querySelector('#v-estudiantes').classList.contains('oculto'), document.querySelector('#v-aplicar [data-volver]').classList.contains('oculto')]"))

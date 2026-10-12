@@ -22,7 +22,6 @@ async function firmar(clave, texto) {
   return [...sig].slice(0, 12).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 const token = (secreto, codigo) => firmar(secreto, `familia|${codigo}`);
-const FECHA = /^\d{4}-\d{2}-\d{2}$/;
 // Intentos fallidos de clave por dirección IP: espera de 1,5 s tras cada fallo y bloqueo de 5 minutos tras 5 fallos en 10 minutos.
 const ipDe = (req) => req.headers.get("x-nf-client-connection-ip") || "local";
 async function bloqueo(req) {
@@ -113,7 +112,7 @@ export default async (req) => {
   if (ruta === "datos" && req.method === "GET") { // la bitácora no viaja aquí: solo con /api/bitacora o en la copia de seguridad
     const [participantes, eqi, esms, cff] = await Promise.all(STORES.map(leerTodo));
     participantes.sort((a, b) => a.codigo.localeCompare(b.codigo));
-    return json({ participantes, eqi, esms, cff });
+    return json({ v: 2, participantes, eqi, esms, cff });
   }
   if (ruta === "bitacora" && req.method === "GET") {
     const bit = await leerTodo("bitacora"); bit.sort((a, b) => a.fecha_hora.localeCompare(b.fecha_hora));
@@ -142,8 +141,7 @@ export default async (req) => {
     if (!/^[A-Z0-9]{1,8}$/.test(codigo)) return json({ error: "Código inválido (letras y números, máximo 8)" }, 400);
     if (!GRUPOS.includes(r.grupo)) return json({ error: "Seleccione el grupo" }, 400);
     if (!["Femenino", "Masculino"].includes(r.sexo)) return json({ error: "Seleccione el sexo" }, 400);
-    for (const k of ["consentimiento", "asentimiento"]) if (r[k] && !FECHA.test(r[k])) return json({ error: "Fecha inválida en " + k }, 400);
-    const row = { codigo, nombre: String(r.nombre || "").trim().slice(0, 60), apellido: String(r.apellido || "").trim().slice(0, 60), grupo: r.grupo, sexo: r.sexo, edad: Number(r.edad) || "", fecha_registro: r.fecha_registro || hoy(), consentimiento: r.consentimiento || "", asentimiento: r.asentimiento || "", observaciones: String(r.observaciones || "").slice(0, 300) };
+    const row = { codigo, nombre: String(r.nombre || "").trim().slice(0, 60), apellido: String(r.apellido || "").trim().slice(0, 60), grupo: r.grupo, sexo: r.sexo, edad: Number(r.edad) || "", fecha_registro: r.fecha_registro || hoy(), observaciones: String(r.observaciones || "").slice(0, 300) };
     const existia = await store("participantes").get(codigo, { type: "json" });
     if (body.nuevo) { // el código identifica al estudiante en todas las pruebas: nunca se reutiliza
       if (existia) return json({ error: `Ya existe un estudiante con el código ${codigo}` }, 409);
@@ -193,6 +191,9 @@ export default async (req) => {
     const r = body.row || {}, codigo = String(r.codigo || "").toUpperCase(), momento = s === "cff" ? undefined : r.momento;
     if (s !== "cff" && !MOMENTOS.includes(momento)) return json({ error: "Momento inválido" }, 400);
     if (!(await store("participantes").get(codigo, { type: "json" }))) return json({ error: "Estudiante no registrado" }, 404);
+    // Ninguna aplicación se guarda sin el consentimiento informado, que el acudiente acepta al responder su enlace
+    const fam = await store("cff").get(codigo, { type: "json" });
+    if (!fam || fam.consentimiento !== "Sí") return json({ error: "El acudiente aún no ha aceptado el consentimiento informado (lo hace al responder su enlace); no se puede guardar la aplicación" }, 409);
     const err = validarItems(key, r); if (err) return json({ error: err }, 400);
     const items = {}; INS[key].items.forEach((it) => (items[it.codigo] = Number(r[it.codigo])));
     const row = { codigo, momento, fecha: hoy(), fecha_hora: ahora(), aplicador: String(r.aplicador || "").slice(0, 80), duracion_seg: Number(r.duracion_seg) || 0, ...items, ...puntajes(key, items), observaciones: String(r.observaciones || "").slice(0, 500) };

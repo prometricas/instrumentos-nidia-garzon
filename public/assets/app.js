@@ -1,10 +1,10 @@
 let D = null; // datos: {participantes, eqi, esms, cff, bitacora}
 let vista = 'estudiantes';
 const porGrupo = (lista) => GRUPOS.map((g) => [g, lista.filter((x) => x.grupo === g)]).filter(([, l]) => l.length);
-const DESC = { Piloto: 'Grupo de prueba de los instrumentos: sirve para ensayar la aplicación y ajustar los cuestionarios; sus datos no entran en el análisis principal.', Experimental: 'Grupo que recibe la intervención pedagógica basada en el desarrollo socioemocional, con medición antes (pretest) y después (postest).', Control: 'Grupo que no recibe la intervención pedagógica; se mide en los mismos momentos para comparar.' };
+const DESC = { Piloto: 'Prueba de los instrumentos; sus datos no entran en el análisis.', Experimental: 'Recibe la intervención; medición antes (pretest) y después (postest).', Control: 'Sin intervención; se mide en los mismos momentos, para comparar.' };
 let grupoActivo = localStorage.getItem('grupoActivo') || 'Piloto';
 function tabsGrupo(lista, cuenta, extra = '') {
-  return `<div class="gbar"><div class="gtabs">${GRUPOS.map((g) => `<button data-g="${g}" class="g-${g.toLowerCase()} ${g === grupoActivo ? 'activo' : ''}">${g}<b>${cuenta(lista.filter((x) => x.grupo === g))}</b></button>`).join('')}</div><p class="gdesc g-${grupoActivo.toLowerCase()}">${DESC[grupoActivo]}</p>${extra}</div>`;
+  return `<div class="gbar"><div class="gtabs">${GRUPOS.map((g) => `<button data-g="${g}" class="g-${g.toLowerCase()} ${g === grupoActivo ? 'activo' : ''}">${g}<b>${cuenta(lista.filter((x) => x.grupo === g))}</b></button>`).join('')}</div><p class="gdesc g-${grupoActivo.toLowerCase()}" title="${DESC[grupoActivo]}">${DESC[grupoActivo]}</p>${extra}</div>`;
 }
 // filtro por nombre o código sobre las filas de una tabla ya dibujada (sin volver a dibujar, para no perder el foco)
 function filtrarFilas(input, tabla, msg) {
@@ -19,6 +19,7 @@ const codigoUsado = (c) => D.participantes.some((p) => p.codigo === c) || (D.pap
 const nombreDe = (c) => { const p = D.participantes.find((p) => p.codigo === c); return p ? nom(p) : ''; };
 const reg = (s, c, m) => D[s].find((r) => r.codigo === c && (s === 'cff' || r.momento === m));
 const nReg = (c) => ['eqi', 'esms', 'cff'].reduce((a, s) => a + D[s].filter((r) => r.codigo === c).length, 0);
+const consentido = (c) => { const f = reg('cff', c); return !!(f && f.consentimiento === 'Sí'); }; // el acudiente aceptó el consentimiento al responder su enlace
 function papeleraHtml() {
   const L = D.papelera || []; if (!L.length) return '';
   return `<details class="papelera"><summary>Papelera: ${L.length} estudiante${L.length > 1 ? 's' : ''} eliminado${L.length > 1 ? 's' : ''} con sus registros guardados</summary><ul>${L.map((x) => `<li><span><b>${esc(x.codigo)}</b> ${esc(nom(x))} · ${x.registros} registro${x.registros === 1 ? '' : 's'} · eliminado el ${esc(x.fecha_papelera)}</span><button class="btn chico sec" data-rest="${esc(x.codigo)}">Recuperar</button><button class="btn chico" style="background:#fff;color:var(--mal);border:1px solid #EFC6C2" data-purga="${esc(x.codigo)}">Borrar definitivamente</button></li>`).join('')}</ul></details>`;
@@ -94,7 +95,7 @@ function verEstudiantes() {
   const ps = D.participantes;
   $('#resumenP').textContent = ps.length ? `${ps.length} estudiante${ps.length > 1 ? 's' : ''} · ` + porGrupo(ps).map(([g, l]) => `${l.length} ${g.toLowerCase()}`).join(' · ') : '';
   const marcaF = (c) => { const r = reg('cff', c); return r ? `<span class="estado si" role="button" tabindex="0" data-s="cff" data-c="${esc(c)}" title="Respondido el ${esc(r.fecha)}. Pulse para ver la ficha">✓ ${esc(r.informante)}</span>` : '<span class="estado pend" role="button" tabindex="0" data-fam title="Pendiente. Pulse para ir a los enlaces de acudientes">Pendiente</span>'; };
-  const marca = (s, c, m) => { const r = reg(s, c, m); const et = m === 'Pretest' ? 'Pre' : 'Post'; return r ? `<span class="estado si" role="button" tabindex="0" data-s="${s}" data-c="${esc(c)}" data-m="${m}" title="Guardado el ${esc(r.fecha)}. Pulse para ver la ficha">${et} ✓</span>` : `<span class="estado pend" role="button" tabindex="0" data-apl="${s}" data-c="${esc(c)}" data-m="${m}" title="Sin aplicar. Pulse para aplicar ahora">${et} ·</span>`; };
+  const marca = (s, c, m) => { const r = reg(s, c, m); const et = m === 'Pretest' ? 'Pre' : 'Post'; return r ? `<span class="estado si" role="button" tabindex="0" data-s="${s}" data-c="${esc(c)}" data-m="${m}" title="Guardado el ${esc(r.fecha)}. Pulse para ver la ficha">${et} ✓</span>` : `<span class="estado pend ${consentido(c) ? '' : 'sin-consent'}" role="button" tabindex="0" data-apl="${s}" data-c="${esc(c)}" data-m="${m}" title="${consentido(c) ? 'Sin aplicar. Pulse para aplicar ahora' : 'Sin aplicar. Falta el consentimiento del acudiente (lo acepta al responder su enlace)'}">${et} ·</span>`; };
   const filaP = (p) => { const n = nReg(p.codigo); return `<tr><td><b>${esc(p.codigo)}</b></td><td><a href="#" data-ficha="${esc(p.codigo)}" title="Abrir la ficha del estudiante">${esc(nom(p))}</a></td><td>${esc(p.sexo)}</td><td>${esc(p.edad)}</td>` +
       ['eqi', 'esms'].map((s) => `<td>${marca(s, p.codigo, 'Pretest')}${marca(s, p.codigo, 'Postest')}</td>`).join('') + `<td>${marcaF(p.codigo)}</td>` +
       `<td><button class="x ${n ? 'con-datos' : ''}" data-del="${esc(p.codigo)}" title="${n ? `Eliminar (tiene ${n} registros; se guardan en la papelera)` : 'Eliminar estudiante'}">×</button></td></tr>`; };
@@ -183,17 +184,14 @@ function verEstudiante(codigo, editar = false) {
   const op = (lista, v) => lista.map((x) => `<option ${x === v ? 'selected' : ''}>${x}</option>`).join('');
   $('#fichaCuerpo').innerHTML = `<div class="ficha-cab">${avatar(p.sexo)}<div><h2><a href="#" data-editar title="Editar los datos del estudiante">${esc(nom(p))}</a> <span class="gtag g-${p.grupo.toLowerCase()}">${esc(p.grupo)}</span><a href="#" class="editar-lnk" data-editar>${editar ? 'Cerrar edición' : 'Editar estudiante'}</a></h2>
     <p class="guia" style="margin:0">${esc(p.codigo)} · ${esc(p.sexo)} · ${esc(p.edad)} años · registrado el ${esc(p.fecha_registro)}${p.observaciones ? ` · ${esc(p.observaciones)}` : ''}</p>
-    <p class="guia consent ${p.consentimiento ? '' : 'falta'}" style="margin:2px 0 0">${p.consentimiento ? `Consentimiento del acudiente: ${esc(p.consentimiento)}` : 'Sin consentimiento del acudiente registrado'} · ${p.asentimiento ? `asentimiento del estudiante: ${esc(p.asentimiento)}` : 'sin asentimiento registrado'}</p></div></div>
+    <p class="guia consent ${consentido(codigo) ? '' : 'falta'}" style="margin:2px 0 0">${consentido(codigo) ? `Consentimiento informado aceptado por el acudiente (${esc(reg('cff', codigo).informante.toLowerCase())}) el ${esc(reg('cff', codigo).fecha)}` : 'Sin consentimiento informado: el acudiente lo acepta al responder su enlace; hasta entonces no se pueden guardar aplicaciones'}</p></div></div>
     <form class="editar ${editar ? '' : 'oculto'}" id="fichaEdit"><div class="fila">
       <div class="campo" style="flex:1.4"><label for="eNombre">Nombre</label><input id="eNombre" value="${esc(p.nombre)}"></div>
       <div class="campo" style="flex:1.4"><label for="eApellido">Apellido</label><input id="eApellido" value="${esc(p.apellido)}"></div>
       <div class="campo"><label for="eGrupo">Grupo</label><select id="eGrupo">${op(GRUPOS, p.grupo)}</select></div>
       <div class="campo"><label for="eSexo">Sexo</label><select id="eSexo">${op(['Femenino', 'Masculino'], p.sexo)}</select></div>
       <div class="campo" style="max-width:90px"><label for="eEdad">Edad</label><input id="eEdad" type="number" min="5" max="12" value="${esc(p.edad)}"></div></div>
-      <div class="fila" style="margin-top:10px">
-      <div class="campo" style="flex:2"><label for="eObs">Observaciones (opcional)</label><input id="eObs" value="${esc(p.observaciones || '')}" placeholder="Por ejemplo: repite el grado, usa gafas, se retiró en octubre"></div>
-      <div class="campo" style="max-width:220px"><label for="eCons">Consentimiento del acudiente (fecha)</label><input id="eCons" type="date" value="${esc(p.consentimiento || '')}"></div>
-      <div class="campo" style="max-width:220px"><label for="eAsen">Asentimiento del estudiante (fecha)</label><input id="eAsen" type="date" value="${esc(p.asentimiento || '')}"></div></div>
+      <div class="campo" style="margin-top:10px"><label for="eObs">Observaciones (opcional)</label><input id="eObs" value="${esc(p.observaciones || '')}" placeholder="Por ejemplo: repite el grado, usa gafas, se retiró en octubre"></div>
       <p class="guia" style="margin:10px 0;font-size:.88em">El código ${esc(p.codigo)} no se cambia: es el identificador que une todas sus aplicaciones.</p>
       <div class="fila"><button class="btn" type="submit" id="eGuardar">Guardar cambios</button><button class="btn sec" type="button" id="eCancelar">Cancelar</button></div><div id="eMsg" style="margin-top:10px"></div></form>
     <div class="pruebas">${['EQI', 'ESMS', 'CFF'].map((k) => fichaPrueba(k, codigo)).join('')}</div>`;
@@ -202,7 +200,7 @@ function verEstudiante(codigo, editar = false) {
   $('#eCancelar').addEventListener('click', () => verEstudiante(codigo, false));
   $('#fichaEdit').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const row = { ...p, nombre: $('#eNombre').value.trim(), apellido: $('#eApellido').value.trim(), grupo: $('#eGrupo').value, sexo: $('#eSexo').value, edad: $('#eEdad').value, observaciones: $('#eObs').value.trim(), consentimiento: $('#eCons').value, asentimiento: $('#eAsen').value };
+    const row = { ...p, nombre: $('#eNombre').value.trim(), apellido: $('#eApellido').value.trim(), grupo: $('#eGrupo').value, sexo: $('#eSexo').value, edad: $('#eEdad').value, observaciones: $('#eObs').value.trim() };
     if (!row.nombre || !row.apellido || !row.edad) return ($('#eMsg').innerHTML = '<div class="aviso mal">Nombre, apellido y edad son obligatorios.</div>');
     try { await api('participante', { method: 'PUT', body: { row } }); toast('Datos actualizados'); await cargar(); verEstudiante(codigo, false); ir(vista); } catch (err) { $('#eMsg').innerHTML = `<div class="aviso mal">${esc(err.message)}</div>`; }
   });
@@ -230,11 +228,12 @@ $('#ayudaBtn').addEventListener('click', () => { $('#ayudaPanel').innerHTML = gu
 function llenarSelEst(q = '') {
   const sel = $('#aCod'), prev = sel.value, ql = q.trim().toLowerCase();
   const lista = D.participantes.filter((p) => !ql || `${p.codigo} ${nom(p)}`.toLowerCase().includes(ql));
-  sel.innerHTML = porGrupo(lista).map(([g, l]) => `<optgroup label="${g}">` + l.map((p) => `<option value="${esc(p.codigo)}">${esc(p.codigo)} · ${esc(nom(p))}</option>`).join('') + '</optgroup>').join('') || `<option value="">${ql ? '(sin coincidencias)' : '(registre estudiantes primero)'}</option>`;
+  sel.innerHTML = porGrupo(lista).map(([g, l]) => `<optgroup label="${g}">` + l.map((p) => `<option value="${esc(p.codigo)}">${esc(p.codigo)} · ${esc(nom(p))}${consentido(p.codigo) ? '' : ' · sin consentimiento'}</option>`).join('') + '</optgroup>').join('') || `<option value="">${ql ? '(sin coincidencias)' : '(registre estudiantes primero)'}</option>`;
   if (prev && [...sel.options].some((o) => o.value === prev)) sel.value = prev;
 }
 $('#aBuscar').addEventListener('input', () => llenarSelEst($('#aBuscar').value));
-function verAplicar() {
+async function verAplicar() {
+  try { await cargar(); } catch (e) { toast(e.message, true); } // datos frescos: el consentimiento puede haber llegado desde el celular del acudiente
   $('#aBuscar').value = ''; llenarSelEst();
   const sel = $('#aCod');
   if (preApl) { elegirIns(preApl.key); sel.value = preApl.codigo; $('#aMom').querySelectorAll('button').forEach((b) => b.classList.toggle('activo', b.dataset.m === preApl.momento)); preApl = null; $('#aMsg').innerHTML = ''; }
@@ -256,6 +255,7 @@ $('#btnStart').addEventListener('click', async () => {
   const codigo = $('#aCod').value, momento = momA(), apl = $('#aApl').value.trim(), m = $('#aMsg');
   if (!codigo) return (m.innerHTML = '<div class="aviso mal">Registre al estudiante antes de aplicar.</div>');
   if (!apl) return (m.innerHTML = '<div class="aviso mal">Escriba el nombre del aplicador.</div>');
+  if (!consentido(codigo)) { m.innerHTML = `<div class="aviso mal">El acudiente de ${esc(codigo)} ${esc(nombreDe(codigo))} aún no ha aceptado el consentimiento informado; lo hace al responder su enlace. <button class="lnk chico" id="irAcudientes">Ir a Acudientes</button></div>`; $('#irAcudientes').addEventListener('click', () => { origen = 'aplicar'; ir('familias'); }); return; }
   localStorage.setItem('aplicador', apl);
   const prev = reg(STORE[insKey], codigo, momento);
   if (prev && !(await dialogo({ titulo: 'Ya existe esta aplicación', texto: `${codigo} ${nombreDe(codigo)} ya tiene "${INS[insKey].corto}" en ${momento} (${prev.fecha}). Si continúa, al guardar se reemplazará ese registro.`, ok: 'Continuar y reemplazar' }))) return;
@@ -390,9 +390,13 @@ function verRespuestas() {
     : `<div class="aviso nota">No hay estudiantes en el grupo ${grupoActivo}.</div>`);
   const t = $('#tablaR table');
   if (t) { const w = ['.r-cod', '.r-nom', '.r-mom'].map((c) => t.querySelector('thead ' + c).offsetWidth); t.style.setProperty('--l2', w[0] + 'px'); t.style.setProperty('--l3', w[0] + w[1] + 'px'); t.style.setProperty('--fijo', w[0] + w[1] + w[2] + 'px'); }
+  ajustarAltoTabla();
   activarTabs($('#tablaR'), verRespuestas);
   $('#tablaR').querySelectorAll('[data-ficha]').forEach((a) => a.addEventListener('click', () => verEstudiante(a.dataset.ficha)));
 }
+
+function ajustarAltoTabla() { const c = $('#tablaR .tabla-r'); if (!c) return; c.style.maxHeight = Math.max(240, innerHeight - c.getBoundingClientRect().top - 16) + 'px'; } // la tabla ocupa todo el alto disponible
+window.addEventListener('resize', ajustarAltoTabla);
 
 /* ---------- bitácora ---------- */
 $('#btnBitacora').addEventListener('click', async () => {

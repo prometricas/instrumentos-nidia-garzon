@@ -82,7 +82,7 @@ const STORE = { EQI: 'eqi', ESMS: 'esms', CFF: 'cff' };
 const GRUPOS = ['Piloto', 'Experimental', 'Control'];
 const MOMENTOS = ['Pretest', 'Postest'];
 const PRUEBAS = [{ key: 'EQI', nombre: 'Emocional', pre: 'Emo', panel: true }, { key: 'ESMS', nombre: 'Lectoescritura', pre: 'Lec', panel: true }, { key: 'CFF', nombre: 'Familiar', pre: 'Fam', panel: false }];
-const FIJAS = [['grupo', 'Grupo'], ['codigo', 'Codigo'], ['nombre', 'Nombre'], ['apellido', 'Apellido'], ['momento', 'Momento'], ['sexo', 'Sexo'], ['edad', 'Edad'], ['consentimiento', 'Consentimiento'], ['asentimiento', 'Asentimiento']];
+const FIJAS = [['grupo', 'Grupo'], ['codigo', 'Codigo'], ['nombre', 'Nombre'], ['apellido', 'Apellido'], ['momento', 'Momento'], ['sexo', 'Sexo'], ['edad', 'Edad'], ['consentimiento', 'Consentimiento']]; // Consentimiento = fecha en que el acudiente lo aceptó en su enlace
 // meta = true añade fecha y hora, aplicador y duración de cada aplicación (y quién respondió en Familiar)
 function columnasRespuestas(meta = false) {
   const cols = [];
@@ -105,14 +105,15 @@ function filasRespuestas(datos, cols, grupo) {
   const out = [];
   for (const p of datos.participantes.filter((p) => !grupo || p.grupo === grupo).sort((a, b) => a.codigo.localeCompare(b.codigo))) {
     for (const m of MOMENTOS) {
-      const o = {}; FIJAS.forEach(([k]) => (o[k] = k === 'momento' ? m : (p[k] ?? '')));
+      const fam = buscarReg(datos, 'CFF', p.codigo);
+      const o = {}; FIJAS.forEach(([k]) => (o[k] = k === 'momento' ? m : k === 'consentimiento' ? (fam && fam.consentimiento === 'Sí' ? fam.fecha : '') : (p[k] ?? '')));
       for (const c of cols) { const r = buscarReg(datos, c.key, p.codigo, m); o[c.id] = r ? (c.campo === 'fecha_hora' ? (r.fecha_hora || r.fecha || '') : (r[c.campo] ?? '')) : ''; }
       out.push(o);
     }
   }
   return out;
 }
-const anchoCol = (k) => ({ wch: k === 'nombre' || k === 'apellido' ? 16 : k === 'grupo' || k === 'momento' || k === 'consentimiento' || k === 'asentimiento' ? 13 : 8 });
+const anchoCol = (k) => ({ wch: k === 'nombre' || k === 'apellido' ? 16 : k === 'grupo' || k === 'momento' || k === 'consentimiento' ? 13 : 8 });
 function matrizRespuestas(datos, cols, g) { return filasRespuestas(datos, cols, g).map((o) => FIJAS.map(([k]) => o[k]).concat(cols.map((c) => o[c.id]))); }
 function construirExcel(datos, meta = false) { // una hoja por grupo
   const wb = XLSX.utils.book_new(), cols = columnasRespuestas(meta);
