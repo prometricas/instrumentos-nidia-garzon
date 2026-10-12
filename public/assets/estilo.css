@@ -20,13 +20,13 @@ header.top .acciones{display:flex;gap:6px}
 .lnk{background:none;border:0;color:var(--azul);padding:8px 12px;border-radius:8px;font-weight:600;white-space:nowrap}
 .lnk:hover{background:var(--azul-suave)}
 /* menú lateral */
-.cuerpo{display:grid;grid-template-columns:clamp(220px,15vw,280px) minmax(0,1fr);min-height:calc(100vh - 70px)}
+.cuerpo{display:grid;grid-template-columns:clamp(240px,16vw,300px) minmax(0,1fr);min-height:calc(100vh - 118px)}
 aside.lateral{background:var(--blanco);border-right:1px solid var(--linea)}
 nav.menu{position:sticky;top:0;display:flex;flex-direction:column;gap:4px;padding:18px 12px}
-nav.menu button{display:flex;align-items:center;gap:11px;background:none;border:0;border-radius:10px;padding:11px 12px;color:var(--tinta-2);font-weight:600;font-size:.94em;text-align:left;line-height:1.25;position:relative}
-nav.menu button svg{width:21px;height:21px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-nav.menu button:hover{color:var(--azul);background:var(--fondo)}
-nav.menu button.activo{color:var(--azul);background:var(--azul-suave)}
+nav.menu button{display:flex;align-items:center;gap:13px;background:none;border:0;border-radius:12px;padding:13px 14px;color:var(--tinta-2);font-weight:600;font-size:1.02em;text-align:left;line-height:1.2;position:relative}
+nav.menu button svg{width:28px;height:28px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;color:#8A94A8}
+nav.menu button:hover{color:var(--azul);background:var(--fondo)} nav.menu button:hover svg{color:var(--azul)}
+nav.menu button.activo{color:var(--azul);background:var(--azul-suave)} nav.menu button.activo svg{color:var(--naranja)}
 nav.menu button.activo::before{content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:4px;border-radius:0 4px 4px 0;background:var(--naranja)}
 main{width:min(1500px, 100% - 2*clamp(16px,2.4vw,36px));margin:0 auto;padding:26px 0 70px}
 h2{font-size:1.45em;font-weight:600;margin:0 0 4px;color:var(--azul)}
@@ -63,6 +63,10 @@ table.datos tr:last-child td{border-bottom:0}
 .estado{display:inline-flex;align-items:center;gap:6px;font-size:.85em;padding:4px 10px;border-radius:999px;background:#EEF1F6;color:var(--tinta-2);margin-right:6px;border:1px solid transparent}
 .estado.si{background:#E3F4E9;color:var(--ok);cursor:pointer}
 .estado.si:hover{background:#CFEBDA;border-color:#9FD3B3}
+.estado.pend{cursor:pointer} .estado.pend:hover{background:var(--azul-suave);color:var(--azul);border-color:#B9C8EE}
+.lnk.chico{padding:3px 8px;font-size:.88em;font-weight:500} .lnk.mal{color:var(--mal)} .lnk.mal:hover{background:#FBE9E7}
+.btn.wa{background:#25D366;color:#fff;display:inline-flex;align-items:center;gap:8px;text-decoration:none;padding:8px 14px;min-height:0;font-size:.9em;margin-right:6px}
+.btn.wa:hover{background:#1DB954} .btn.wa svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
 .x{background:none;border:0;color:var(--tinta-2);font-size:1.3em;line-height:1;padding:4px 8px;border-radius:8px}
 .x:hover{color:var(--mal);background:#FBE9E7}
 .x.con-datos{color:#B9BEC9}
@@ -91,11 +95,17 @@ table.datos tr:last-child td{border-bottom:0}
 .ayuda-panel p{margin:8px 0 0;color:var(--tinta-2);font-size:.9em}
 
 /* entrada */
-.entrada{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.entrada{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
 .entrada .tarjeta{width:400px;text-align:center;padding:34px 30px}
 .entrada img{height:54px;margin-bottom:16px}
 .entrada h1{font-size:1.2em;margin:0 0 4px;color:var(--azul)}
 .entrada p{color:var(--tinta-2);font-size:.9em;margin:0 0 18px}
+
+/* crédito */
+.credito{text-align:center;font-size:.78em;color:#9AA3B5;padding:14px 16px;margin:0}
+.credito a{color:#7A8599;text-decoration:none;font-weight:600}
+.credito a:hover{color:var(--azul);text-decoration:underline}
+.entrada .credito{margin-top:18px}
 
 /* pantalla del niño */
 .kid{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;z-index:20}
@@ -138,16 +148,16 @@ table.datos tr:last-child td{border-bottom:0}
 .fam .ops button{border:1px solid var(--linea);background:#fff;border-radius:10px;padding:10px 4px;font-size:.88em;line-height:1.2;min-height:50px}
 .fam .ops button.sel{background:var(--azul);color:#fff;border-color:var(--azul)}
 .fam .item.falta{border-color:var(--naranja);box-shadow:0 0 0 3px var(--naranja-suave)}
-.fam .pie{position:sticky;bottom:0;background:var(--fondo);padding:12px 0 56px;display:flex;gap:10px}
+.fam .pie{position:sticky;bottom:0;background:var(--fondo);padding:12px 0 16px;display:flex;gap:10px}
 .fam .pie .btn{flex:1}
 .fam .pie .btn.sec{flex:0 0 auto}
 
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
 @media (max-width:760px){
-  header.top{gap:12px} header.top .titulo{display:none} header.top .acciones{margin-left:auto} #btnExcel{display:none}
+  header.top{gap:12px} header.top .titulo{display:none} header.top .acciones{margin-left:auto}
   .cuerpo{display:block;min-height:0} aside.lateral{border-right:0;border-bottom:1px solid var(--linea)}
   nav.menu{position:static;flex-direction:row;overflow-x:auto;padding:8px 10px;gap:2px}
-  nav.menu button{flex:none;padding:9px 12px;gap:8px} nav.menu button.activo::before{left:10px;right:10px;top:auto;bottom:0;width:auto;height:3px;border-radius:3px 3px 0 0}
+  nav.menu button{flex:none;padding:9px 12px;gap:8px;font-size:.95em} nav.menu button svg{width:22px;height:22px} nav.menu button.activo::before{left:10px;right:10px;top:auto;bottom:0;width:auto;height:3px;border-radius:3px 3px 0 0}
   .opt{width:140px;min-height:170px} .opt .ico{height:84px} .opt .ico svg{width:84px;height:84px} .kid-body{padding:14px 12px} .escala{gap:10px}
   .opciones-ins{grid-template-columns:1fr} .cabeza .resumen{text-align:left}
 }
@@ -168,40 +178,46 @@ table.datos tr:last-child td{border-bottom:0}
 .modal-caja .cerrar{position:absolute;right:12px;top:10px;font-size:1.6em}
 .modal-caja h2{display:flex;align-items:center;gap:12px}
 .gtag{font-size:.6em;font-weight:600;color:#fff;background:var(--c,#6B7280);border-radius:999px;padding:3px 12px}
-details.reg{border:1px solid var(--linea);border-radius:12px;padding:12px 16px;margin-bottom:10px;background:#fff}
-details.reg summary{cursor:pointer;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
-details.reg summary span{color:var(--tinta-2);font-size:.9em}
-details.reg summary em{font-style:normal;color:var(--tinta-2);font-size:.85em;margin-left:auto}
-details.reg .puntajes{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-details.reg .punt{background:var(--azul-suave);border-radius:10px;padding:6px 12px;font-weight:600;color:var(--azul)}
-details.reg .punt small{display:block;font-weight:400;color:var(--tinta-2);font-size:.75em}
-table.resp{width:100%;border-collapse:collapse;font-size:.92em}
-table.resp td{padding:6px 8px;border-bottom:1px solid var(--linea);vertical-align:top}
-table.resp td:last-child{white-space:nowrap;text-align:right;font-weight:600;width:1%}
-table.resp tr.dim td{color:var(--azul);font-weight:600;background:#F7F9FC;border-top:1px solid var(--linea)}
-details.reg .obs{color:var(--tinta-2);font-size:.92em;margin:10px 0 0}
+.modal-caja h2 a{text-decoration:none;color:var(--azul)} .modal-caja h2 a:hover{text-decoration:underline}
+.editar{background:var(--fondo);border:1px solid var(--linea);border-radius:12px;padding:14px 16px;margin:0 0 16px}
+.prueba{border:1px solid var(--linea);border-radius:12px;padding:14px 16px;margin-bottom:12px;background:#fff}
+.prueba h3{margin:0 0 8px;font-size:1.05em;color:var(--azul);font-weight:600}
+.prueba h3 span{font-weight:400;color:var(--tinta-2);font-size:.85em;margin-left:8px}
+table.dims{width:100%;border-collapse:collapse;font-size:.93em}
+table.dims th{text-align:right;font-weight:600;color:var(--tinta-2);font-size:.85em;padding:4px 10px;border-bottom:1px solid var(--linea);white-space:nowrap}
+table.dims th:first-child{text-align:left}
+table.dims td{padding:7px 10px;border-bottom:1px solid var(--linea);text-align:right;font-weight:700;color:var(--azul);white-space:nowrap;font-variant-numeric:tabular-nums}
+table.dims td:first-child{text-align:left;font-weight:400;color:var(--tinta);white-space:normal;width:100%}
+table.dims td small{color:var(--tinta-2);font-weight:400;margin-left:6px;font-size:.85em}
+table.dims tr:last-child td{border-bottom:0}
+table.dims .nada{color:#B9BEC9;font-weight:400} table.dims .camb{color:var(--tinta-2);font-weight:600} table.dims .camb.mas{color:var(--ok)} table.dims .camb.menos{color:var(--mal)}
+.prueba .meta{font-size:.88em;color:var(--tinta-2);margin-top:8px;padding-top:8px;border-top:1px solid var(--linea)}
+.prueba .meta b{color:var(--tinta);margin-right:4px} .prueba .meta i{font-style:italic}
 table.datos a[data-ficha]{text-decoration:none;font-weight:600}
 table.datos a[data-ficha]:hover{text-decoration:underline}
 
-/* tabla de respuestas (una fila por estudiante) */
+/* tabla de respuestas (formato panel: dos filas por estudiante) */
 .tabla-r{overflow:auto;max-height:calc(100vh - 250px);min-height:240px;background:#fff;border:1px solid var(--linea);border-radius:12px}
 table.resp-ancha{border-collapse:separate;border-spacing:0;font-size:.86em}
-table.resp-ancha th,table.resp-ancha td{padding:0 8px;height:34px;border-bottom:1px solid var(--linea);white-space:nowrap;text-align:center;background:#fff}
+table.resp-ancha th,table.resp-ancha td{padding:0 8px;height:32px;border-bottom:1px solid var(--linea);white-space:nowrap;text-align:center;background:#fff;vertical-align:middle}
 table.resp-ancha td{font-variant-numeric:tabular-nums}
 table.resp-ancha thead th{position:sticky;top:0;z-index:2;background:#F3F6FB;color:var(--azul);font-weight:600}
-table.resp-ancha thead th.r2{top:34px} table.resp-ancha thead th.r3{top:68px;font-weight:500;color:var(--tinta-2);cursor:help}
+table.resp-ancha thead th.r2{top:32px;font-weight:500;color:var(--tinta-2);cursor:help}
 table.resp-ancha th[rowspan]{vertical-align:bottom;padding-bottom:8px;text-align:left}
 table.resp-ancha .r1.p-emo{background:#DCE5F6} table.resp-ancha .r1.p-lec{background:#FFE4CF} table.resp-ancha .r1.p-fam{background:#D9EFE2;color:#176B39}
-table.resp-ancha .r2{background:#F3F6FB}
-table.resp-ancha th.r1,table.resp-ancha th.r2{text-align:left;padding:0}
-table.resp-ancha th.r1 span,table.resp-ancha th.r2 span{position:sticky;left:calc(var(--fijo,0px) + 10px);padding:0 10px}
+table.resp-ancha th.r1{text-align:left;padding:0} table.resp-ancha th.r1 span{position:sticky;left:calc(var(--fijo,0px) + 10px);padding:0 10px} table.resp-ancha th.r1 small{font-weight:400;opacity:.8;margin-left:6px}
 table.resp-ancha .ini{border-left:2px solid #C3CCDC}
-table.resp-ancha td.punt{background:#F3F6FB;font-weight:700;color:var(--azul)} table.resp-ancha th.punt{color:var(--azul);background:#E8EEF9}
+table.resp-ancha td.dim{background:#F3F6FB;font-weight:700;color:var(--azul)} table.resp-ancha th.dim{color:var(--azul);background:#E8EEF9}
+table.resp-ancha td.vacio{color:#A4ACBC;font-weight:400;text-align:left;padding-left:14px;background:#FAFBFC}
+table.resp-ancha td.mom{color:var(--tinta-2);font-size:.92em;text-align:left;min-width:84px}
+table.resp-ancha tr.post td.mom{color:var(--naranja)}
 table.resp-ancha .fijo{position:sticky;z-index:1;text-align:left}
 table.resp-ancha thead .fijo{z-index:3}
-table.resp-ancha .r-cod{left:0;min-width:70px;max-width:70px}
-table.resp-ancha .r-nom{left:70px;border-right:2px solid #C3CCDC}
-table.resp-ancha td:nth-child(-n+5){text-align:left}
-table.resp-ancha tbody tr:hover td{background:#FAFBFE} table.resp-ancha tbody tr:hover td.punt{background:#EDF1F9}
+table.resp-ancha .r-cod{left:0;min-width:70px}
+table.resp-ancha .r-nom{left:var(--l2,70px)}
+table.resp-ancha .r-ape{left:var(--l3,150px)}
+table.resp-ancha .r-mom{left:var(--l4,230px);border-right:2px solid #C3CCDC}
+table.resp-ancha td:nth-child(-n+5),table.resp-ancha tr.pre td:nth-child(6){text-align:left}
+table.resp-ancha tbody tr.pre > td{border-top:2px solid #E3E8F0}
 table.resp-ancha a[data-ficha]{text-decoration:none;font-weight:600}
 table.resp-ancha a[data-ficha]:hover{text-decoration:underline}

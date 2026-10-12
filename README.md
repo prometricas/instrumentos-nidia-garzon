@@ -4,7 +4,7 @@ App web para aplicar los instrumentos de la investigación *Factores socioemocio
 
 - **Aplicador** (`index.html`, con clave): registra estudiantes, aplica en pantalla el EQ-i:YV(S) y la ESMS-E leyendo cada frase en voz alta, genera los enlaces para las familias, muestra la tabla de respuestas y la descarga en Excel.
 - **Familias** (`familia.html`, enlace firmado por estudiante y momento, sin clave): cuestionario CFCSAL-F desde el celular.
-- **Datos**: Netlify Blobs (almacenes `participantes`, `eqi`, `esms`, `cff`, `bitacora`), una entrada por estudiante y momento. La bitácora queda solo en el servidor como registro de auditoría. El módulo **Tabla de respuestas** y el Excel descargado muestran una fila por estudiante (Grupo, Código, Nombre, Apellido, Sexo, Edad) y en columnas sus respuestas brutas y puntajes por dimensión (inversos recodificados): Emocional pre y post (`Emo_Pre_*`, `Emo_Post_*`), Lectoescritura pre y post (`Lec_Pre_*`, `Lec_Post_*`) y Familiar (`Fam_*`). El Excel trae una hoja por grupo (Piloto, Experimental, Control). El código del estudiante es único y nunca se reutiliza, ni siquiera si el estudiante está en la papelera.
+- **Datos**: Netlify Blobs (almacenes `participantes`, `eqi`, `esms`, `cff`, `bitacora`), una entrada por estudiante y momento. La bitácora queda solo en el servidor como registro de auditoría. El módulo **Tabla de respuestas** y el Excel descargado están en formato largo (panel): dos filas por estudiante, una por momento (columna `Momento` = Pretest | Postest), con Grupo, Codigo, Nombre, Apellido, Sexo, Edad y, en columnas, las respuestas brutas y las dimensiones (inversos recodificados) de Emocional (`Emo_*`) y Lectoescritura (`Lec_*`); el cuestionario Familiar (`Fam_*`), de una sola aplicación, se repite en ambas filas como variable fija del estudiante. El Excel trae una hoja por grupo (Piloto, Experimental, Control). El código del estudiante es único y nunca se reutiliza (ni si está en la papelera; el sugerido es siempre el siguiente al mayor usado). Desde la ficha del estudiante se editan sus datos (no el código) y se ven sus dimensiones pre y post con el cambio.
 
 ## Estructura
 
@@ -27,3 +27,6 @@ Una sola variable de entorno: `APP_CLAVE`, la clave del aplicador (también firm
 npm install
 node dev-local.mjs      # http://localhost:8888, clave APP_CLAVE de .env o, si no existe, la misma del sitio
 ```
+
+## Datos ficticios para revisar en local
+Con el servidor local encendido, `node test/semilla.mjs` separa nombre y apellido de los estudiantes que tengan todo en "Nombre", completa el plantel ficticio de los tres grupos y crea las aplicaciones que falten con respuestas aleatorias coherentes con el perfil de cada estudiante (deja algunas pendientes a propósito). No reemplaza nada ya guardado y no toca el sitio publicado.

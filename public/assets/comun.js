@@ -74,43 +74,45 @@ function iconFace(v) {
   return `<svg width="104" height="104" viewBox="0 0 104 104" aria-hidden="true">${shake}${nod}<g transform="rotate(${tilt} ${c} ${c})"><rect x="14" y="14" width="76" height="76" rx="24" fill="${fill}" stroke="${edge}" stroke-width="4"/><ellipse cx="38" cy="30" rx="11" ry="6" fill="#fff" opacity=".45"/>${eyes}${mouth}</g></svg>`;
 }
 
-// Tabla de respuestas: una fila por estudiante y, en columnas, todas sus respuestas y puntajes
-// (Emocional pre y post, Lectoescritura pre y post, Familiar). La usan el módulo "Tabla de respuestas" y el Excel.
+// Tabla de respuestas en formato largo (panel): una fila por estudiante y momento (Pretest, Postest).
+// En columnas, las respuestas y dimensiones de Emocional y Lectoescritura; el cuestionario Familiar, de una
+// sola aplicación, es una variable fija del estudiante y se repite en sus dos filas. La usan el módulo
+// "Tabla de respuestas" y el Excel (una hoja por grupo).
 const STORE = { EQI: 'eqi', ESMS: 'esms', CFF: 'cff' };
 const GRUPOS = ['Piloto', 'Experimental', 'Control'];
-const PRUEBAS = [{ key: 'EQI', nombre: 'Emocional', pre: 'Emo' }, { key: 'ESMS', nombre: 'Lectoescritura', pre: 'Lec' }, { key: 'CFF', nombre: 'Familiar', pre: 'Fam' }];
-const FIJAS = [['grupo', 'Grupo'], ['codigo', 'Codigo'], ['nombre', 'Nombre'], ['apellido', 'Apellido'], ['sexo', 'Sexo'], ['edad', 'Edad']];
+const MOMENTOS = ['Pretest', 'Postest'];
+const PRUEBAS = [{ key: 'EQI', nombre: 'Emocional', pre: 'Emo', panel: true }, { key: 'ESMS', nombre: 'Lectoescritura', pre: 'Lec', panel: true }, { key: 'CFF', nombre: 'Familiar', pre: 'Fam', panel: false }];
+const FIJAS = [['grupo', 'Grupo'], ['codigo', 'Codigo'], ['nombre', 'Nombre'], ['apellido', 'Apellido'], ['momento', 'Momento'], ['sexo', 'Sexo'], ['edad', 'Edad']];
 function columnasRespuestas() {
   const cols = [];
   for (const P of PRUEBAS) {
     const ins = INS[P.key];
-    for (const m of P.key === 'CFF' ? [null] : ['Pretest', 'Postest']) {
-      const base = P.pre + (m ? (m === 'Pretest' ? '_Pre' : '_Post') : '');
-      const c = (campo, tipo, corto, texto) => cols.push({ id: `${base}_${campo}`, key: P.key, prueba: P.nombre, momento: m, campo, tipo, corto, texto });
-      if (P.key === 'CFF') c('informante', 'meta', 'Informante', 'Quién respondió');
-      ins.items.forEach((it) => c(it.codigo, 'item', it.codigo, `${it.dimension}: ${it.texto}${it.inverso ? ' (inverso)' : ''}`));
-      ins.puntajes.forEach((p) => c(p.variable, 'punt', p.variable, p.etiqueta));
-    }
+    const c = (campo, tipo, corto, texto) => cols.push({ id: `${P.pre}_${campo}`, key: P.key, prueba: P.nombre, panel: P.panel, campo, tipo, corto, texto });
+    if (P.key === 'CFF') c('informante', 'meta', 'Informante', 'Quién respondió el cuestionario');
+    ins.items.forEach((it) => c(it.codigo, 'item', it.codigo, `${it.dimension}: ${it.texto}${it.inverso ? ' (inverso)' : ''}`));
+    ins.puntajes.forEach((p) => c(p.variable, 'dim', p.variable, p.etiqueta));
   }
   return cols;
 }
+const buscarReg = (datos, key, codigo, m) => datos[STORE[key]].find((r) => r.codigo === codigo && (key === 'CFF' || r.momento === m));
 function filasRespuestas(datos, cols, grupo) {
-  const buscar = (key, codigo, m) => datos[STORE[key]].find((r) => r.codigo === codigo && (key === 'CFF' || r.momento === m));
-  return datos.participantes.filter((p) => !grupo || p.grupo === grupo).sort((a, b) => a.codigo.localeCompare(b.codigo)).map((p) => {
-    const o = {}; FIJAS.forEach(([k]) => (o[k] = p[k] ?? ''));
-    for (const c of cols) { const r = buscar(c.key, p.codigo, c.momento); o[c.id] = r ? (r[c.campo] ?? '') : ''; }
-    return o;
-  });
+  const out = [];
+  for (const p of datos.participantes.filter((p) => !grupo || p.grupo === grupo).sort((a, b) => a.codigo.localeCompare(b.codigo))) {
+    for (const m of MOMENTOS) {
+      const o = {}; FIJAS.forEach(([k]) => (o[k] = k === 'momento' ? m : (p[k] ?? '')));
+      for (const c of cols) { const r = buscarReg(datos, c.key, p.codigo, m); o[c.id] = r ? (r[c.campo] ?? '') : ''; }
+      out.push(o);
+    }
+  }
+  return out;
 }
-// Excel: una hoja por grupo (Piloto, Experimental, Control) con la misma tabla. La columna Grupo se conserva
-// para poder unir las hojas en un solo archivo de análisis (SPSS, R) sin perder la variable de grupo.
 function construirExcel(datos) {
   const wb = XLSX.utils.book_new(), cols = columnasRespuestas();
   const enc = FIJAS.map(([, t]) => t).concat(cols.map((c) => c.id));
   for (const g of GRUPOS) {
     const filas = filasRespuestas(datos, cols, g).map((o) => FIJAS.map(([k]) => o[k]).concat(cols.map((c) => o[c.id])));
     const ws = XLSX.utils.aoa_to_sheet([enc].concat(filas));
-    ws['!cols'] = FIJAS.map(([k]) => ({ wch: k === 'nombre' || k === 'apellido' ? 16 : k === 'grupo' ? 12 : 8 })).concat(cols.map((c) => ({ wch: Math.max(8, c.id.length + 1) })));
+    ws['!cols'] = FIJAS.map(([k]) => ({ wch: k === 'nombre' || k === 'apellido' ? 16 : k === 'grupo' || k === 'momento' ? 12 : 8 })).concat(cols.map((c) => ({ wch: Math.max(8, c.id.length + 1) })));
     XLSX.utils.book_append_sheet(wb, ws, g);
   }
   return XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
