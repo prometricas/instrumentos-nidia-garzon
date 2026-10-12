@@ -1,0 +1,16 @@
+{
+  "name": "instrumentos-tesis-garzon",
+  "version": "1.0.0",
+  "description": "App web de instrumentos cuantitativos (tesis doctoral N. M. Garzón Peña, CESUMA)",
+  "scripts": {
+    "dev": "node dev-local.mjs",
+    "build": "python3 build.py"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@netlify/blobs": "^11.1.4"
+  },
+  "private": true
+}

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es" class="fam">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Cuestionario para la familia</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="assets/estilo.css">
+</head>
+<body class="fam">
+<header class="top">
+  <img src="assets/logo.png" alt="Universidad CESUMA">
+  <div class="titulo"><b>Cuestionario para la familia</b>Investigación sobre lectoescritura · 2.º grado · I. E. Julio César Turbay Ayala</div>
+</header>
+<main id="main"><p class="guia">Cargando…</p></main>
+<div class="toast" id="toast"></div>
+
+<script src="assets/instrumentos.js"></script>
+<script src="assets/comun.js"></script>
+<script>
+const ins = INS.CFF, q = new URLSearchParams(location.search);
+const par = { e: (q.get('e') || '').toUpperCase(), m: q.get('m') || '', t: q.get('t') || '' };
+const resp = {};
+let info = null;
+
+function avisoFinal(html) { $('#main').innerHTML = `<div class="tarjeta" style="text-align:center;padding:30px 22px">${html}</div>`; }
+
+function render() {
+  const quien = info.nombre ? `<b>${esc(info.nombre)}</b> (${esc(info.codigo)})` : `<b>${esc(info.codigo)}</b>`;
+  let items = '', dim = null;
+  for (const it of ins.items) {
+    if (it.dimension !== dim) { dim = it.dimension; items += `<div class="dim">${esc(dim.replace(/^\d+\.\d+\s*/, ''))}</div>`; }
+    items += `<div class="item" id="it-${it.codigo}"><div class="txt">${esc(it.texto)}</div><div class="ops">${ins.escala.map((e) => `<button data-c="${it.codigo}" data-v="${e.valor}" class="${resp[it.codigo] === e.valor ? 'sel' : ''}">${esc(e.etiqueta)}</button>`).join('')}</div></div>`;
+  }
+  $('#main').innerHTML = `
+    <h2>Familia de ${quien}</h2>
+    <p class="guia">Gracias por participar. Marque con qué frecuencia ocurre cada situación en su casa. No hay respuestas buenas ni malas; sus respuestas son confidenciales y se usan solo para la investigación.</p>
+    ${info.respondido ? `<div class="aviso nota">Este cuestionario ya fue respondido el ${esc(info.fecha)}. Si lo envía de nuevo, reemplazará las respuestas anteriores.</div>` : ''}
+    <div class="tarjeta"><div class="campo"><label for="quien">Quién responde</label><select id="quien"><option>Madre</option><option>Padre</option><option>Acudiente</option></select></div></div>
+    ${items}
+    <div class="tarjeta"><div class="campo"><label for="obs">Comentarios (opcional)</label><textarea id="obs" rows="2"></textarea></div></div>
+    <div id="msg"></div>
+    <div class="pie"><button class="btn grande naranja" id="enviar">Enviar respuestas</button></div>`;
+  $('#main').querySelectorAll('.ops button').forEach((b) => b.addEventListener('click', () => {
+    resp[b.dataset.c] = Number(b.dataset.v);
+    const it = $('#it-' + b.dataset.c); it.classList.remove('falta');
+    it.querySelectorAll('button').forEach((x) => x.classList.toggle('sel', x === b));
+  }));
+  $('#enviar').addEventListener('click', enviar);
+}
+
+async function enviar() {
+  const faltan = ins.items.filter((it) => resp[it.codigo] == null);
+  if (faltan.length) {
+    faltan.forEach((it) => $('#it-' + it.codigo).classList.add('falta'));
+    $('#msg').innerHTML = `<div class="aviso mal">Faltan ${faltan.length} preguntas por responder (marcadas en naranja).</div>`;
+    $('#it-' + faltan[0].codigo).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  $('#enviar').disabled = true; $('#msg').innerHTML = '';
+  try {
+    await api('familia', { method: 'POST', body: { ...par, informante: $('#quien').value, items: resp, observaciones: $('#obs').value.trim() } });
+    avisoFinal(`<img src="assets/logo.png" alt="" style="height:44px;margin-bottom:14px"><h2>Respuestas enviadas</h2><p class="guia" style="margin:0">Muchas gracias por su tiempo y por apoyar el aprendizaje de ${esc(info.nombre || info.codigo)}. Ya puede cerrar esta página.</p>`);
+  } catch (e) {
+    $('#msg').innerHTML = `<div class="aviso mal">No se pudieron enviar las respuestas: ${esc(e.message)}. Revise la conexión e intente de nuevo.</div>`;
+    $('#enviar').disabled = false;
+  }
+}
+
+(async () => {
+  try { info = await api(`familia?e=${encodeURIComponent(par.e)}&m=${encodeURIComponent(par.m)}&t=${encodeURIComponent(par.t)}`); render(); }
+  catch (e) { avisoFinal(`<h2>Enlace no válido</h2><p class="guia" style="margin:0">${esc(e.message)}. Pida a la docente investigadora que le envíe de nuevo el enlace.</p>`); }
+})();
+</script>
+</body>
+</html>
