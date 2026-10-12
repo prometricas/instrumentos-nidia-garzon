@@ -18,9 +18,7 @@ function render() {
       <div class="tarjeta"><div class="campo"><label for="quien">Quién responde</label><select id="quien" class="vacio"><option value="" disabled selected>Seleccione quién responde</option><option>Madre</option><option>Padre</option><option>Acudiente</option></select></div></div>
       <div id="msg"></div>
       <div class="pie"><div style="flex:1"><button class="btn grande naranja" id="comenzar" style="width:100%" disabled>Comenzar</button><p class="guia pista" id="pista" style="margin:8px 0 0;font-size:.88em;text-align:center">Marque la casilla y elija quién responde para comenzar.</p></div></div>`;
-    if (info.informante) $('#quien').value = info.informante; // si ya respondió antes, se recuerda; si no, debe elegir
-    $('#quien').classList.toggle('vacio', !$('#quien').value);
-    $('#acepto').checked = !!info.acepta;
+    $('#acepto').checked = !!info.acepta; // quién responde nunca viene preseleccionado: el acudiente debe elegirlo
     const listo = () => { const ok = $('#acepto').checked && !!$('#quien').value; $('#comenzar').disabled = !ok; $('#pista').classList.toggle('oculto', ok); return ok; };
     $('#quien').addEventListener('change', () => { $('#quien').classList.toggle('vacio', !$('#quien').value); listo(); });
     $('#acepto').addEventListener('change', listo);
