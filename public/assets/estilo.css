@@ -35,20 +35,20 @@ nav.menu.secundario button.activo::before{display:none}
 aside.lateral .credito{text-align:left;padding:10px 24px 14px;line-height:1.4}
 table.datos.bit td{white-space:normal;font-size:.92em} table.datos.bit td:first-child{white-space:nowrap;color:var(--tinta-2)}
 .credito-movil{display:none}
-nav.menu{position:sticky;top:0;display:flex;flex-direction:column;gap:4px;padding:12px 12px}
+nav.menu{position:sticky;top:0;display:flex;flex-direction:column;gap:4px;padding:15px 12px}
 nav.menu button{display:flex;align-items:center;gap:13px;background:none;border:0;border-radius:12px;padding:13px 14px;color:var(--tinta-2);font-weight:600;font-size:1.02em;text-align:left;line-height:1.2;position:relative}
 nav.menu button svg{width:28px;height:28px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;color:#8A94A8}
 nav.menu button:hover{color:var(--azul);background:var(--fondo)} nav.menu button:hover svg{color:var(--azul)}
 nav.menu button.activo{color:var(--azul);background:var(--azul-suave)} nav.menu button.activo svg{color:var(--naranja)}
 nav.menu button.activo::before{content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:4px;border-radius:0 4px 4px 0;background:var(--naranja)}
-main{width:min(1500px, 100% - 2*clamp(16px,2.4vw,36px));margin:0 auto;padding:24px 0 56px}
-h2{font-size:1.42em;font-weight:600;margin:0 0 4px;color:var(--azul)}
-p.guia{color:var(--tinta-2);margin:0 0 18px;max-width:96ch;font-size:.96em;line-height:1.5}
+main{width:min(1500px, 100% - 2*clamp(16px,2.4vw,36px));margin:0 auto;padding:25px 0 62px}
+h2{font-size:1.44em;font-weight:600;margin:0 0 4px;color:var(--azul)}
+p.guia{color:var(--tinta-2);margin:0 0 19px;max-width:96ch;font-size:.97em;line-height:1.5}
 .cabeza{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
 .cabeza .resumen{color:var(--tinta-2);font-size:.92em;text-align:right}
 
 /* componentes */
-.tarjeta{background:var(--blanco);border:1px solid var(--linea);border-radius:14px;padding:18px 22px;margin-bottom:16px}
+.tarjeta{background:var(--blanco);border:1px solid var(--linea);border-radius:14px;padding:19px 22px;margin-bottom:17px}
 .fila{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
 .campo{flex:1;min-width:130px}
 .campo label{display:block;font-size:.82em;color:var(--tinta-2);margin-bottom:4px}
@@ -191,7 +191,7 @@ table.datos tr:last-child td{border-bottom:0}
 }
 
 /* pestañas por grupo, con la explicación del grupo al lado */
-.gbar{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin:6px 0 12px}
+.gbar{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin:6px 0 13px}
 .gtabs{display:flex;gap:8px;flex-wrap:wrap;flex:0 1 auto;min-width:0;max-width:100%}
 .gtabs button{background:#fff;border:2px solid var(--c,#6B7280);color:var(--c,#6B7280);border-radius:999px;padding:8px 18px;font-weight:600;display:inline-flex;gap:8px;align-items:center}
 .gtabs button b{font-weight:600;background:var(--c,#6B7280);color:#fff;border-radius:999px;padding:1px 9px;font-size:.85em;opacity:.85}
@@ -232,7 +232,7 @@ table.datos a[data-ficha]{text-decoration:none;font-weight:600}
 table.datos a[data-ficha]:hover{text-decoration:underline}
 
 /* tabla de respuestas (formato panel: dos filas por estudiante) */
-.barra-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 14px}
+.barra-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 16px}
 .barra-r .eti{color:var(--tinta-2);font-size:.88em} .barra-r label.check{font-size:.88em}
 .barra-r .derecha{display:flex;align-items:center;gap:10px;margin-left:auto}
 .barra-r .seg button{padding:7px 12px;min-height:38px;font-size:.9em} .barra-r .btn{padding:8px 16px;min-height:38px;font-size:.95em}
