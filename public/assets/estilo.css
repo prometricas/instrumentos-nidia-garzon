@@ -23,7 +23,14 @@ header.top .acciones{display:flex;gap:6px}
 #app{min-height:100vh;display:flex;flex-direction:column} /* el cuerpo ocupa justo lo que queda bajo la cabecera: sin desplazamiento obligado */
 .cuerpo{display:grid;grid-template-columns:clamp(240px,16vw,300px) minmax(0,1fr);flex:1}
 aside.lateral{background:var(--blanco);border-right:1px solid var(--linea);display:flex;flex-direction:column}
-aside.lateral .credito{margin-top:auto;position:sticky;bottom:0;background:var(--blanco);text-align:left;padding:14px 24px;line-height:1.4}
+.pie-lateral{margin-top:auto;position:sticky;bottom:0;background:var(--blanco);padding-top:10px}
+nav.menu.secundario{padding:6px 12px 2px;gap:0;border-top:1px solid var(--linea);margin:0 12px;padding-left:0;padding-right:0}
+nav.menu.secundario button,nav.menu.secundario label{display:flex;align-items:center;font-size:.84em;font-weight:500;color:#7A8599;padding:7px 12px;gap:10px;cursor:pointer;border-radius:8px;line-height:1.2}
+nav.menu.secundario svg{width:18px;height:18px;color:#A4ACBC;stroke-width:1.9}
+nav.menu.secundario button:hover,nav.menu.secundario label:hover{color:var(--azul);background:var(--fondo)} nav.menu.secundario button:hover svg,nav.menu.secundario label:hover svg{color:var(--azul)}
+nav.menu.secundario button.activo::before{display:none}
+aside.lateral .credito{text-align:left;padding:10px 24px 14px;line-height:1.4}
+table.datos.bit td{white-space:normal;font-size:.92em} table.datos.bit td:first-child{white-space:nowrap;color:var(--tinta-2)}
 .credito-movil{display:none}
 nav.menu{position:sticky;top:0;display:flex;flex-direction:column;gap:4px;padding:18px 12px}
 nav.menu button{display:flex;align-items:center;gap:13px;background:none;border:0;border-radius:12px;padding:13px 14px;color:var(--tinta-2);font-weight:600;font-size:1.02em;text-align:left;line-height:1.2;position:relative}
@@ -167,9 +174,11 @@ table.datos tr:last-child td{border-bottom:0}
 .volver:hover{text-decoration:underline}
 @media (max-width:760px){
   header.top{gap:12px} header.top .titulo{display:none} header.top .acciones{margin-left:auto}
-  .cuerpo{display:block;min-height:0} aside.lateral{border-right:0;border-bottom:1px solid var(--linea);display:block}
+  .cuerpo{display:block;min-height:0} aside.lateral{border-right:0;border-bottom:1px solid var(--linea);display:flex;flex-direction:row;align-items:center;overflow-x:auto}
+  .pie-lateral{margin:0;position:static;padding:0;flex:none} nav.menu.secundario{border-top:0;border-left:1px solid var(--linea);flex-direction:row;padding:8px 6px;margin:0}
+  nav.menu.secundario button span,nav.menu.secundario label span{display:none} nav.menu.secundario svg{width:22px;height:22px}
   aside.lateral .credito{display:none} .credito-movil{display:block}
-  nav.menu{position:static;flex-direction:row;overflow-x:auto;padding:8px 10px;gap:2px}
+  nav.menu{position:static;flex-direction:row;overflow-x:visible;padding:8px 10px;gap:2px;flex:none}
   .gtabs button{padding:7px 13px;font-size:.95em}
   nav.menu button{flex:none;padding:9px 12px;gap:8px;font-size:.95em} nav.menu button svg{width:22px;height:22px} nav.menu button.activo::before{left:10px;right:10px;top:auto;bottom:0;width:auto;height:3px;border-radius:3px 3px 0 0}
   .opt{width:140px;min-height:170px} .opt .ico{height:84px} .opt .ico svg{width:84px;height:84px} .kid-body{padding:14px 12px} .escala{gap:10px}
@@ -248,7 +257,7 @@ table.resp-ancha a[data-ficha]:hover{text-decoration:underline}
 @media (max-width:1180px){.pruebas{grid-template-columns:1fr}}
 @media (max-width:760px){.modal{padding:12px 8px} .modal-caja{padding:18px 14px 20px} .avatar{width:48px;height:48px} .ficha-cab{gap:12px;align-items:flex-start}}
 
-/* indicador de carga, diálogo propio, pendientes de envío, buscador, avance */
+/* indicador de carga, diálogo propio, pendientes de envío, buscador */
 .cargando{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--linea);border-radius:999px;padding:8px 16px 8px 12px;font-size:.9em;color:var(--tinta-2);box-shadow:0 6px 20px rgba(28,36,51,.14);z-index:60;display:flex;align-items:center;gap:10px}
 .spin{width:16px;height:16px;border:2.5px solid var(--azul-suave);border-top-color:var(--azul);border-radius:50%;animation:girar .8s linear infinite}
 @keyframes girar{to{transform:rotate(360deg)}}
@@ -264,16 +273,4 @@ table.resp-ancha a[data-ficha]:hover{text-decoration:underline}
 .buscar span{color:var(--tinta-2);font-size:.88em;white-space:nowrap}
 label.check{display:inline-flex;align-items:center;gap:8px;color:var(--tinta-2);font-size:.92em;cursor:pointer;white-space:nowrap}
 label.check input{width:17px;height:17px;accent-color:var(--azul)}
-.dos-col{display:flex;gap:14px;align-items:stretch;flex-wrap:wrap;margin-top:14px}
-.dos-col #avance{min-width:0;max-width:100%;overflow-x:auto}
-.dos-col .controles{flex:1 1 300px;margin:0;padding:16px 18px;display:flex;flex-direction:column;justify-content:center}
-.dos-col .controles .seg button{padding:8px 14px;min-height:40px}
-.dos-col .controles{min-width:0} .dos-col .controles label.check{white-space:normal;line-height:1.3}
-table.avance{border-collapse:collapse;font-size:.9em;background:#fff;border:1px solid var(--linea);border-radius:12px;overflow:hidden;display:inline-table;align-self:flex-start}
-table.avance th,table.avance td{padding:8px 10px;border-bottom:1px solid var(--linea);text-align:center;font-variant-numeric:tabular-nums}
-table.avance th{background:var(--azul-suave);color:var(--azul);font-weight:600;white-space:nowrap}
-table.avance th:first-child,table.avance td:first-child{text-align:left}
-table.avance tr:last-child td{border-bottom:0}
-table.avance td.ok{color:var(--ok);font-weight:700} table.avance td.parcial{color:var(--tinta)}
-table.avance .punto{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c,#6B7280);margin-right:8px;vertical-align:middle}
 .consent{font-size:.88em} .consent.falta{color:var(--naranja)}

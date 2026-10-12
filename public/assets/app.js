@@ -73,13 +73,13 @@ let origen = null; // módulo desde el que se llegó con una marca pendiente, pa
 function ir(v) {
   vista = v;
   document.querySelectorAll('main > section').forEach((s) => s.classList.toggle('oculto', s.id !== 'v-' + v));
-  document.querySelectorAll('nav.menu button').forEach((b) => b.classList.toggle('activo', b.dataset.v === v));
+  document.querySelectorAll('nav.menu button[data-v]').forEach((b) => b.classList.toggle('activo', b.dataset.v === v));
   document.querySelectorAll('[data-volver]').forEach((a) => a.classList.toggle('oculto', !(origen && origen !== v)));
   $('#ayudaBtn').classList.toggle('oculto', v !== 'aplicar'); if (v !== 'aplicar') $('#ayudaPanel').classList.add('oculto');
   if (!location.hash) history.replaceState(null, '', '#' + v); else if (location.hash !== '#' + v) history.pushState(null, '', '#' + v); // el botón Atrás del navegador vuelve al módulo anterior
   VISTAS[v]();
 }
-document.querySelectorAll('nav.menu button').forEach((b) => b.addEventListener('click', () => { origen = null; ir(b.dataset.v); }));
+document.querySelectorAll('nav.menu button[data-v]').forEach((b) => b.addEventListener('click', () => { origen = null; ir(b.dataset.v); }));
 document.querySelectorAll('[data-volver]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); const o = origen; origen = null; ir(o); }));
 window.addEventListener('popstate', () => {
   if (K) { history.pushState(null, '', '#aplicar'); return; } // durante una aplicación, Atrás no hace nada
@@ -216,7 +216,7 @@ function verEstudiante(codigo, editar = false) {
 }
 $('#fichaCerrar').addEventListener('click', () => $('#ficha').classList.add('oculto'));
 $('#ficha').addEventListener('click', (e) => { if (e.target === $('#ficha')) $('#ficha').classList.add('oculto'); });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('#ficha').classList.add('oculto'); if (e.key === 'Enter' && e.target.matches('.estado[tabindex]')) e.target.click(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { $('#ficha').classList.add('oculto'); $('#bitacora').classList.add('oculto'); } if (e.key === 'Enter' && e.target.matches('.estado[tabindex], label[for=archivoCopia]')) e.target.click(); });
 document.addEventListener('click', (e) => { if (e.target.matches('[data-ficha]')) e.preventDefault(); });
 
 /* ---------- aplicar ---------- */
@@ -378,9 +378,6 @@ function verRespuestas() {
   const dims = todas.filter((c) => c.tipo === 'dim');
   const completo = (p) => dims.every((c) => MOMENTOS.every((m) => { const r = buscarReg(D, c.key, p.codigo, m); return r && r[c.campo] !== ''; }));
   $('#resumenR').textContent = ps.length ? `${ps.filter(completo).length} de ${ps.length} estudiantes con las cinco aplicaciones` : '';
-  const cuenta = (l, key, m) => l.filter((p) => buscarReg(D, key, p.codigo, m)).length;
-  const fila = (g) => { const l = ps.filter((p) => p.grupo === g); const celda = (key, m) => { const n = cuenta(l, key, m); return `<td class="${l.length && n === l.length ? 'ok' : n ? 'parcial' : ''}">${n}/${l.length}</td>`; }; return `<tr><td class="g-${g.toLowerCase()}"><span class="punto"></span>${g}</td><td>${l.length}</td>${celda('EQI', 'Pretest')}${celda('EQI', 'Postest')}${celda('ESMS', 'Pretest')}${celda('ESMS', 'Postest')}${celda('CFF')}</tr>`; };
-  $('#avance').innerHTML = ps.length ? `<table class="avance"><thead><tr><th>Avance</th><th title="Estudiantes registrados">Estud.</th><th title="Factores socioemocionales, pretest">Emo. pre</th><th title="Factores socioemocionales, postest">Emo. post</th><th title="Motivación hacia la lectoescritura, pretest">Lecto. pre</th><th title="Motivación hacia la lectoescritura, postest">Lecto. post</th><th title="Acompañamiento familiar">Familiar</th></tr></thead><tbody>${GRUPOS.map(fila).join('')}</tbody></table>` : '';
   const bloques = PRUEBAS.map((P) => ({ P, cols: cols.filter((c) => c.key === P.key) })).filter((b) => b.cols.length);
   const clase = (P) => 'p-' + P.pre.toLowerCase();
   const celdas = (b, p, m) => { const r = buscarReg(D, b.P.key, p.codigo, m); return r ? b.cols.map((c, i) => `<td class="num ${c.tipo !== 'item' ? 'dim' : ''} ${i === 0 ? 'ini' : ''}">${esc(r[c.campo] ?? '')}</td>`).join('') : `<td colspan="${b.cols.length}" class="vacio ini" ${b.P.panel ? '' : 'rowspan="2"'}><span>${b.P.panel ? 'Sin aplicar' : 'Pendiente'}</span></td>`; };
@@ -396,6 +393,18 @@ function verRespuestas() {
   activarTabs($('#tablaR'), verRespuestas);
   $('#tablaR').querySelectorAll('[data-ficha]').forEach((a) => a.addEventListener('click', () => verEstudiante(a.dataset.ficha)));
 }
+
+/* ---------- bitácora ---------- */
+$('#btnBitacora').addEventListener('click', async () => {
+  try {
+    const { bitacora } = await api('bitacora'); const lista = bitacora.slice().reverse().slice(0, 300);
+    $('#bitCuerpo').innerHTML = `<h2>Bitácora</h2><p class="guia" style="margin-bottom:12px">Registro de auditoría del servidor: cada registro, edición, aplicación, eliminación y copia, con fecha y hora de Colombia. ${bitacora.length > 300 ? 'Se muestran los últimos 300 de ' + bitacora.length + '; la copia de seguridad trae todos.' : bitacora.length + ' eventos.'}</p>
+      ${lista.length ? `<div class="tabla"><table class="datos bit"><thead><tr><th>Fecha y hora</th><th>Evento</th><th>Detalle</th></tr></thead><tbody>${lista.map((b) => `<tr><td>${esc(b.fecha_hora)}</td><td>${esc(b.evento.replace(/_/g, ' '))}</td><td>${esc(b.detalle)}</td></tr>`).join('')}</tbody></table></div>` : '<div class="aviso nota">Aún no hay eventos.</div>'}`;
+    $('#bitacora').classList.remove('oculto');
+  } catch (e) { toast('No se pudo leer la bitácora: ' + e.message, true); }
+});
+$('#bitCerrar').addEventListener('click', () => $('#bitacora').classList.add('oculto'));
+$('#bitacora').addEventListener('click', (e) => { if (e.target === $('#bitacora')) $('#bitacora').classList.add('oculto'); });
 
 /* ---------- Excel y copia de seguridad ---------- */
 async function conXLSX() { if (!window.XLSX) await new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'assets/xlsx.full.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
