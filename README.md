@@ -2,9 +2,9 @@
 
 App web para aplicar los instrumentos de la investigación *Factores socioemocionales y su incidencia en la lectoescritura* (2.º grado, I. E. Julio César Turbay Ayala) y guardar las respuestas en una base central.
 
-- **Aplicador** (`index.html`, con clave): registra estudiantes, aplica en pantalla el EQ-i:YV(S) y la ESMS-E leyendo cada frase en voz alta, genera los enlaces para las familias y descarga la base completa en Excel.
+- **Aplicador** (`index.html`, con clave): registra estudiantes, aplica en pantalla el EQ-i:YV(S) y la ESMS-E leyendo cada frase en voz alta, genera los enlaces para las familias, muestra la tabla de respuestas y la descarga en Excel.
 - **Familias** (`familia.html`, enlace firmado por estudiante y momento, sin clave): cuestionario CFCSAL-F desde el celular.
-- **Datos**: Netlify Blobs (almacenes `participantes`, `eqi`, `esms`, `cff`, `bitacora`), una entrada por estudiante y momento. El Excel descargado tiene una hoja por instrumento, bitácora y diccionario de variables, con respuestas brutas y puntajes por dimensión (inversos recodificados).
+- **Datos**: Netlify Blobs (almacenes `participantes`, `eqi`, `esms`, `cff`, `bitacora`), una entrada por estudiante y momento. La bitácora queda solo en el servidor como registro de auditoría. El módulo **Tabla de respuestas** y el Excel descargado muestran una fila por estudiante (Grupo, Código, Nombre, Apellido, Sexo, Edad) y en columnas sus respuestas brutas y puntajes por dimensión (inversos recodificados): Emocional pre y post (`Emo_Pre_*`, `Emo_Post_*`), Lectoescritura pre y post (`Lec_Pre_*`, `Lec_Post_*`) y Familiar (`Fam_*`). El Excel trae una hoja por grupo (Piloto, Experimental, Control). El código del estudiante es único y nunca se reutiliza, ni siquiera si el estudiante está en la papelera.
 
 ## Estructura
 

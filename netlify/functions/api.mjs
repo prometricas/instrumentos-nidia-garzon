@@ -51,7 +51,6 @@ function validarItems(key, items) {
   return null;
 }
 const MOMENTOS = ["Pretest", "Postest"];
-const claves = (s, codigo) => (s === "cff" ? [codigo] : MOMENTOS.map((m) => `${codigo}|${m}`));
 const llaves = (s, codigo) => (s === "cff" ? [codigo] : MOMENTOS.map((m) => `${codigo}|${m}`));
 
 export default async (req) => {
@@ -99,6 +98,10 @@ export default async (req) => {
     if (!["Femenino", "Masculino"].includes(r.sexo)) return json({ error: "Seleccione el sexo" }, 400);
     const row = { codigo, nombre: String(r.nombre || "").trim().slice(0, 60), apellido: String(r.apellido || "").trim().slice(0, 60), grupo: r.grupo, sexo: r.sexo, edad: Number(r.edad) || "", fecha_registro: r.fecha_registro || hoy(), observaciones: String(r.observaciones || "").slice(0, 300) };
     const existia = await store("participantes").get(codigo, { type: "json" });
+    if (body.nuevo) { // el código identifica al estudiante en todas las pruebas: nunca se reutiliza
+      if (existia) return json({ error: `Ya existe un estudiante con el código ${codigo}` }, 409);
+      if (await store("papelera").get(codigo, { type: "json" })) return json({ error: `El código ${codigo} pertenece a un estudiante de la papelera; recupérelo o use otro código` }, 409);
+    }
     await store("participantes").setJSON(codigo, row);
     await bitacora(existia ? "edicion" : "registro", `Participante ${codigo} ${row.nombre} ${row.apellido} (${row.grupo})`);
     return json({ ok: true, row });

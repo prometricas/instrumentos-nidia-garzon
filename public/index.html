@@ -29,11 +29,13 @@
     <div class="titulo"><b>Instrumentos de la investigación</b>Factores socioemocionales y lectoescritura · 2.º grado · I. E. Julio César Turbay Ayala</div>
     <div class="acciones"><button class="lnk" id="btnExcel">Descargar Excel</button><button class="lnk" id="btnSalir">Salir</button></div>
   </header>
-  <nav class="tabs">
-    <button data-v="estudiantes" class="activo">Estudiantes</button>
-    <button data-v="aplicar">Aplicar al estudiante</button>
-    <button data-v="familias">Acudientes</button>
-  </nav>
+  <div class="cuerpo">
+  <aside class="lateral"><nav class="menu">
+    <button data-v="estudiantes" class="activo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 19v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 17.5V19"/><circle cx="10" cy="7.5" r="3.5"/><path d="M20 19v-1.5a3.5 3.5 0 0 0-2.5-3.35M15.5 4.2a3.5 3.5 0 0 1 0 6.6"/></svg><span>Estudiantes</span></button>
+    <button data-v="aplicar"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3h6v3H9zM9 13l2 2 4-4"/></svg><span>Aplicar al estudiante</span></button>
+    <button data-v="familias"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/></svg><span>Acudientes</span></button>
+    <button data-v="respuestas"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M3 14.5h18M9 4v16M15 4v16"/></svg><span>Tabla de respuestas</span></button>
+  </nav></aside>
   <main>
     <section id="v-estudiantes">
       <div class="cabeza"><div><h2>Estudiantes</h2><p class="guia" style="margin:0">Cada estudiante tiene un código que vincula sus registros. Las marcas verdes son aplicaciones guardadas; al pulsar una (o el nombre) se abre la ficha del estudiante con todas sus respuestas. Elija el grupo en las pestañas.</p></div><div class="resumen" id="resumenP"></div></div>
@@ -42,8 +44,8 @@
           <div class="campo" style="max-width:110px"><label for="pCodigo">Código</label><input id="pCodigo"></div>
           <div class="campo" style="flex:1.4"><label for="pNombre">Nombre</label><input id="pNombre" placeholder="Nombre"></div>
           <div class="campo" style="flex:1.4"><label for="pApellido">Apellido</label><input id="pApellido" placeholder="Apellido"></div>
-          <div class="campo"><label for="pGrupo">Grupo</label><select id="pGrupo" class="vacio"><option value="" disabled selected>Seleccione el grupo</option><option>Piloto</option><option>Experimental</option><option>Control</option></select></div>
-          <div class="campo"><label for="pSexo">Sexo</label><select id="pSexo" class="vacio"><option value="" disabled selected>Seleccione el sexo</option><option>Femenino</option><option>Masculino</option></select></div>
+          <div class="campo" style="min-width:190px"><label for="pGrupo">Grupo</label><select id="pGrupo" class="vacio"><option value="" disabled selected>Seleccione el grupo</option><option>Piloto</option><option>Experimental</option><option>Control</option></select></div>
+          <div class="campo" style="min-width:190px"><label for="pSexo">Sexo</label><select id="pSexo" class="vacio"><option value="" disabled selected>Seleccione el sexo</option><option>Femenino</option><option>Masculino</option></select></div>
           <div class="campo" style="max-width:90px"><label for="pEdad">Edad</label><input id="pEdad" type="number" min="5" max="12"></div>
           <button class="btn" id="btnAddP">Registrar</button>
         </div>
@@ -54,7 +56,7 @@
 
     <section id="v-aplicar" class="oculto">
       <h2>Aplicar al estudiante</h2>
-      <p class="guia">Aplicación individual: el aplicador lee cada frase en voz alta y el estudiante toca su respuesta. Primero hay dos frases de práctica que no se guardan. El botón naranja de la esquina muestra el guion.</p>
+      <p class="guia">Aplicación individual: el aplicador lee cada frase en voz alta y el estudiante toca su respuesta. Empieza con dos frases de práctica que no se guardan. El botón ? de la esquina muestra el guion.</p>
       <div class="tarjeta">
         <div class="opciones-ins" id="opIns"></div>
         <div class="fila">
@@ -72,7 +74,14 @@
       <div class="tarjeta" style="margin-top:14px"><div class="fila"><button class="btn sec" id="btnCopiarTodos">Copiar los enlaces del grupo</button><button class="btn sec" id="btnCopiarPend">Copiar solo los pendientes del grupo</button></div></div>
       <div class="tabla" id="tablaF"></div>
     </section>
+
+    <section id="v-respuestas" class="oculto">
+      <div class="cabeza"><div><h2>Tabla de respuestas</h2><p class="guia" style="margin:0">Una fila por estudiante con todas sus respuestas: Emocional y Lectoescritura (pretest y postest) y Familiar. Las columnas sombreadas son los puntajes. Es la misma tabla del Excel, que trae una hoja por grupo. Pase el cursor sobre un código de pregunta para ver la frase; pulse el nombre para abrir la ficha.</p></div><div class="resumen" id="resumenR"></div></div>
+      <div class="tarjeta" style="margin-top:14px"><div class="fila"><div class="campo" style="flex:0 0 auto;min-width:0"><label>Mostrar</label><div class="seg" id="rVer"><button data-m="todo" class="activo">Respuestas y puntajes</button><button data-m="punt">Solo puntajes</button></div></div><div style="flex:1"></div><button class="btn" id="btnExcelR">Descargar Excel</button></div></div>
+      <div id="tablaR"></div>
+    </section>
   </main>
+  </div>
   <button class="ayuda-btn oculto" id="ayudaBtn" title="Guion para el aplicador" aria-label="Guion para el aplicador">?</button>
   <div class="ayuda-panel oculto" id="ayudaPanel"></div>
 </div>
@@ -105,16 +114,15 @@
 <script>
 let D = null; // datos: {participantes, eqi, esms, cff, bitacora}
 let vista = 'estudiantes';
-const STORE = { EQI: 'eqi', ESMS: 'esms', CFF: 'cff' };
-const GRUPOS = ['Piloto', 'Experimental', 'Control'];
 const porGrupo = (lista) => GRUPOS.map((g) => [g, lista.filter((x) => x.grupo === g)]).filter(([, l]) => l.length);
 const DESC = { Piloto: 'Grupo de prueba de los instrumentos: sirve para ensayar la aplicación y ajustar los cuestionarios; sus datos no entran en el análisis principal.', Experimental: 'Grupo que recibe la intervención pedagógica basada en el desarrollo socioemocional, con medición antes (pretest) y después (postest).', Control: 'Grupo que no recibe la intervención pedagógica; se mide en los mismos momentos para comparar.' };
 let grupoActivo = localStorage.getItem('grupoActivo') || 'Piloto';
 function tabsGrupo(lista, cuenta) {
-  return `<div class="gtabs">${GRUPOS.map((g) => `<button data-g="${g}" class="g-${g.toLowerCase()} ${g === grupoActivo ? 'activo' : ''}">${g}<b>${cuenta(lista.filter((x) => x.grupo === g))}</b></button>`).join('')}</div><p class="gdesc g-${grupoActivo.toLowerCase()}">${DESC[grupoActivo]}</p>`;
+  return `<div class="gbar"><div class="gtabs">${GRUPOS.map((g) => `<button data-g="${g}" class="g-${g.toLowerCase()} ${g === grupoActivo ? 'activo' : ''}">${g}<b>${cuenta(lista.filter((x) => x.grupo === g))}</b></button>`).join('')}</div><p class="gdesc g-${grupoActivo.toLowerCase()}">${DESC[grupoActivo]}</p></div>`;
 }
 function activarTabs(cont, onChange) { cont.querySelectorAll('.gtabs button').forEach((b) => b.addEventListener('click', () => { grupoActivo = b.dataset.g; localStorage.setItem('grupoActivo', grupoActivo); onChange(); })); }
 const nom = (p) => [p.nombre, p.apellido].filter(Boolean).join(' ');
+const codigoUsado = (c) => D.participantes.some((p) => p.codigo === c) || (D.papelera || []).some((p) => p.codigo === c);
 const nombreDe = (c) => { const p = D.participantes.find((p) => p.codigo === c); return p ? nom(p) : ''; };
 const reg = (s, c, m) => D[s].find((r) => r.codigo === c && (s === 'cff' || r.momento === m));
 const nReg = (c) => ['eqi', 'esms', 'cff'].reduce((a, s) => a + D[s].filter((r) => r.codigo === c).length, 0);
@@ -146,11 +154,11 @@ async function cargar() { const [d, p] = await Promise.all([api('datos'), api('p
 function ir(v) {
   vista = v;
   document.querySelectorAll('main > section').forEach((s) => s.classList.toggle('oculto', s.id !== 'v-' + v));
-  document.querySelectorAll('nav.tabs button').forEach((b) => b.classList.toggle('activo', b.dataset.v === v));
+  document.querySelectorAll('nav.menu button').forEach((b) => b.classList.toggle('activo', b.dataset.v === v));
   $('#ayudaBtn').classList.toggle('oculto', v !== 'aplicar'); if (v !== 'aplicar') $('#ayudaPanel').classList.add('oculto');
-  ({ estudiantes: verEstudiantes, aplicar: verAplicar, familias: verFamilias })[v]();
+  ({ estudiantes: verEstudiantes, aplicar: verAplicar, familias: verFamilias, respuestas: verRespuestas })[v]();
 }
-document.querySelectorAll('nav.tabs button').forEach((b) => b.addEventListener('click', () => ir(b.dataset.v)));
+document.querySelectorAll('nav.menu button').forEach((b) => b.addEventListener('click', () => ir(b.dataset.v)));
 async function recargar() { try { await cargar(); ir(vista); } catch (e) { toast(e.message, true); } }
 function seg(id, onChange) { const el = $(id); el.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { el.querySelectorAll('button').forEach((x) => x.classList.toggle('activo', x === b)); onChange && onChange(b.dataset.m); })); return () => el.querySelector('.activo').dataset.m; }
 function guionHtml(ins) { return `<h4>Guion · ${esc(ins.corto)}</h4>${esc(ins.instruccion_aplicador)}<p>Teclas: 1-${ins.escala.length} marcan la respuesta, Enter avanza.</p>`; }
@@ -169,9 +177,8 @@ function verEstudiantes() {
     ['EQI', 'ESMS', 'CFF'].map((k) => `<th>${esc(INS[k].tabla)}<small>${esc(INS[k].nombre)}</small></th>`).join('') + `<th></th></tr></thead><tbody>` + lista.map(filaP).join('') + '</tbody></table>'
     : `<div class="aviso nota">Aún no hay estudiantes en el grupo ${grupoActivo}. Regístrelos con el formulario de arriba.</div>`) + papeleraHtml();
   activarTabs($('#tablaP'), verEstudiantes);
-  if (!$('#pGrupo').value) { $('#pGrupo').value = grupoActivo; $('#pGrupo').classList.remove('vacio'); }
   const cod = $('#pCodigo').value.trim().toUpperCase();
-  if (!cod || ps.some((p) => p.codigo === cod)) { let n = ps.length + 1; while (ps.some((p) => p.codigo === 'E' + z(n))) n++; $('#pCodigo').value = 'E' + z(n); }
+  if (!cod || codigoUsado(cod)) { let n = 1; while (codigoUsado('E' + z(n))) n++; $('#pCodigo').value = 'E' + z(n); }
   $('#tablaP').querySelectorAll('.estado.si, [data-ficha]').forEach((ch) => ch.addEventListener('click', () => verEstudiante(ch.dataset.c || ch.dataset.ficha)));
   $('#tablaP').querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', async () => {
     const c = b.dataset.del, n = nReg(c);
@@ -199,7 +206,9 @@ $('#btnAddP').addEventListener('click', async () => {
   document.querySelectorAll('#v-estudiantes .campo').forEach((c) => c.classList.remove('falta'));
   const falta = (id, texto) => { $(id).closest('.campo').classList.add('falta'); faltan.push(texto); };
   if (!row.codigo) falta('#pCodigo', 'el código');
+  else if (!/^[A-Z0-9]{1,8}$/.test(row.codigo)) falta('#pCodigo', 'un código válido (solo letras y números, máximo 8)');
   else if (D.participantes.some((p) => p.codigo === row.codigo)) falta('#pCodigo', `otro código (${row.codigo} ya existe)`);
+  else if ((D.papelera || []).some((p) => p.codigo === row.codigo)) falta('#pCodigo', `otro código (${row.codigo} está en la papelera)`);
   if (!row.nombre) falta('#pNombre', 'el nombre');
   if (!row.apellido) falta('#pApellido', 'el apellido');
   if (!row.grupo) falta('#pGrupo', 'el grupo');
@@ -207,7 +216,7 @@ $('#btnAddP').addEventListener('click', async () => {
   if (!row.edad) falta('#pEdad', 'la edad');
   if (faltan.length) { m.innerHTML = `<div class="aviso mal">Falta ${faltan.join(', ').replace(/, ([^,]*)$/, ' y $1')}.</div>`; $('#v-estudiantes .campo.falta input, #v-estudiantes .campo.falta select')?.focus(); return; }
   try {
-    await api('participante', { method: 'PUT', body: { row } });
+    await api('participante', { method: 'PUT', body: { row, nuevo: true } });
     m.innerHTML = `<div class="aviso ok">Registrado ${esc(row.codigo)} · ${esc(row.nombre)} ${esc(row.apellido)}.</div>`;
     $('#pCodigo').value = ''; $('#pNombre').value = ''; $('#pApellido').value = ''; $('#pEdad').value = ''; $('#pSexo').value = ''; $('#pSexo').classList.add('vacio'); grupoActivo = row.grupo; localStorage.setItem('grupoActivo', grupoActivo);
     await recargar(); $('#pNombre').focus();
@@ -347,12 +356,37 @@ async function copiarEnlaces(lista) {
 $('#btnCopiarTodos').addEventListener('click', () => copiarEnlaces(enlaces.filter((e) => e.grupo === grupoActivo)));
 $('#btnCopiarPend').addEventListener('click', () => copiarEnlaces(enlaces.filter((e) => e.grupo === grupoActivo && !reg('cff', e.codigo))));
 
+/* ---------- tabla de respuestas ---------- */
+let verR = 'todo';
+seg('#rVer', (m) => { verR = m; verRespuestas(); });
+function verRespuestas() {
+  const todas = columnasRespuestas(), cols = todas.filter((c) => verR === 'todo' || c.tipo !== 'item');
+  const ps = D.participantes, filas = filasRespuestas(D, todas, grupoActivo);
+  const completos = (g) => filasRespuestas(D, todas, g).filter((o) => todas.filter((c) => c.tipo === 'punt').every((c) => o[c.id] !== '')).length;
+  $('#resumenR').textContent = ps.length ? `${completos()} de ${ps.length} estudiantes con las cinco aplicaciones` : '';
+  const bloques = (clave) => cols.reduce((a, c) => { const k = clave(c); if (a.length && a[a.length - 1].k === k) a[a.length - 1].n++; else a.push({ k, c, n: 1 }); return a; }, []);
+  const clase = (c) => 'p-' + c.prueba.toLowerCase().slice(0, 3);
+  const inicio = new Set(bloques((c) => c.prueba + c.momento).map((b) => b.c.id));
+  const td = (c, v) => `<td class="${c.tipo === 'punt' ? 'punt' : ''} ${inicio.has(c.id) ? 'ini' : ''}">${esc(v)}</td>`;
+  const lista = filas.map((o) => `<tr><td class="fijo r-cod"><b>${esc(o.codigo)}</b></td><td class="fijo r-nom"><a href="#" data-ficha="${esc(o.codigo)}">${esc(o.nombre)}</a></td><td>${esc(o.apellido)}</td><td>${esc(o.sexo === 'Femenino' ? 'F' : o.sexo === 'Masculino' ? 'M' : '')}</td><td>${esc(o.edad)}</td>${cols.map((c) => td(c, o[c.id])).join('')}</tr>`).join('');
+  $('#tablaR').innerHTML = tabsGrupo(ps, (l) => l.length) + (filas.length ? `<div class="tabla-r"><table class="resp-ancha"><thead>
+    <tr><th rowspan="3" class="fijo r-cod">Código</th><th rowspan="3" class="fijo r-nom">Nombre</th><th rowspan="3">Apellido</th><th rowspan="3" title="Sexo">Sexo</th><th rowspan="3">Edad</th>${bloques((c) => c.prueba).map((b) => `<th colspan="${b.n}" class="${clase(b.c)} ini r1"><span>${esc(b.c.prueba)}</span></th>`).join('')}</tr>
+    <tr>${bloques((c) => c.prueba + c.momento).map((b) => `<th colspan="${b.n}" class="${clase(b.c)} ini r2"><span>${b.c.momento || 'Única aplicación'}</span></th>`).join('')}</tr>
+    <tr>${cols.map((c) => `<th class="r3 ${c.tipo === 'punt' ? 'punt' : ''} ${inicio.has(c.id) ? 'ini' : ''}" title="${esc(c.texto)}">${esc(c.corto)}</th>`).join('')}</tr>
+    </thead><tbody>${lista}</tbody></table></div>`
+    : `<div class="aviso nota">No hay estudiantes en el grupo ${grupoActivo}.</div>`);
+  const nomTh = $('#tablaR thead .r-nom'); if (nomTh) $('#tablaR table').style.setProperty('--fijo', (nomTh.offsetLeft + nomTh.offsetWidth) + 'px'); // los rótulos de prueba quedan visibles al desplazar
+  activarTabs($('#tablaR'), verRespuestas);
+  $('#tablaR').querySelectorAll('[data-ficha]').forEach((a) => a.addEventListener('click', () => verEstudiante(a.dataset.ficha)));
+}
+
 /* ---------- Excel ---------- */
+$('#btnExcelR').addEventListener('click', () => $('#btnExcel').click());
 $('#btnExcel').addEventListener('click', async () => {
   try {
     if (!window.XLSX) await new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'assets/xlsx.full.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
     await cargar();
-    descargar(construirExcel(D), `BD_Instrumentos_${hoy()}.xlsx`);
+    descargar(construirExcel(D), `Respuestas_instrumentos_${hoy()}.xlsx`);
   } catch (e) { toast('No se pudo generar el Excel: ' + e.message, true); }
 });
 

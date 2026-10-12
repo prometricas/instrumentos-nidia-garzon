@@ -74,35 +74,45 @@ function iconFace(v) {
   return `<svg width="104" height="104" viewBox="0 0 104 104" aria-hidden="true">${shake}${nod}<g transform="rotate(${tilt} ${c} ${c})"><rect x="14" y="14" width="76" height="76" rx="24" fill="${fill}" stroke="${edge}" stroke-width="4"/><ellipse cx="38" cy="30" rx="11" ry="6" fill="#fff" opacity=".45"/>${eyes}${mouth}</g></svg>`;
 }
 
-// Libro de Excel con la misma estructura de la base local: una hoja por instrumento, bitácora y diccionario.
-const META = { EQI: ['codigo', 'momento', 'fecha', 'aplicador', 'duracion_seg'], ESMS: ['codigo', 'momento', 'fecha', 'aplicador', 'duracion_seg'], CFF: ['codigo', 'fecha', 'informante'] };
-const META_LABEL = { codigo: ['Código del estudiante', 'texto', 'Debe existir en Participantes'], momento: ['Momento de medición', 'texto', 'Pretest | Postest'], fecha: ['Fecha de aplicación', 'fecha AAAA-MM-DD', ''], aplicador: ['Persona que aplicó el instrumento', 'texto', ''], informante: ['Parentesco del informante', 'texto', 'Madre | Padre | Acudiente'], duracion_seg: ['Duración de la aplicación en segundos', 'entero', '>= 0'] };
-function construirExcel(datos) {
-  const wb = XLSX.utils.book_new();
-  const hoja = (nombre, headers, rows, anchos) => {
-    const ws = XLSX.utils.aoa_to_sheet([headers].concat(rows.map((r) => headers.map((c) => r[c] ?? ''))));
-    ws['!cols'] = headers.map((c) => ({ wch: anchos?.[c] || (c === 'observaciones' || c === 'detalle' ? 40 : c === 'nombre' || c === 'apellido' || c === 'etiqueta' ? 20 : c.length <= 5 ? 7 : Math.max(10, Math.min(18, c.length + 2))) }));
-    XLSX.utils.book_append_sheet(wb, ws, nombre);
-  };
-  const dic = [];
-  const ph = ['codigo', 'nombre', 'apellido', 'grupo', 'sexo', 'edad', 'fecha_registro', 'observaciones'];
-  hoja('Participantes', ph, datos.participantes);
-  dic.push(['Participantes', 'codigo', 'Código del estudiante', 'texto', 'único, p. ej. E01', 'Clave de vinculación entre hojas'], ['Participantes', 'nombre', 'Nombre del estudiante', 'texto', '', 'Solo para identificarlo en la aplicación; no se usa en los análisis'], ['Participantes', 'apellido', 'Apellido del estudiante', 'texto', '', ''],
-    ['Participantes', 'grupo', 'Grupo del diseño', 'texto', 'Piloto | Experimental | Control', ''], ['Participantes', 'sexo', 'Sexo', 'texto', 'Femenino | Masculino', ''],
-    ['Participantes', 'edad', 'Edad en años cumplidos', 'entero', '7 a 9', ''], ['Participantes', 'fecha_registro', 'Fecha de registro', 'fecha AAAA-MM-DD', '', ''], ['Participantes', 'observaciones', 'Notas', 'texto', '', '']);
-  for (const [key, lista] of [['EQI', datos.eqi], ['ESMS', datos.esms], ['CFF', datos.cff]]) {
-    const ins = INS[key], headers = META[key].concat(ins.items.map((i) => i.codigo), ins.puntajes.map((p) => p.variable), ['observaciones']);
-    hoja(ins.hoja, headers, [...lista].sort((a, b) => (a.codigo + (a.momento || '')).localeCompare(b.codigo + (b.momento || ''))));
-    const vals = ins.escala.map((e) => `${e.valor} = ${e.etiqueta}`).join(' | ');
-    for (const m of META[key]) dic.push([ins.hoja, m, ...META_LABEL[m], '']);
-    for (const it of ins.items) dic.push([ins.hoja, it.codigo, `${it.dimension}: ${it.texto}`, 'entero', vals, it.inverso ? `Reactivo inverso: se recodifica (${ins.escala.length} + 1 - x) antes de sumar` : 'Respuesta bruta']);
-    for (const p of ins.puntajes) dic.push([ins.hoja, p.variable, p.etiqueta, 'entero', '', 'Suma de reactivos de la dimensión, con inversos recodificados']);
-    dic.push([ins.hoja, 'observaciones', 'Notas de la aplicación', 'texto', '', '']);
+// Tabla de respuestas: una fila por estudiante y, en columnas, todas sus respuestas y puntajes
+// (Emocional pre y post, Lectoescritura pre y post, Familiar). La usan el módulo "Tabla de respuestas" y el Excel.
+const STORE = { EQI: 'eqi', ESMS: 'esms', CFF: 'cff' };
+const GRUPOS = ['Piloto', 'Experimental', 'Control'];
+const PRUEBAS = [{ key: 'EQI', nombre: 'Emocional', pre: 'Emo' }, { key: 'ESMS', nombre: 'Lectoescritura', pre: 'Lec' }, { key: 'CFF', nombre: 'Familiar', pre: 'Fam' }];
+const FIJAS = [['grupo', 'Grupo'], ['codigo', 'Codigo'], ['nombre', 'Nombre'], ['apellido', 'Apellido'], ['sexo', 'Sexo'], ['edad', 'Edad']];
+function columnasRespuestas() {
+  const cols = [];
+  for (const P of PRUEBAS) {
+    const ins = INS[P.key];
+    for (const m of P.key === 'CFF' ? [null] : ['Pretest', 'Postest']) {
+      const base = P.pre + (m ? (m === 'Pretest' ? '_Pre' : '_Post') : '');
+      const c = (campo, tipo, corto, texto) => cols.push({ id: `${base}_${campo}`, key: P.key, prueba: P.nombre, momento: m, campo, tipo, corto, texto });
+      if (P.key === 'CFF') c('informante', 'meta', 'Informante', 'Quién respondió');
+      ins.items.forEach((it) => c(it.codigo, 'item', it.codigo, `${it.dimension}: ${it.texto}${it.inverso ? ' (inverso)' : ''}`));
+      ins.puntajes.forEach((p) => c(p.variable, 'punt', p.variable, p.etiqueta));
+    }
   }
-  hoja('Bitacora', ['fecha_hora', 'evento', 'detalle'], datos.bitacora);
-  const wd = XLSX.utils.aoa_to_sheet([['hoja', 'variable', 'etiqueta', 'tipo', 'valores_validos', 'regla']].concat(dic));
-  wd['!cols'] = [{ wch: 14 }, { wch: 18 }, { wch: 70 }, { wch: 16 }, { wch: 48 }, { wch: 60 }];
-  XLSX.utils.book_append_sheet(wb, wd, 'Diccionario');
+  return cols;
+}
+function filasRespuestas(datos, cols, grupo) {
+  const buscar = (key, codigo, m) => datos[STORE[key]].find((r) => r.codigo === codigo && (key === 'CFF' || r.momento === m));
+  return datos.participantes.filter((p) => !grupo || p.grupo === grupo).sort((a, b) => a.codigo.localeCompare(b.codigo)).map((p) => {
+    const o = {}; FIJAS.forEach(([k]) => (o[k] = p[k] ?? ''));
+    for (const c of cols) { const r = buscar(c.key, p.codigo, c.momento); o[c.id] = r ? (r[c.campo] ?? '') : ''; }
+    return o;
+  });
+}
+// Excel: una hoja por grupo (Piloto, Experimental, Control) con la misma tabla. La columna Grupo se conserva
+// para poder unir las hojas en un solo archivo de análisis (SPSS, R) sin perder la variable de grupo.
+function construirExcel(datos) {
+  const wb = XLSX.utils.book_new(), cols = columnasRespuestas();
+  const enc = FIJAS.map(([, t]) => t).concat(cols.map((c) => c.id));
+  for (const g of GRUPOS) {
+    const filas = filasRespuestas(datos, cols, g).map((o) => FIJAS.map(([k]) => o[k]).concat(cols.map((c) => o[c.id])));
+    const ws = XLSX.utils.aoa_to_sheet([enc].concat(filas));
+    ws['!cols'] = FIJAS.map(([k]) => ({ wch: k === 'nombre' || k === 'apellido' ? 16 : k === 'grupo' ? 12 : 8 })).concat(cols.map((c) => ({ wch: Math.max(8, c.id.length + 1) })));
+    XLSX.utils.book_append_sheet(wb, ws, g);
+  }
   return XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
 }
 function descargar(data, nombre) {
