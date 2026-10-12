@@ -6,7 +6,7 @@ import path from "node:path";
 import { BlobsServer } from "@netlify/blobs/server";
 
 const PORT = 8888, BLOBS_PORT = 8971, TOKEN = "local-token";
-process.env.APP_CLAVE = process.env.APP_CLAVE || fs.readFileSync(".env", "utf8").match(/APP_CLAVE=(.*)/)?.[1]?.trim() || "prueba123";
+process.env.APP_CLAVE = process.env.APP_CLAVE || (fs.existsSync(".env") && fs.readFileSync(".env", "utf8").match(/APP_CLAVE=(.*)/)?.[1]?.trim()) || "prueba123";
 const blobs = new BlobsServer({ directory: path.resolve(".blobs"), port: BLOBS_PORT, token: TOKEN });
 await blobs.start();
 const ctx = { edgeURL: `http://localhost:${BLOBS_PORT}`, uncachedEdgeURL: `http://localhost:${BLOBS_PORT}`, token: TOKEN, siteID: "local-site" };
