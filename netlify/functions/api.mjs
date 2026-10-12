@@ -4,6 +4,8 @@ import { getStore } from "@netlify/blobs";
 import INS from "../lib/instrumentos.mjs";
 
 const STORES = ["participantes", "eqi", "esms", "cff", "bitacora"];
+const REGS = ["eqi", "esms", "cff"];
+const nomDe = (p) => [p.nombre, p.apellido].filter(Boolean).join(" ").trim();
 const KEY = { eqi: "EQI", esms: "ESMS", cff: "CFF" };
 const store = (name) => getStore({ name, consistency: "strong" });
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -71,7 +73,7 @@ export default async (req) => {
     const p = await store("participantes").get(e, { type: "json" });
     if (!p) return json({ error: "Estudiante no registrado" }, 404);
     const previo = await store("cff").get(`${e}|${m}`, { type: "json" });
-    if (req.method === "GET") return json({ ok: true, codigo: e, nombre: p.nombre, momento: m, respondido: !!previo, fecha: previo?.fecha || null });
+    if (req.method === "GET") return json({ ok: true, codigo: e, nombre: nomDe(p), momento: m, respondido: !!previo, fecha: previo?.fecha || null, informante: previo?.informante || null });
     if (req.method === "POST") {
       const err = validarItems("CFF", body.items || {});
       if (err) return json({ error: err }, 400);
@@ -98,17 +100,46 @@ export default async (req) => {
     const r = body.row || {};
     const codigo = String(r.codigo || "").trim().toUpperCase();
     if (!/^[A-Z0-9]{1,8}$/.test(codigo)) return json({ error: "Código inválido (letras y números, máximo 8)" }, 400);
-    const row = { codigo, nombre: String(r.nombre || "").trim().slice(0, 80), grupo: r.grupo === "Control" ? "Control" : "Experimental", curso: String(r.curso || "").trim().slice(0, 10), sexo: r.sexo === "Masculino" ? "Masculino" : "Femenino", edad: Number(r.edad) || "", fecha_registro: r.fecha_registro || hoy(), observaciones: String(r.observaciones || "").slice(0, 300) };
+    if (!["Experimental", "Control"].includes(r.grupo)) return json({ error: "Seleccione el grupo" }, 400);
+    if (!["Femenino", "Masculino"].includes(r.sexo)) return json({ error: "Seleccione el sexo" }, 400);
+    const row = { codigo, nombre: String(r.nombre || "").trim().slice(0, 60), apellido: String(r.apellido || "").trim().slice(0, 60), grupo: r.grupo, curso: String(r.curso || "").trim().slice(0, 10), sexo: r.sexo, edad: Number(r.edad) || "", fecha_registro: r.fecha_registro || hoy(), observaciones: String(r.observaciones || "").slice(0, 300) };
     const existia = await store("participantes").get(codigo, { type: "json" });
     await store("participantes").setJSON(codigo, row);
-    await bitacora(existia ? "edicion" : "registro", `Participante ${codigo} ${row.nombre} (${row.grupo})`);
+    await bitacora(existia ? "edicion" : "registro", `Participante ${codigo} ${row.nombre} ${row.apellido} (${row.grupo})`);
     return json({ ok: true, row });
   }
-  if (ruta === "participante" && req.method === "DELETE") {
+  if (ruta === "participante" && req.method === "DELETE") { // a la papelera, con todos sus registros
     const codigo = String(url.searchParams.get("codigo") || "").toUpperCase();
+    const p = await store("participantes").get(codigo, { type: "json" });
+    if (!p) return json({ error: "Estudiante no encontrado" }, 404);
+    const registros = {};
+    for (const s of REGS) { registros[s] = []; for (const m of MOMENTOS) { const r = await store(s).get(`${codigo}|${m}`, { type: "json" }); if (r) registros[s].push(r); } }
+    await store("papelera").setJSON(codigo, { participante: p, registros, fecha: ahora() });
+    for (const s of REGS) for (const m of MOMENTOS) await store(s).delete(`${codigo}|${m}`);
     await store("participantes").delete(codigo);
-    for (const s of ["eqi", "esms", "cff"]) for (const m of MOMENTOS) await store(s).delete(`${codigo}|${m}`);
-    await bitacora("eliminacion", `Participante ${codigo} y sus registros`);
+    const n = REGS.reduce((a, s) => a + registros[s].length, 0);
+    await bitacora("papelera", `Participante ${codigo} ${p.nombre} ${p.apellido || ""} movido a la papelera con ${n} registro(s)`);
+    return json({ ok: true, registros: n });
+  }
+  if (ruta === "papelera" && req.method === "GET") {
+    const lista = await leerTodo("papelera");
+    return json({ papelera: lista.map((x) => ({ ...x.participante, fecha_papelera: x.fecha, registros: REGS.reduce((a, s) => a + (x.registros[s] || []).length, 0) })).sort((a, b) => a.codigo.localeCompare(b.codigo)) });
+  }
+  if (ruta === "restaurar" && req.method === "POST") {
+    const codigo = String(body.codigo || "").toUpperCase();
+    const x = await store("papelera").get(codigo, { type: "json" });
+    if (!x) return json({ error: "No está en la papelera" }, 404);
+    if (await store("participantes").get(codigo, { type: "json" })) return json({ error: `Ya existe un estudiante activo con el código ${codigo}` }, 400);
+    await store("participantes").setJSON(codigo, x.participante);
+    for (const s of REGS) for (const r of x.registros[s] || []) await store(s).setJSON(`${codigo}|${r.momento}`, r);
+    await store("papelera").delete(codigo);
+    await bitacora("restauracion", `Participante ${codigo} restaurado desde la papelera`);
+    return json({ ok: true });
+  }
+  if (ruta === "papelera" && req.method === "DELETE") {
+    const codigo = String(url.searchParams.get("codigo") || "").toUpperCase();
+    await store("papelera").delete(codigo);
+    await bitacora("eliminacion", `Participante ${codigo} eliminado definitivamente desde la papelera`);
     return json({ ok: true });
   }
   if (ruta === "registro" && req.method === "PUT") {
@@ -136,13 +167,13 @@ export default async (req) => {
     const m = url.searchParams.get("m");
     if (!MOMENTOS.includes(m)) return json({ error: "Momento inválido" }, 400);
     const participantes = await leerTodo("participantes");
-    const out = await Promise.all(participantes.sort((a, b) => a.codigo.localeCompare(b.codigo)).map(async (p) => ({ codigo: p.codigo, nombre: p.nombre, t: await token(clave, p.codigo, m) })));
+    const out = await Promise.all(participantes.sort((a, b) => a.codigo.localeCompare(b.codigo)).map(async (p) => ({ codigo: p.codigo, nombre: nomDe(p), t: await token(clave, p.codigo, m) })));
     return json({ momento: m, enlaces: out });
   }
   if (ruta === "prueba" && req.method === "POST") {
     const existentes = await leerTodo("participantes");
     if (existentes.length) return json({ error: "Ya hay estudiantes registrados" }, 400);
-    for (const [codigo, nombre, grupo, curso, sexo, edad] of PRUEBA) await store("participantes").setJSON(codigo, { codigo, nombre, grupo, curso, sexo, edad, fecha_registro: hoy(), observaciones: "Registro ficticio de prueba" });
+    for (const [codigo, nom, grupo, curso, sexo, edad] of PRUEBA) { const [nombre, ...ap] = nom.split(" "), apellido = ap.join(" "); await store("participantes").setJSON(codigo, { codigo, nombre, apellido, grupo, curso, sexo, edad, fecha_registro: hoy(), observaciones: "Registro ficticio de prueba" }); }
     await bitacora("registro", "12 estudiantes ficticios de prueba");
     return json({ ok: true });
   }

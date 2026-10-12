@@ -194,7 +194,9 @@
         "etiqueta": "Suma de las cuatro dimensiones (21-84)",
         "dimension": "*"
       }
-    ]
+    ],
+    "corto": "Factores socioemocionales",
+    "tecnico": "EQ-i:YV(S) · 21 frases"
   },
   "ESMS": {
     "id": "ESMS",
@@ -383,7 +385,9 @@
         "etiqueta": "Escritura, motivación controlada (3-15)",
         "dimension": "Escritura · controlada"
       }
-    ]
+    ],
+    "corto": "Motivación hacia la lectoescritura",
+    "tecnico": "ESMS-E · 18 frases"
   },
   "CFF": {
     "id": "CFF",
@@ -516,6 +520,25 @@
         "variable": "Total_CFCSAL_F",
         "etiqueta": "Total Forma Familia (12-48)",
         "dimension": "*"
+      }
+    ],
+    "corto": "Acompañamiento familiar",
+    "tecnico": "CFCSAL-F · 12 preguntas",
+    "secciones": [
+      {
+        "titulo": "El hogar y la lectura",
+        "dimension": "3.1 Ambiente alfabetizador del hogar",
+        "intro": "Sobre los materiales y momentos de lectura en su casa."
+      },
+      {
+        "titulo": "Leer y escribir juntos",
+        "dimension": "3.2 Lectura compartida y mediación familiar",
+        "intro": "Sobre lo que hacen juntos con libros, palabras y escritos."
+      },
+      {
+        "titulo": "Cuando le cuesta",
+        "dimension": "3.3 Apoyo emocional ante las dificultades",
+        "intro": "Sobre cómo acompaña a su hijo o hija cuando leer o escribir se le dificulta."
       }
     ]
   }

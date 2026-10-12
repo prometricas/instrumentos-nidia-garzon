@@ -32,35 +32,32 @@
   <nav class="tabs">
     <button data-v="estudiantes" class="activo">Estudiantes</button>
     <button data-v="aplicar">Aplicar al estudiante</button>
-    <button data-v="familias">Familias</button>
+    <button data-v="familias">Acudientes</button>
   </nav>
   <main>
     <section id="v-estudiantes">
-      <h2>Estudiantes</h2>
-      <p class="guia">Cada estudiante tiene un código que vincula sus registros. En las columnas de la derecha, cada marca verde es una aplicación guardada (Pre = pretest, Post = postest); al pulsarla se elimina.</p>
-      <div class="tarjeta">
+      <div class="cabeza"><div><h2>Estudiantes</h2><p class="guia" style="margin:0">Cada estudiante tiene un código que vincula sus registros. Las marcas verdes son aplicaciones guardadas; al pulsar una se elimina.</p></div><div class="resumen" id="resumenP"></div></div>
+      <div class="tarjeta" style="margin-top:14px">
         <div class="fila">
-          <div class="campo" style="max-width:100px"><label for="pCodigo">Código</label><input id="pCodigo"></div>
-          <div class="campo" style="flex:2"><label for="pNombre">Nombre</label><input id="pNombre" placeholder="Nombre y apellido"></div>
-          <div class="campo"><label for="pGrupo">Grupo</label><select id="pGrupo"><option>Experimental</option><option>Control</option></select></div>
-          <div class="campo" style="max-width:90px"><label for="pCurso">Curso</label><input id="pCurso" placeholder="201"></div>
-          <div class="campo"><label for="pSexo">Sexo</label><select id="pSexo"><option>Femenino</option><option>Masculino</option></select></div>
-          <div class="campo" style="max-width:80px"><label for="pEdad">Edad</label><input id="pEdad" type="number" min="5" max="12"></div>
+          <div class="campo" style="max-width:110px"><label for="pCodigo">Código</label><input id="pCodigo"></div>
+          <div class="campo" style="flex:1.4"><label for="pNombre">Nombre</label><input id="pNombre" placeholder="Nombre"></div>
+          <div class="campo" style="flex:1.4"><label for="pApellido">Apellido</label><input id="pApellido" placeholder="Apellido"></div>
+          <div class="campo"><label for="pGrupo">Grupo</label><select id="pGrupo" class="vacio"><option value="" disabled selected>Seleccione el grupo</option><option>Experimental</option><option>Control</option></select></div>
+          <div class="campo" style="max-width:100px"><label for="pCurso">Curso</label><input id="pCurso" placeholder="201"></div>
+          <div class="campo"><label for="pSexo">Sexo</label><select id="pSexo" class="vacio"><option value="" disabled selected>Seleccione el sexo</option><option>Femenino</option><option>Masculino</option></select></div>
+          <div class="campo" style="max-width:90px"><label for="pEdad">Edad</label><input id="pEdad" type="number" min="5" max="12"></div>
           <button class="btn" id="btnAddP">Registrar</button>
         </div>
         <div id="pMsg" style="margin-top:10px"></div>
       </div>
-      <div id="tablaP"></div>
+      <div class="tabla" id="tablaP"></div>
     </section>
 
     <section id="v-aplicar" class="oculto">
       <h2>Aplicar al estudiante</h2>
-      <p class="guia">Aplicación individual: el aplicador lee cada frase en voz alta y el estudiante toca su respuesta. Primero hay dos frases de práctica que no se guardan.</p>
+      <p class="guia">Aplicación individual: el aplicador lee cada frase en voz alta y el estudiante toca su respuesta. Primero hay dos frases de práctica que no se guardan. El botón naranja de la esquina muestra el guion.</p>
       <div class="tarjeta">
-        <div class="opciones-ins" id="opIns">
-          <button data-k="EQI" class="activo"><b>EQ-i:YV(S)</b><span>Factores socioemocionales · 21 frases</span></button>
-          <button data-k="ESMS"><b>ESMS-E</b><span>Motivación hacia la lectoescritura · 18 frases</span></button>
-        </div>
+        <div class="opciones-ins" id="opIns"></div>
         <div class="fila">
           <div class="campo" style="flex:2"><label for="aCod">Estudiante</label><select id="aCod"></select></div>
           <div class="campo" style="flex:0 0 auto"><label>Momento</label><div class="seg" id="aMom"><button data-m="Pretest" class="activo">Pretest</button><button data-m="Postest">Postest</button></div></div>
@@ -68,40 +65,40 @@
           <button class="btn grande" id="btnStart">Comenzar</button>
         </div>
         <div id="aMsg" style="margin-top:10px"></div>
-        <details class="guion"><summary>Guion para el aplicador</summary><div class="texto" id="aScript"></div></details>
       </div>
     </section>
 
     <section id="v-familias" class="oculto">
-      <h2>Familias</h2>
-      <p class="guia">Cada acudiente responde el cuestionario CFCSAL-F desde su celular con un enlace propio. El enlace identifica al estudiante y al momento; no pide clave.</p>
-      <div class="tarjeta">
+      <div class="cabeza"><div><h2>Acudientes</h2><p class="guia" style="margin:0">Cada acudiente responde el cuestionario de acompañamiento familiar desde su celular con un enlace propio, que identifica al estudiante y al momento; no pide clave.</p></div></div>
+      <div class="tarjeta" style="margin-top:14px">
         <div class="fila">
           <div class="campo" style="flex:0 0 auto"><label>Momento</label><div class="seg" id="fMom"><button data-m="Pretest" class="activo">Pretest</button><button data-m="Postest">Postest</button></div></div>
           <button class="btn sec" id="btnCopiarTodos">Copiar todos los enlaces</button>
         </div>
       </div>
-      <div id="tablaF"></div>
+      <div class="tabla" id="tablaF"></div>
     </section>
   </main>
+  <button class="ayuda-btn oculto" id="ayudaBtn" title="Guion para el aplicador" aria-label="Guion para el aplicador">?</button>
+  <div class="ayuda-panel oculto" id="ayudaPanel"></div>
 </div>
 
 <!-- PANTALLA DEL NIÑO -->
 <div class="kid oculto" id="kid">
   <div class="kid-top">
     <img src="assets/logo.png" alt="">
-    <span id="kTag"></span>
+    <span class="tag" id="kTag"></span>
     <div class="prog"><i id="kProg"></i></div>
     <span id="kCount"></span>
-    <button id="kScriptBtn">Guion</button>
     <button id="kExit">Salir</button>
   </div>
-  <div class="guion-flot oculto" id="kScript"></div>
   <div class="kid-body" id="kBody"></div>
   <div class="kid-nav" id="kNav">
     <button class="btn sec grande" id="kBack">Atrás</button>
     <button class="btn grande" id="kNext" disabled>Siguiente</button>
   </div>
+  <button class="ayuda-btn" id="kAyudaBtn" title="Guion para el aplicador" aria-label="Guion para el aplicador">?</button>
+  <div class="ayuda-panel oculto" id="kAyudaPanel"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -112,8 +109,14 @@
 let D = null; // datos: {participantes, eqi, esms, cff, bitacora}
 let vista = 'estudiantes';
 const STORE = { EQI: 'eqi', ESMS: 'esms', CFF: 'cff' };
-const nombreDe = (c) => (D.participantes.find((p) => p.codigo === c) || {}).nombre || '';
+const nom = (p) => [p.nombre, p.apellido].filter(Boolean).join(' ');
+const nombreDe = (c) => { const p = D.participantes.find((p) => p.codigo === c); return p ? nom(p) : ''; };
 const reg = (s, c, m) => D[s].find((r) => r.codigo === c && r.momento === m);
+const nReg = (c) => ['eqi', 'esms', 'cff'].reduce((a, s) => a + D[s].filter((r) => r.codigo === c).length, 0);
+function papeleraHtml() {
+  const L = D.papelera || []; if (!L.length) return '';
+  return `<details class="papelera"><summary>Papelera: ${L.length} estudiante${L.length > 1 ? 's' : ''} eliminado${L.length > 1 ? 's' : ''} con sus registros guardados</summary><ul>${L.map((x) => `<li><span><b>${esc(x.codigo)}</b> ${esc(nom(x))} · ${x.registros} registro${x.registros === 1 ? '' : 's'} · eliminado el ${esc(x.fecha_papelera)}</span><button class="btn chico sec" data-rest="${esc(x.codigo)}">Recuperar</button><button class="btn chico" style="background:#fff;color:var(--mal);border:1px solid #EFC6C2" data-purga="${esc(x.codigo)}">Borrar definitivamente</button></li>`).join('')}</ul></details>`;
+}
 
 /* ---------- entrada ---------- */
 async function entrar(clave) {
@@ -132,62 +135,92 @@ $('#btnEntrar').addEventListener('click', async () => {
 });
 $('#clave').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#btnEntrar').click(); });
 $('#btnSalir').addEventListener('click', () => { sessionStorage.removeItem('clave'); location.reload(); });
-async function cargar() { D = await api('datos'); }
+async function cargar() { const [d, p] = await Promise.all([api('datos'), api('papelera')]); D = d; D.papelera = p.papelera; }
 
 /* ---------- navegación ---------- */
 function ir(v) {
   vista = v;
   document.querySelectorAll('main > section').forEach((s) => s.classList.toggle('oculto', s.id !== 'v-' + v));
   document.querySelectorAll('nav.tabs button').forEach((b) => b.classList.toggle('activo', b.dataset.v === v));
+  $('#ayudaBtn').classList.toggle('oculto', v !== 'aplicar'); if (v !== 'aplicar') $('#ayudaPanel').classList.add('oculto');
   ({ estudiantes: verEstudiantes, aplicar: verAplicar, familias: verFamilias })[v]();
 }
 document.querySelectorAll('nav.tabs button').forEach((b) => b.addEventListener('click', () => ir(b.dataset.v)));
 async function recargar() { try { await cargar(); ir(vista); } catch (e) { toast(e.message, true); } }
 function seg(id, onChange) { const el = $(id); el.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { el.querySelectorAll('button').forEach((x) => x.classList.toggle('activo', x === b)); onChange && onChange(b.dataset.m); })); return () => el.querySelector('.activo').dataset.m; }
+function guionHtml(ins) { return `<h4>Guion · ${esc(ins.corto)}</h4>${esc(ins.instruccion_aplicador)}<p>Teclas: 1-${ins.escala.length} marcan la respuesta, Enter avanza.</p>`; }
 
 /* ---------- estudiantes ---------- */
 function verEstudiantes() {
   const ps = D.participantes;
-  const marca = (s, c, m) => { const r = reg(s, c, m); return r ? `<span class="chip si" data-s="${s}" data-c="${esc(c)}" data-m="${m}" title="Guardado el ${esc(r.fecha)}. Pulse para eliminar">${m.slice(0, m === 'Pretest' ? 3 : 4)} ✓</span>` : `<span class="chip">${m.slice(0, m === 'Pretest' ? 3 : 4)} ·</span>`; };
-  $('#tablaP').innerHTML = ps.length ? `<table class="datos"><tr><th>Código</th><th>Nombre</th><th>Grupo</th><th>Curso</th><th>Sexo</th><th>Edad</th><th>EQ-i:YV(S)</th><th>ESMS-E</th><th>Familia</th><th></th></tr>` +
-    ps.map((p) => `<tr><td><b>${esc(p.codigo)}</b></td><td>${esc(p.nombre)}</td><td>${esc(p.grupo)}</td><td>${esc(p.curso)}</td><td>${esc(p.sexo)}</td><td>${esc(p.edad)}</td>` +
+  $('#resumenP').textContent = ps.length ? `${ps.length} estudiantes · ${ps.filter((p) => p.grupo === 'Experimental').length} experimental · ${ps.filter((p) => p.grupo === 'Control').length} control` : '';
+  const marca = (s, c, m) => { const r = reg(s, c, m); const et = m === 'Pretest' ? 'Pre' : 'Post'; return r ? `<span class="estado si" data-s="${s}" data-c="${esc(c)}" data-m="${m}" title="Guardado el ${esc(r.fecha)}">${et} ✓</span>` : `<span class="estado">${et} ·</span>`; };
+  $('#tablaP').innerHTML = ps.length ? `<table class="datos"><thead><tr><th>Código</th><th>Nombre</th><th>Apellido</th><th>Grupo</th><th>Curso</th><th>Sexo</th><th>Edad</th>` +
+    ['EQI', 'ESMS', 'CFF'].map((k) => `<th>${esc(INS[k].corto)}<small>${esc(INS[k].nombre)}</small></th>`).join('') + `<th></th></tr></thead><tbody>` +
+    ps.map((p) => { const n = nReg(p.codigo); return `<tr><td><b>${esc(p.codigo)}</b></td><td>${esc(p.nombre)}</td><td>${esc(p.apellido)}</td><td>${esc(p.grupo)}</td><td>${esc(p.curso)}</td><td>${esc(p.sexo)}</td><td>${esc(p.edad)}</td>` +
       ['eqi', 'esms', 'cff'].map((s) => `<td>${marca(s, p.codigo, 'Pretest')}${marca(s, p.codigo, 'Postest')}</td>`).join('') +
-      `<td><button class="x" data-del="${esc(p.codigo)}" title="Eliminar estudiante y sus registros">×</button></td></tr>`).join('') + '</table>'
-    : `<div class="aviso nota">Aún no hay estudiantes. Regístrelos arriba o <button class="btn chico" id="btnPrueba">añada 12 estudiantes ficticios de prueba</button> para ensayar la app.</div>`;
+      `<td><button class="x ${n ? 'con-datos' : ''}" data-del="${esc(p.codigo)}" title="${n ? `Eliminar (tiene ${n} registros; se guardan en la papelera)` : 'Eliminar estudiante'}">×</button></td></tr>`; }).join('') + '</tbody></table>' + papeleraHtml()
+    : `<div class="aviso nota">Aún no hay estudiantes. Regístrelos arriba o <button class="btn chico" id="btnPrueba">añada 12 estudiantes ficticios de prueba</button> para ensayar la app.</div>` + papeleraHtml();
   const cod = $('#pCodigo').value.trim().toUpperCase();
   if (!cod || ps.some((p) => p.codigo === cod)) { let n = ps.length + 1; while (ps.some((p) => p.codigo === 'E' + z(n))) n++; $('#pCodigo').value = 'E' + z(n); }
-  $('#tablaP').querySelectorAll('.chip.si').forEach((ch) => ch.addEventListener('click', async () => {
-    const { s, c, m } = ch.dataset;
-    if (!confirm(`¿Eliminar ${INS[Object.keys(STORE).find((k) => STORE[k] === s)].nombre} de ${c} ${nombreDe(c)} (${m})?`)) return;
+  $('#tablaP').querySelectorAll('.estado.si').forEach((ch) => ch.addEventListener('click', async () => {
+    const { s, c, m } = ch.dataset, k = Object.keys(STORE).find((k) => STORE[k] === s);
+    if (!confirm(`¿Eliminar "${INS[k].corto}" (${INS[k].nombre}) de ${c} ${nombreDe(c)}, ${m}?`)) return;
     try { await api(`registro?store=${s}&codigo=${c}&momento=${m}`, { method: 'DELETE' }); toast('Registro eliminado'); await recargar(); } catch (e) { toast(e.message, true); }
   }));
   $('#tablaP').querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', async () => {
-    const c = b.dataset.del;
-    if (!confirm(`¿Eliminar a ${c} ${nombreDe(c)} y todos sus registros?`)) return;
-    try { await api(`participante?codigo=${c}`, { method: 'DELETE' }); toast('Estudiante eliminado'); await recargar(); } catch (e) { toast(e.message, true); }
+    const c = b.dataset.del, n = nReg(c);
+    if (n) {
+      const r = prompt(`${c} ${nombreDe(c)} tiene ${n} registro${n > 1 ? 's' : ''} guardado${n > 1 ? 's' : ''}. Si lo elimina, el estudiante y sus registros pasan a la papelera, desde donde puede recuperarlos.\n\nPara confirmar, escriba el código ${c}:`);
+      if (r === null) return;
+      if (r.trim().toUpperCase() !== c) { toast('El código no coincide; no se eliminó nada', true); return; }
+    } else if (!confirm(`¿Eliminar a ${c} ${nombreDe(c)}? (no tiene registros)`)) return;
+    try { await api(`participante?codigo=${c}`, { method: 'DELETE' }); toast(n ? 'Movido a la papelera con sus registros' : 'Estudiante eliminado'); await recargar(); } catch (e) { toast(e.message, true); }
+  }));
+  $('#tablaP').querySelectorAll('[data-rest]').forEach((b) => b.addEventListener('click', async () => {
+    try { await api('restaurar', { method: 'POST', body: { codigo: b.dataset.rest } }); toast('Estudiante recuperado con sus registros'); await recargar(); } catch (e) { toast(e.message, true); }
+  }));
+  $('#tablaP').querySelectorAll('[data-purga]').forEach((b) => b.addEventListener('click', async () => {
+    const c = b.dataset.purga;
+    if (prompt(`Esto borra definitivamente a ${c} y sus registros de la papelera. Para confirmar, escriba el código ${c}:`)?.trim().toUpperCase() !== c) return toast('No se borró nada', true);
+    try { await api(`papelera?codigo=${c}`, { method: 'DELETE' }); toast('Borrado definitivamente'); await recargar(); } catch (e) { toast(e.message, true); }
   }));
   const bp = $('#btnPrueba'); if (bp) bp.addEventListener('click', async () => { try { await api('prueba', { method: 'POST' }); toast('12 estudiantes de prueba añadidos'); await recargar(); } catch (e) { toast(e.message, true); } });
 }
+['#pGrupo', '#pSexo'].forEach((id) => $(id).addEventListener('change', () => $(id).classList.toggle('vacio', !$(id).value)));
+document.querySelectorAll('#v-estudiantes .campo input, #v-estudiantes .campo select').forEach((el) => el.addEventListener('input', () => el.closest('.campo').classList.remove('falta')));
 $('#btnAddP').addEventListener('click', async () => {
-  const row = { codigo: $('#pCodigo').value.trim().toUpperCase(), nombre: $('#pNombre').value.trim(), grupo: $('#pGrupo').value, curso: $('#pCurso').value.trim(), sexo: $('#pSexo').value, edad: $('#pEdad').value };
-  const m = $('#pMsg');
-  if (!row.codigo) return (m.innerHTML = '<div class="aviso mal">Escriba un código.</div>');
-  if (D.participantes.some((p) => p.codigo === row.codigo)) return (m.innerHTML = `<div class="aviso mal">El código ${esc(row.codigo)} ya existe.</div>`);
-  if (!row.edad) return (m.innerHTML = '<div class="aviso mal">Escriba la edad.</div>');
-  try { await api('participante', { method: 'PUT', body: { row } }); m.innerHTML = `<div class="aviso ok">Registrado ${esc(row.codigo)} · ${esc(row.nombre)}.</div>`; $('#pCodigo').value = ''; $('#pNombre').value = ''; $('#pEdad').value = ''; await recargar(); }
-  catch (e) { m.innerHTML = `<div class="aviso mal">${esc(e.message)}</div>`; }
+  const row = { codigo: $('#pCodigo').value.trim().toUpperCase(), nombre: $('#pNombre').value.trim(), apellido: $('#pApellido').value.trim(), grupo: $('#pGrupo').value, curso: $('#pCurso').value.trim(), sexo: $('#pSexo').value, edad: $('#pEdad').value };
+  const m = $('#pMsg'), faltan = [];
+  document.querySelectorAll('#v-estudiantes .campo').forEach((c) => c.classList.remove('falta'));
+  const falta = (id, texto) => { $(id).closest('.campo').classList.add('falta'); faltan.push(texto); };
+  if (!row.codigo) falta('#pCodigo', 'el código');
+  else if (D.participantes.some((p) => p.codigo === row.codigo)) falta('#pCodigo', `otro código (${row.codigo} ya existe)`);
+  if (!row.nombre) falta('#pNombre', 'el nombre');
+  if (!row.apellido) falta('#pApellido', 'el apellido');
+  if (!row.grupo) falta('#pGrupo', 'el grupo');
+  if (!row.sexo) falta('#pSexo', 'el sexo');
+  if (!row.edad) falta('#pEdad', 'la edad');
+  if (faltan.length) { m.innerHTML = `<div class="aviso mal">Falta ${faltan.join(', ').replace(/, ([^,]*)$/, ' y $1')}.</div>`; $('#v-estudiantes .campo.falta input, #v-estudiantes .campo.falta select')?.focus(); return; }
+  try {
+    await api('participante', { method: 'PUT', body: { row } });
+    m.innerHTML = `<div class="aviso ok">Registrado ${esc(row.codigo)} · ${esc(row.nombre)} ${esc(row.apellido)}.</div>`;
+    $('#pCodigo').value = ''; $('#pNombre').value = ''; $('#pApellido').value = ''; $('#pEdad').value = ''; ['#pGrupo', '#pSexo'].forEach((id) => { $(id).value = ''; $(id).classList.add('vacio'); });
+    await recargar(); $('#pNombre').focus();
+  } catch (e) { m.innerHTML = `<div class="aviso mal">${esc(e.message)}</div>`; }
 });
 
 /* ---------- aplicar ---------- */
 let insKey = 'EQI';
 const momA = seg('#aMom');
-$('#opIns').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { insKey = b.dataset.k; $('#opIns').querySelectorAll('button').forEach((x) => x.classList.toggle('activo', x === b)); $('#aScript').textContent = INS[insKey].instruccion_aplicador; }));
+$('#opIns').innerHTML = ['EQI', 'ESMS'].map((k) => `<button data-k="${k}" class="${k === insKey ? 'activo' : ''}"><b>${esc(INS[k].corto)}</b><span>${esc(INS[k].tecnico)}</span></button>`).join('');
+$('#opIns').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { insKey = b.dataset.k; $('#opIns').querySelectorAll('button').forEach((x) => x.classList.toggle('activo', x === b)); $('#ayudaPanel').innerHTML = guionHtml(INS[insKey]); }));
+$('#ayudaBtn').addEventListener('click', () => { $('#ayudaPanel').innerHTML = guionHtml(INS[insKey]); $('#ayudaPanel').classList.toggle('oculto'); });
 function verAplicar() {
   const sel = $('#aCod'), prev = sel.value;
-  sel.innerHTML = D.participantes.map((p) => `<option value="${esc(p.codigo)}">${esc(p.codigo)} · ${esc(p.nombre)} · ${esc(p.grupo)}</option>`).join('') || '<option value="">(registre estudiantes primero)</option>';
+  sel.innerHTML = D.participantes.map((p) => `<option value="${esc(p.codigo)}">${esc(p.codigo)} · ${esc(nom(p))} · ${esc(p.grupo)}</option>`).join('') || '<option value="">(registre estudiantes primero)</option>';
   if (prev && [...sel.options].some((o) => o.value === prev)) sel.value = prev;
   if (!$('#aApl').value) $('#aApl').value = localStorage.getItem('aplicador') || '';
-  $('#aScript').textContent = INS[insKey].instruccion_aplicador;
 }
 $('#btnStart').addEventListener('click', () => {
   const codigo = $('#aCod').value, momento = momA(), apl = $('#aApl').value.trim(), m = $('#aMsg');
@@ -195,7 +228,7 @@ $('#btnStart').addEventListener('click', () => {
   if (!apl) return (m.innerHTML = '<div class="aviso mal">Escriba el nombre del aplicador.</div>');
   localStorage.setItem('aplicador', apl);
   const prev = reg(STORE[insKey], codigo, momento);
-  if (prev && !confirm(`${codigo} ${nombreDe(codigo)} ya tiene ${INS[insKey].nombre} en ${momento} (${prev.fecha}). Si continúa, al guardar se reemplazará ese registro. ¿Continuar?`)) return;
+  if (prev && !confirm(`${codigo} ${nombreDe(codigo)} ya tiene "${INS[insKey].corto}" en ${momento} (${prev.fecha}). Si continúa, al guardar se reemplazará ese registro. ¿Continuar?`)) return;
   m.innerHTML = ''; startKid({ key: insKey, codigo, momento, aplicador: apl });
 });
 
@@ -204,9 +237,9 @@ let K = null;
 function startKid(cfg) {
   const ins = INS[cfg.key];
   K = { ...cfg, ins, seq: ins.practica.map((p) => ({ ...p, prac: true })).concat(ins.items), i: 0, resp: {}, t0: Date.now() };
-  $('#kTag').textContent = `${ins.nombre} · ${cfg.codigo} ${nombreDe(cfg.codigo)} · ${cfg.momento}`;
-  $('#kScript').innerHTML = `<b>Guion del aplicador</b><br>${esc(ins.instruccion_aplicador)}<p style="margin:8px 0 0">Teclas: 1-${ins.escala.length} marcan la respuesta, Enter avanza.</p>`;
-  $('#kScript').classList.add('oculto'); $('#kid').classList.remove('oculto'); $('#app').classList.add('oculto');
+  $('#kTag').innerHTML = `<b>${esc(ins.corto)}</b> · ${esc(ins.nombre)} · ${esc(cfg.codigo)} ${esc(nombreDe(cfg.codigo))} · ${esc(cfg.momento)}`;
+  $('#kAyudaPanel').innerHTML = guionHtml(ins); $('#kAyudaPanel').classList.add('oculto');
+  $('#kid').classList.remove('oculto'); $('#app').classList.add('oculto');
   renderKid();
 }
 function renderKid() {
@@ -227,7 +260,7 @@ function renderKid() {
 $('#kNext').addEventListener('click', () => { if (K.i < K.seq.length - 1) { K.i++; renderKid(); } else finKid(); });
 $('#kBack').addEventListener('click', () => { if (K.i > 0) { K.i--; renderKid(); } });
 $('#kExit').addEventListener('click', () => { if (K && K.i > 0 && !$('#kBody').querySelector('.kid-fin') && !confirm('Se perderán las respuestas de esta aplicación. ¿Salir?')) return; cerrarKid(); });
-$('#kScriptBtn').addEventListener('click', () => $('#kScript').classList.toggle('oculto'));
+$('#kAyudaBtn').addEventListener('click', () => $('#kAyudaPanel').classList.toggle('oculto'));
 document.addEventListener('keydown', (e) => {
   if (!K || e.target.tagName === 'TEXTAREA') return;
   if (/^[1-5]$/.test(e.key)) { const b = $('#kBody').querySelector(`.opt[data-v="${e.key}"]`); if (b) b.click(); }
@@ -240,7 +273,7 @@ function finKid() {
   const sc = puntajes(K.key, items), dur = Math.round((Date.now() - K.t0) / 1000);
   $('#kProg').style.width = '100%'; $('#kCount').textContent = 'Completo'; $('#kNav').classList.add('oculto');
   $('#kBody').innerHTML = `<div class="kid-fin"><p class="kid-stmt" style="font-size:34px">¡Muy bien, terminamos!</p>
-    <p style="color:var(--tinta-2)">Resumen para el aplicador (${esc(ins.nombre)}, ${esc(codigo)} ${esc(nombreDe(codigo))}, ${esc(momento)}, ${dur} s):</p>
+    <p style="color:var(--tinta-2)">Resumen para el aplicador: ${esc(ins.corto)} (${esc(ins.nombre)}), ${esc(codigo)} ${esc(nombreDe(codigo))}, ${esc(momento)}, ${dur} s.</p>
     <table>${ins.puntajes.map((p) => `<tr><td>${esc(p.etiqueta)}</td><td>${sc[p.variable]}</td></tr>`).join('')}</table>
     <div class="campo"><label for="kObs">Observaciones (opcional)</label><textarea id="kObs" rows="2"></textarea></div>
     <div class="fila" style="margin-top:12px"><button class="btn grande" id="kSave">Guardar</button><button class="btn sec grande" id="kDiscard">Descartar</button></div><div id="kMsg" style="margin-top:10px"></div></div>`;
@@ -252,7 +285,7 @@ function finKid() {
   $('#kDiscard').addEventListener('click', () => { if (confirm('¿Descartar esta aplicación sin guardar?')) cerrarKid(); });
 }
 
-/* ---------- familias ---------- */
+/* ---------- acudientes ---------- */
 const momF = seg('#fMom', () => verFamilias());
 let enlaces = [];
 async function verFamilias() {
@@ -261,9 +294,9 @@ async function verFamilias() {
   try { await cargar(); enlaces = (await api('enlaces?m=' + m)).enlaces; } catch (e) { $('#tablaF').innerHTML = `<div class="aviso mal">${esc(e.message)}</div>`; return; }
   const url = (e) => `${location.origin}/familia.html?e=${e.codigo}&m=${m}&t=${e.t}`;
   const msg = (e) => `Hola. Le pedimos responder el cuestionario de la investigación sobre lectoescritura de ${e.nombre || e.codigo} (toma unos 5 minutos): ${url(e)}`;
-  $('#tablaF').innerHTML = enlaces.length ? `<table class="datos"><tr><th>Código</th><th>Nombre</th><th>Estado (${m})</th><th>Enlace</th></tr>` +
-    enlaces.map((e) => { const r = reg('cff', e.codigo, m); return `<tr><td><b>${esc(e.codigo)}</b></td><td>${esc(e.nombre)}</td><td>${r ? `<span class="chip si" style="cursor:default">Respondido ${esc(r.fecha)}</span>` : '<span class="chip">Pendiente</span>'}</td>
-      <td><button class="btn chico sec" data-copy="${esc(url(e))}">Copiar</button> <a class="btn chico sec" style="text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msg(e))}">WhatsApp</a></td></tr>`; }).join('') + '</table>'
+  $('#tablaF').innerHTML = enlaces.length ? `<table class="datos"><thead><tr><th>Código</th><th>Nombre</th><th>Estado<small>${m}</small></th><th>Enlace</th></tr></thead><tbody>` +
+    enlaces.map((e) => { const r = reg('cff', e.codigo, m); return `<tr><td><b>${esc(e.codigo)}</b></td><td>${esc(e.nombre)}</td><td>${r ? `<span class="estado si" style="cursor:default;pointer-events:none">Respondido ${esc(r.fecha)}</span>` : '<span class="estado">Pendiente</span>'}</td>
+      <td><button class="btn chico sec" data-copy="${esc(url(e))}">Copiar</button> <a class="btn chico sec" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msg(e))}">WhatsApp</a></td></tr>`; }).join('') + '</tbody></table>'
     : '<div class="aviso nota">Registre estudiantes para generar sus enlaces.</div>';
   $('#tablaF').querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', async () => { await navigator.clipboard.writeText(b.dataset.copy); toast('Enlace copiado'); }));
 }

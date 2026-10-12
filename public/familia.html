@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Cuestionario para la familia</title>
+<title>Cuestionario para el acudiente</title>
 <link rel="icon" href="assets/logo.png">
 <link rel="stylesheet" href="assets/estilo.css">
 </head>
 <body class="fam">
 <header class="top">
   <img src="assets/logo.png" alt="Universidad CESUMA">
-  <div class="titulo"><b>Cuestionario para la familia</b>Investigación sobre lectoescritura · 2.º grado · I. E. Julio César Turbay Ayala</div>
+  <div class="titulo"><b>Cuestionario para el acudiente</b>Investigación sobre lectoescritura · 2.º grado · I. E. Julio César Turbay Ayala</div>
 </header>
 <main id="main"><p class="guia">Cargando…</p></main>
 <div class="toast" id="toast"></div>
@@ -21,56 +21,66 @@
 <script>
 const ins = INS.CFF, q = new URLSearchParams(location.search);
 const par = { e: (q.get('e') || '').toUpperCase(), m: q.get('m') || '', t: q.get('t') || '' };
+const SEC = ins.secciones.map((s) => ({ ...s, items: ins.items.filter((it) => it.dimension === s.dimension) }));
 const resp = {};
-let info = null;
+let info = null, paso = -1; // -1 = presentación, 0..n-1 = secciones
 
-function avisoFinal(html) { $('#main').innerHTML = `<div class="tarjeta" style="text-align:center;padding:30px 22px">${html}</div>`; }
+function final(html) { $('#main').innerHTML = `<div class="tarjeta" style="text-align:center;padding:30px 22px">${html}</div>`; }
+const quien = () => info.nombre ? `<b>${esc(info.nombre)}</b> (${esc(info.codigo)})` : `<b>${esc(info.codigo)}</b>`;
+const barra = () => `<div class="pasos">${SEC.map((s, i) => `<span class="${i < paso ? 'hecho' : i === paso ? 'actual' : ''}"></span>`).join('')}</div>`;
 
 function render() {
-  const quien = info.nombre ? `<b>${esc(info.nombre)}</b> (${esc(info.codigo)})` : `<b>${esc(info.codigo)}</b>`;
-  let items = '', dim = null;
-  for (const it of ins.items) {
-    if (it.dimension !== dim) { dim = it.dimension; items += `<div class="dim">${esc(dim.replace(/^\d+\.\d+\s*/, ''))}</div>`; }
-    items += `<div class="item" id="it-${it.codigo}"><div class="txt">${esc(it.texto)}</div><div class="ops">${ins.escala.map((e) => `<button data-c="${it.codigo}" data-v="${e.valor}" class="${resp[it.codigo] === e.valor ? 'sel' : ''}">${esc(e.etiqueta)}</button>`).join('')}</div></div>`;
+  window.scrollTo(0, 0);
+  if (paso < 0) {
+    $('#main').innerHTML = `<h2>Acudiente de ${quien()}</h2>
+      <p class="guia">Gracias por participar. Le haremos ${ins.items.length} preguntas breves, en ${SEC.length} partes, sobre la lectura y la escritura en su casa. Toma unos 5 minutos. No hay respuestas buenas ni malas; sus respuestas son confidenciales y se usan solo para la investigación.</p>
+      ${info.respondido ? `<div class="aviso nota">Este cuestionario ya fue respondido el ${esc(info.fecha)}. Si lo envía de nuevo, reemplazará las respuestas anteriores.</div>` : ''}
+      <div class="tarjeta"><div class="campo"><label for="quien">Quién responde</label><select id="quien"><option>Madre</option><option>Padre</option><option>Acudiente</option></select></div></div>
+      <div class="pie"><button class="btn grande naranja" id="comenzar">Comenzar</button></div>`;
+    $('#quien').value = info.informante || 'Madre';
+    $('#comenzar').addEventListener('click', () => { info.informante = $('#quien').value; paso = 0; render(); });
+    return;
   }
-  $('#main').innerHTML = `
-    <h2>Familia de ${quien}</h2>
-    <p class="guia">Gracias por participar. Marque con qué frecuencia ocurre cada situación en su casa. No hay respuestas buenas ni malas; sus respuestas son confidenciales y se usan solo para la investigación.</p>
-    ${info.respondido ? `<div class="aviso nota">Este cuestionario ya fue respondido el ${esc(info.fecha)}. Si lo envía de nuevo, reemplazará las respuestas anteriores.</div>` : ''}
-    <div class="tarjeta"><div class="campo"><label for="quien">Quién responde</label><select id="quien"><option>Madre</option><option>Padre</option><option>Acudiente</option></select></div></div>
-    ${items}
-    <div class="tarjeta"><div class="campo"><label for="obs">Comentarios (opcional)</label><textarea id="obs" rows="2"></textarea></div></div>
-    <div id="msg"></div>
-    <div class="pie"><button class="btn grande naranja" id="enviar">Enviar respuestas</button></div>`;
+  const s = SEC[paso], ultimo = paso === SEC.length - 1;
+  $('#main').innerHTML = `${barra()}<div class="seccion"><h3>${esc(s.titulo)}</h3><p class="intro">Parte ${paso + 1} de ${SEC.length} · ${esc(s.intro)} Marque con qué frecuencia ocurre.</p>
+    ${s.items.map((it) => `<div class="item" id="it-${it.codigo}"><div class="txt">${esc(it.texto)}</div><div class="ops">${ins.escala.map((e) => `<button data-c="${it.codigo}" data-v="${e.valor}" class="${resp[it.codigo] === e.valor ? 'sel' : ''}">${esc(e.etiqueta)}</button>`).join('')}</div></div>`).join('')}
+    ${ultimo ? '<div class="tarjeta"><div class="campo"><label for="obs">Comentarios (opcional)</label><textarea id="obs" rows="2"></textarea></div></div>' : ''}
+    <div id="msg"></div></div>
+    <div class="pie"><button class="btn sec grande" id="atras">Atrás</button><button class="btn grande ${ultimo ? 'naranja' : ''}" id="sig">${ultimo ? 'Enviar respuestas' : 'Siguiente'}</button></div>`;
+  if (ultimo && info.obs) $('#obs').value = info.obs;
   $('#main').querySelectorAll('.ops button').forEach((b) => b.addEventListener('click', () => {
     resp[b.dataset.c] = Number(b.dataset.v);
     const it = $('#it-' + b.dataset.c); it.classList.remove('falta');
     it.querySelectorAll('button').forEach((x) => x.classList.toggle('sel', x === b));
+    const sig = it.nextElementSibling; if (sig && sig.classList.contains('item')) sig.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }));
-  $('#enviar').addEventListener('click', enviar);
+  $('#atras').addEventListener('click', () => { if (ultimo) info.obs = $('#obs').value; paso--; render(); });
+  $('#sig').addEventListener('click', () => {
+    const faltan = s.items.filter((it) => resp[it.codigo] == null);
+    if (faltan.length) {
+      faltan.forEach((it) => $('#it-' + it.codigo).classList.add('falta'));
+      $('#msg').innerHTML = `<div class="aviso mal">Falta responder ${faltan.length === 1 ? 'una pregunta' : faltan.length + ' preguntas'} de esta parte (marcadas en naranja).</div>`;
+      $('#it-' + faltan[0].codigo).scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    if (ultimo) enviar(); else { paso++; render(); }
+  });
 }
 
 async function enviar() {
-  const faltan = ins.items.filter((it) => resp[it.codigo] == null);
-  if (faltan.length) {
-    faltan.forEach((it) => $('#it-' + it.codigo).classList.add('falta'));
-    $('#msg').innerHTML = `<div class="aviso mal">Faltan ${faltan.length} preguntas por responder (marcadas en naranja).</div>`;
-    $('#it-' + faltan[0].codigo).scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
-  }
-  $('#enviar').disabled = true; $('#msg').innerHTML = '';
+  $('#sig').disabled = true; $('#msg').innerHTML = '';
   try {
-    await api('familia', { method: 'POST', body: { ...par, informante: $('#quien').value, items: resp, observaciones: $('#obs').value.trim() } });
-    avisoFinal(`<img src="assets/logo.png" alt="" style="height:44px;margin-bottom:14px"><h2>Respuestas enviadas</h2><p class="guia" style="margin:0">Muchas gracias por su tiempo y por apoyar el aprendizaje de ${esc(info.nombre || info.codigo)}. Ya puede cerrar esta página.</p>`);
+    await api('familia', { method: 'POST', body: { ...par, informante: info.informante, items: resp, observaciones: $('#obs').value.trim() } });
+    final(`<img src="assets/logo.png" alt="" style="height:44px;margin-bottom:14px"><h2>Respuestas enviadas</h2><p class="guia" style="margin:0">Muchas gracias por su tiempo y por apoyar el aprendizaje de ${esc(info.nombre || info.codigo)}. Ya puede cerrar esta página.</p>`);
   } catch (e) {
     $('#msg').innerHTML = `<div class="aviso mal">No se pudieron enviar las respuestas: ${esc(e.message)}. Revise la conexión e intente de nuevo.</div>`;
-    $('#enviar').disabled = false;
+    $('#sig').disabled = false;
   }
 }
 
 (async () => {
   try { info = await api(`familia?e=${encodeURIComponent(par.e)}&m=${encodeURIComponent(par.m)}&t=${encodeURIComponent(par.t)}`); render(); }
-  catch (e) { avisoFinal(`<h2>Enlace no válido</h2><p class="guia" style="margin:0">${esc(e.message)}. Pida a la docente investigadora que le envíe de nuevo el enlace.</p>`); }
+  catch (e) { final(`<h2>Enlace no válido</h2><p class="guia" style="margin:0">${esc(e.message)}. Pida a la docente investigadora que le envíe de nuevo el enlace.</p>`); }
 })();
 </script>
 </body>

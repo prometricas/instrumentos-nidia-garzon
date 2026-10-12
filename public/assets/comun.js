@@ -76,13 +76,13 @@ function construirExcel(datos) {
   const wb = XLSX.utils.book_new();
   const hoja = (nombre, headers, rows, anchos) => {
     const ws = XLSX.utils.aoa_to_sheet([headers].concat(rows.map((r) => headers.map((c) => r[c] ?? ''))));
-    ws['!cols'] = headers.map((c) => ({ wch: anchos?.[c] || (c === 'observaciones' || c === 'detalle' ? 40 : c === 'nombre' || c === 'etiqueta' ? 24 : c.length <= 5 ? 7 : Math.max(10, Math.min(18, c.length + 2))) }));
+    ws['!cols'] = headers.map((c) => ({ wch: anchos?.[c] || (c === 'observaciones' || c === 'detalle' ? 40 : c === 'nombre' || c === 'apellido' || c === 'etiqueta' ? 20 : c.length <= 5 ? 7 : Math.max(10, Math.min(18, c.length + 2))) }));
     XLSX.utils.book_append_sheet(wb, ws, nombre);
   };
   const dic = [];
-  const ph = ['codigo', 'nombre', 'grupo', 'curso', 'sexo', 'edad', 'fecha_registro', 'observaciones'];
+  const ph = ['codigo', 'nombre', 'apellido', 'grupo', 'curso', 'sexo', 'edad', 'fecha_registro', 'observaciones'];
   hoja('Participantes', ph, datos.participantes);
-  dic.push(['Participantes', 'codigo', 'Código del estudiante', 'texto', 'único, p. ej. E01', 'Clave de vinculación entre hojas'], ['Participantes', 'nombre', 'Nombre del estudiante', 'texto', '', 'Solo para identificarlo en la aplicación; no se usa en los análisis'],
+  dic.push(['Participantes', 'codigo', 'Código del estudiante', 'texto', 'único, p. ej. E01', 'Clave de vinculación entre hojas'], ['Participantes', 'nombre', 'Nombre del estudiante', 'texto', '', 'Solo para identificarlo en la aplicación; no se usa en los análisis'], ['Participantes', 'apellido', 'Apellido del estudiante', 'texto', '', ''],
     ['Participantes', 'grupo', 'Condición del diseño cuasiexperimental', 'texto', 'Experimental | Control', ''], ['Participantes', 'curso', 'Curso o sección', 'texto', '', ''], ['Participantes', 'sexo', 'Sexo', 'texto', 'Femenino | Masculino', ''],
     ['Participantes', 'edad', 'Edad en años cumplidos', 'entero', '7 a 9', ''], ['Participantes', 'fecha_registro', 'Fecha de registro', 'fecha AAAA-MM-DD', '', ''], ['Participantes', 'observaciones', 'Notas', 'texto', '', '']);
   for (const [key, lista] of [['EQI', datos.eqi], ['ESMS', datos.esms], ['CFF', datos.cff]]) {
