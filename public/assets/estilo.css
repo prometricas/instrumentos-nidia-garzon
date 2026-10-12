@@ -111,7 +111,6 @@ table.datos tr:last-child td{border-bottom:0}
 .kid-q{font-size:1.25em;color:var(--tinta-2);margin:0}
 .kid-stmt{font-size:clamp(30px,4.4vw,56px);font-weight:600;line-height:1.25;max-width:26ch;margin:0;color:var(--tinta)}
 .kid-stmt.prac{color:var(--azul)}
-.kid-num{font-size:.9em;color:var(--tinta-2)}
 .escala{display:flex;gap:clamp(12px,1.6vw,24px);justify-content:center;flex-wrap:wrap}
 .opt{width:clamp(150px,13vw,200px);min-height:200px;border:3px solid var(--linea);border-radius:24px;background:#fff;display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 10px 16px;transition:transform .12s,border-color .12s,background .12s}
 .opt:hover{border-color:var(--azul)}
@@ -151,3 +150,33 @@ table.datos tr:last-child td{border-bottom:0}
   .opt{width:140px;min-height:170px} .opt .ico{height:84px} .opt .ico svg{width:84px;height:84px} .kid-body{padding:14px 12px} .escala{gap:10px}
   .opciones-ins{grid-template-columns:1fr} .cabeza .resumen{text-align:left}
 }
+
+/* pestañas por grupo */
+.gtabs{display:flex;gap:8px;margin:4px 0 10px;flex-wrap:wrap}
+.gtabs button{--c:#6B7280;background:#fff;border:2px solid var(--c);color:var(--c);border-radius:999px;padding:8px 18px;font-weight:600;display:inline-flex;gap:8px;align-items:center}
+.gtabs button b{font-weight:600;background:var(--c);color:#fff;border-radius:999px;padding:1px 9px;font-size:.85em;opacity:.85}
+.gtabs button.activo{background:var(--c);color:#fff}
+.gtabs button.activo b{background:#fff;color:var(--c)}
+.g-piloto{--c:#6B7280} .g-control{--c:#1E8E4A} .g-experimental{--c:#F36A00}
+.gdesc{margin:0 0 14px;padding:10px 14px;border-left:4px solid var(--c,#6B7280);background:#fff;border-radius:0 10px 10px 0;color:var(--tinta-2);font-size:.92em}
+
+/* ficha del estudiante */
+.modal{position:fixed;inset:0;background:rgba(28,36,51,.45);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;z-index:45;overflow:auto}
+.modal-caja{background:#fff;border-radius:16px;width:min(900px,100%);padding:24px 28px 28px;position:relative;box-shadow:0 20px 60px rgba(28,36,51,.3)}
+.modal-caja .cerrar{position:absolute;right:12px;top:10px;font-size:1.6em}
+.modal-caja h2{display:flex;align-items:center;gap:12px}
+.gtag{--c:#6B7280;font-size:.6em;font-weight:600;color:#fff;background:var(--c);border-radius:999px;padding:3px 12px}
+details.reg{border:1px solid var(--linea);border-radius:12px;padding:12px 16px;margin-bottom:10px;background:#fff}
+details.reg summary{cursor:pointer;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+details.reg summary span{color:var(--tinta-2);font-size:.9em}
+details.reg summary em{font-style:normal;color:var(--tinta-2);font-size:.85em;margin-left:auto}
+details.reg .puntajes{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+details.reg .punt{background:var(--azul-suave);border-radius:10px;padding:6px 12px;font-weight:600;color:var(--azul)}
+details.reg .punt small{display:block;font-weight:400;color:var(--tinta-2);font-size:.75em}
+table.resp{width:100%;border-collapse:collapse;font-size:.92em}
+table.resp td{padding:6px 8px;border-bottom:1px solid var(--linea);vertical-align:top}
+table.resp td:last-child{white-space:nowrap;text-align:right;font-weight:600;width:1%}
+table.resp tr.dim td{color:var(--azul);font-weight:600;background:#F7F9FC;border-top:1px solid var(--linea)}
+details.reg .obs{color:var(--tinta-2);font-size:.92em;margin:10px 0 0}
+table.datos a[data-ficha]{text-decoration:none;font-weight:600}
+table.datos a[data-ficha]:hover{text-decoration:underline}

@@ -57,18 +57,18 @@ function iconSure(v) {
 function iconFace(v) {
   const c = 52, k = '#1C2433', sh = '#B89A5A';
   const fill = '#FFE9BE', edge = '#E6C98A';
-  const tilt = [0, 0, 4, -4, -7][v - 1];
-  const px = [-3, -1, 0, 0, 0][v - 1], py = [0, 0, -3, 0, 0][v - 1]; // mirada: a un lado (no), hacia arriba (duda)
+  const tilt = [0, 0, 5, -4, -8][v - 1];
+  const px = [-4, -1, 0, 0, 0][v - 1], py = [1, 0, -3, 0, 0][v - 1]; // mirada: a un lado (no), hacia arriba (duda)
   const eyes = `<circle cx="${36 + px}" cy="${45 + py}" r="5" fill="${k}"/><circle cx="${68 + px}" cy="${45 + py}" r="5" fill="${k}"/>`;
   const mouth = [
-    `<path d="M38 72 q14 -9 28 0" stroke="${k}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
-    `<path d="M39 70 q13 -5 26 0" stroke="${k}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    `<path d="M37 74 q15 -13 30 0" stroke="${k}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    `<path d="M40 69 q12 -4 24 0" stroke="${k}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
     `<path d="M39 69 l26 0" stroke="${k}" stroke-width="5" stroke-linecap="round"/>`,
     `<path d="M39 66 q13 6 26 0" stroke="${k}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
     `<path d="M37 64 q15 11 30 0" stroke="${k}" stroke-width="5" fill="none" stroke-linecap="round"/>`
   ][v - 1];
   const shake = v === 1 ? `<path d="M9 40 q-6 12 0 24 M3 44 q-4 8 0 16 M95 40 q6 12 0 24 M101 44 q4 8 0 16" stroke="${sh}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
-    : v === 2 ? `<path d="M9 42 q-5 10 0 20 M95 42 q5 10 0 20" stroke="${sh}" stroke-width="3.5" fill="none" stroke-linecap="round"/>` : '';
+    : v === 2 ? `<path d="M10 46 q-4 6 0 12 M94 46 q4 6 0 12" stroke="${sh}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>` : '';
   const nod = v === 4 ? `<path d="M44 8 q8 -5 16 0" stroke="${sh}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
     : v === 5 ? `<path d="M44 9 q8 -5 16 0 M40 3 q12 -7 24 0" stroke="${sh}" stroke-width="3.5" fill="none" stroke-linecap="round"/>` : '';
   return `<svg width="104" height="104" viewBox="0 0 104 104" aria-hidden="true">${shake}${nod}<g transform="rotate(${tilt} ${c} ${c})"><rect x="14" y="14" width="76" height="76" rx="24" fill="${fill}" stroke="${edge}" stroke-width="4"/><ellipse cx="38" cy="30" rx="11" ry="6" fill="#fff" opacity=".45"/>${eyes}${mouth}</g></svg>`;
