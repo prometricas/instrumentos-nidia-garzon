@@ -27,7 +27,7 @@ globalThis.Netlify = { env: { get: (k) => process.env[k] } };
 const { default: api } = await import("./netlify/functions/api.mjs");
 const MIME = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".png": "image/png", ".json": "application/json" };
 // Mismas cabeceras de seguridad que netlify.toml, para que cualquier problema con ellas se vea también en local
-const CAB = { "x-frame-options": "DENY", "x-content-type-options": "nosniff", "referrer-policy": "no-referrer",
+const CAB = { "x-frame-options": "DENY", "x-content-type-options": "nosniff", "referrer-policy": "no-referrer", "cache-control": "no-cache", // el navegador siempre pide la versión del disco
   "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" };
 
 http.createServer(async (req, res) => {
