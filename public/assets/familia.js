@@ -59,7 +59,7 @@ async function enviar() {
   $('#sig').disabled = true; $('#msg').innerHTML = '';
   try {
     await api('familia', { method: 'POST', body: { ...par, informante: info.informante, acepta: info.acepta === true, items: resp, observaciones: $('#obs').value.trim() } });
-    final(`<img src="assets/logo.png" alt="" style="height:44px;margin-bottom:14px"><h2>Respuestas enviadas</h2><p class="guia" style="margin:0">Muchas gracias por su tiempo y por apoyar el aprendizaje de ${esc(info.nombre || info.codigo)}. Ya puede cerrar esta página.</p>`);
+    final(`<img src="assets/logo.png" alt="" style="height:44px;margin-bottom:14px"><h2>Respuestas enviadas</h2><p class="guia" style="margin:0">Muchas gracias por su tiempo. Ya puede cerrar esta página.</p>`);
   } catch (e) {
     $('#msg').innerHTML = `<div class="aviso mal">No se pudieron enviar las respuestas: ${esc(e.message)}. Revise la conexión e intente de nuevo.</div>`;
     $('#sig').disabled = false;

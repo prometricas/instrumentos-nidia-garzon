@@ -354,7 +354,8 @@ setInterval(() => { if (leerCola().length) enviarCola(); }, 60000);
 /* ---------- acudientes ---------- */
 let enlaces = [];
 const urlF = (e) => `${location.origin}/familia.html?e=${e.codigo}&t=${e.t}`;
-const msgF = (e) => `Hola. Le pedimos el favor de responder unas preguntas cortas sobre la lectura y la escritura de *${(e.nombre || e.codigo).replace(/[*_~]/g, '')}* en casa. Toma 5 minutos y se responde desde el celular: ${urlF(e)}\n¡Muchas gracias!`; // *nombre* = negrita en WhatsApp
+// *nombre* = negrita en WhatsApp. El enlace va solo, al final, para que WhatsApp lo convierta en hipervínculo (solo lo hace con dominios reales, no con localhost).
+const msgF = (e) => `Hola. Por favor responda este cuestionario corto (5 minutos) sobre la lectura y la escritura de *${(e.nombre || e.codigo).replace(/[*_~]/g, '')}* en casa:\n${urlF(e)}`;
 async function verFamilias() {
   $('#tablaF').innerHTML = '<p class="guia">Cargando…</p>';
   try { await cargar(); enlaces = (await api('enlaces')).enlaces; } catch (e) { $('#tablaF').innerHTML = `<div class="aviso mal">${esc(e.message)}</div>`; return; }
