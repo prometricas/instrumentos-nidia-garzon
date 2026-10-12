@@ -39,14 +39,14 @@
   </nav></aside>
   <main>
     <section id="v-estudiantes">
-      <div class="cabeza"><div><h2>Estudiantes</h2><p class="guia" style="margin:0">Cada estudiante tiene un código que vincula sus registros. Las marcas verdes son aplicaciones guardadas; al pulsar una (o el nombre) se abre la ficha del estudiante con todas sus respuestas. Elija el grupo en las pestañas.</p></div><div class="resumen" id="resumenP"></div></div>
+      <div class="cabeza"><div><h2>Estudiantes</h2><p class="guia" style="margin:0">Cada estudiante tiene un código que vincula sus registros. Las marcas verdes son aplicaciones guardadas y abren la ficha del estudiante (también al pulsar el nombre); las grises están pendientes y llevan a aplicar. Elija el grupo en las pestañas.</p></div><div class="resumen" id="resumenP"></div></div>
       <div class="tarjeta" style="margin-top:14px">
         <div class="fila">
           <div class="campo" style="max-width:110px"><label for="pCodigo">Código</label><input id="pCodigo"></div>
           <div class="campo" style="flex:1.4"><label for="pNombre">Nombre</label><input id="pNombre" placeholder="Nombre"></div>
           <div class="campo" style="flex:1.4"><label for="pApellido">Apellido</label><input id="pApellido" placeholder="Apellido"></div>
-          <div class="campo" style="min-width:190px"><label for="pGrupo">Grupo</label><select id="pGrupo" class="vacio"><option value="" disabled selected>Seleccione el grupo</option><option>Piloto</option><option>Experimental</option><option>Control</option></select></div>
-          <div class="campo" style="min-width:190px"><label for="pSexo">Sexo</label><select id="pSexo" class="vacio"><option value="" disabled selected>Seleccione el sexo</option><option>Femenino</option><option>Masculino</option></select></div>
+          <div class="campo" style="min-width:175px"><label for="pGrupo">Grupo</label><select id="pGrupo" class="vacio"><option value="" disabled selected>Seleccione el grupo</option><option>Piloto</option><option>Experimental</option><option>Control</option></select></div>
+          <div class="campo" style="min-width:175px"><label for="pSexo">Sexo</label><select id="pSexo" class="vacio"><option value="" disabled selected>Seleccione el sexo</option><option>Femenino</option><option>Masculino</option></select></div>
           <div class="campo" style="max-width:90px"><label for="pEdad">Edad</label><input id="pEdad" type="number" min="5" max="12"></div>
           <button class="btn" id="btnAddP">Registrar</button>
         </div>
@@ -56,6 +56,7 @@
     </section>
 
     <section id="v-aplicar" class="oculto">
+      <a href="#" class="volver oculto" data-volver>← Volver a Estudiantes</a>
       <h2>Aplicar al estudiante</h2>
       <p class="guia">Aplicación individual: el aplicador lee cada frase en voz alta y el estudiante toca su respuesta. Empieza con dos frases de práctica que no se guardan. El botón ? de la esquina muestra el guion.</p>
       <div class="tarjeta">
@@ -71,6 +72,7 @@
     </section>
 
     <section id="v-familias" class="oculto">
+      <a href="#" class="volver oculto" data-volver>← Volver a Estudiantes</a>
       <div class="cabeza"><div><h2>Acudientes</h2><p class="guia" style="margin:0">Cada acudiente responde una sola vez el cuestionario de acompañamiento familiar desde su celular, con un enlace propio que identifica al estudiante y no pide clave. Envíelo por WhatsApp o copie el enlace para otro medio.</p></div><div class="resumen" id="resumenF"></div></div>
       <div class="tabla" id="tablaF"></div>
     </section>
@@ -140,7 +142,7 @@ async function entrar(clave) {
   catch (e) { sessionStorage.removeItem('clave'); throw e; }
   await cargar();
   $('#entrada').classList.add('oculto'); $('#app').classList.remove('oculto');
-  ir('estudiantes');
+  ir(VISTAS[location.hash.slice(1)] ? location.hash.slice(1) : 'estudiantes');
 }
 $('#btnEntrar').addEventListener('click', async () => {
   const c = $('#clave').value; if (!c) return;
@@ -153,14 +155,23 @@ $('#btnSalir').addEventListener('click', () => { sessionStorage.removeItem('clav
 async function cargar() { const [d, p] = await Promise.all([api('datos'), api('papelera')]); D = d; D.papelera = p.papelera; }
 
 /* ---------- navegación ---------- */
+const VISTAS = { estudiantes: () => verEstudiantes(), aplicar: () => verAplicar(), familias: () => verFamilias(), respuestas: () => verRespuestas() };
+let origen = null; // módulo desde el que se llegó con una marca pendiente, para poder volver
 function ir(v) {
   vista = v;
   document.querySelectorAll('main > section').forEach((s) => s.classList.toggle('oculto', s.id !== 'v-' + v));
   document.querySelectorAll('nav.menu button').forEach((b) => b.classList.toggle('activo', b.dataset.v === v));
+  document.querySelectorAll('[data-volver]').forEach((a) => a.classList.toggle('oculto', !(origen && origen !== v)));
   $('#ayudaBtn').classList.toggle('oculto', v !== 'aplicar'); if (v !== 'aplicar') $('#ayudaPanel').classList.add('oculto');
-  ({ estudiantes: verEstudiantes, aplicar: verAplicar, familias: verFamilias, respuestas: verRespuestas })[v]();
+  if (!location.hash) history.replaceState(null, '', '#' + v); else if (location.hash !== '#' + v) history.pushState(null, '', '#' + v); // el botón Atrás del navegador vuelve al módulo anterior
+  VISTAS[v]();
 }
-document.querySelectorAll('nav.menu button').forEach((b) => b.addEventListener('click', () => ir(b.dataset.v)));
+document.querySelectorAll('nav.menu button').forEach((b) => b.addEventListener('click', () => { origen = null; ir(b.dataset.v); }));
+document.querySelectorAll('[data-volver]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); const o = origen; origen = null; ir(o); }));
+window.addEventListener('popstate', () => {
+  if (K) { history.pushState(null, '', '#aplicar'); return; } // durante una aplicación, Atrás no hace nada
+  const v = location.hash.slice(1); if (VISTAS[v] && D) { origen = null; ir(v); }
+});
 async function recargar() { try { await cargar(); ir(vista); } catch (e) { toast(e.message, true); } }
 function seg(id, onChange) { const el = $(id); el.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { el.querySelectorAll('button').forEach((x) => x.classList.toggle('activo', x === b)); onChange && onChange(b.dataset.m); })); return () => el.querySelector('.activo').dataset.m; }
 function guionHtml(ins) { return `<h4>Guion · ${esc(ins.corto)}</h4><p>Diga al niño(a): <i>«${esc(ins.guion.diga)}»</i></p><p>${esc(ins.guion.haga)}</p><p class="teclas">Teclas: 1-${ins.escala.length} marcan la respuesta, tecla Enter avanza.</p>`; }
@@ -169,13 +180,13 @@ function guionHtml(ins) { return `<h4>Guion · ${esc(ins.corto)}</h4><p>Diga al 
 function verEstudiantes() {
   const ps = D.participantes;
   $('#resumenP').textContent = ps.length ? `${ps.length} estudiante${ps.length > 1 ? 's' : ''} · ` + porGrupo(ps).map(([g, l]) => `${l.length} ${g.toLowerCase()}`).join(' · ') : '';
-  const marcaF = (c) => { const r = reg('cff', c); return r ? `<span class="estado si" data-s="cff" data-c="${esc(c)}" title="Respondido el ${esc(r.fecha)}. Pulse para ver la ficha">✓ ${esc(r.informante)}</span>` : '<span class="estado pend" data-fam title="Pendiente. Pulse para ir a los enlaces de acudientes">Pendiente</span>'; };
-  const marca = (s, c, m) => { const r = reg(s, c, m); const et = m === 'Pretest' ? 'Pre' : 'Post'; return r ? `<span class="estado si" data-s="${s}" data-c="${esc(c)}" data-m="${m}" title="Guardado el ${esc(r.fecha)}. Pulse para ver la ficha">${et} ✓</span>` : `<span class="estado pend" data-apl="${s}" data-c="${esc(c)}" data-m="${m}" title="Sin aplicar. Pulse para aplicar ahora">${et} ·</span>`; };
-  const filaP = (p) => { const n = nReg(p.codigo); return `<tr><td><b>${esc(p.codigo)}</b></td><td><a href="#" data-ficha="${esc(p.codigo)}" title="Ver respuestas">${esc(p.nombre)}</a></td><td>${esc(p.apellido)}</td><td>${esc(p.sexo)}</td><td>${esc(p.edad)}</td>` +
+  const marcaF = (c) => { const r = reg('cff', c); return r ? `<span class="estado si" role="button" tabindex="0" data-s="cff" data-c="${esc(c)}" title="Respondido el ${esc(r.fecha)}. Pulse para ver la ficha">✓ ${esc(r.informante)}</span>` : '<span class="estado pend" role="button" tabindex="0" data-fam title="Pendiente. Pulse para ir a los enlaces de acudientes">Pendiente</span>'; };
+  const marca = (s, c, m) => { const r = reg(s, c, m); const et = m === 'Pretest' ? 'Pre' : 'Post'; return r ? `<span class="estado si" role="button" tabindex="0" data-s="${s}" data-c="${esc(c)}" data-m="${m}" title="Guardado el ${esc(r.fecha)}. Pulse para ver la ficha">${et} ✓</span>` : `<span class="estado pend" role="button" tabindex="0" data-apl="${s}" data-c="${esc(c)}" data-m="${m}" title="Sin aplicar. Pulse para aplicar ahora">${et} ·</span>`; };
+  const filaP = (p) => { const n = nReg(p.codigo); return `<tr><td><b>${esc(p.codigo)}</b></td><td><a href="#" data-ficha="${esc(p.codigo)}" title="Abrir la ficha del estudiante">${esc(nom(p))}</a></td><td>${esc(p.sexo)}</td><td>${esc(p.edad)}</td>` +
       ['eqi', 'esms'].map((s) => `<td>${marca(s, p.codigo, 'Pretest')}${marca(s, p.codigo, 'Postest')}</td>`).join('') + `<td>${marcaF(p.codigo)}</td>` +
       `<td><button class="x ${n ? 'con-datos' : ''}" data-del="${esc(p.codigo)}" title="${n ? `Eliminar (tiene ${n} registros; se guardan en la papelera)` : 'Eliminar estudiante'}">×</button></td></tr>`; };
   const lista = ps.filter((p) => p.grupo === grupoActivo);
-  $('#tablaP').innerHTML = tabsGrupo(ps, (l) => l.length) + (lista.length ? `<table class="datos"><thead><tr><th>Código</th><th>Nombre</th><th>Apellido</th><th>Sexo</th><th>Edad</th>` +
+  $('#tablaP').innerHTML = tabsGrupo(ps, (l) => l.length) + (lista.length ? `<table class="datos"><thead><tr><th>Código</th><th>Nombre</th><th>Sexo</th><th>Edad</th>` +
     ['EQI', 'ESMS', 'CFF'].map((k) => `<th>${esc(INS[k].tabla)}<small>${esc(INS[k].nombre)}</small></th>`).join('') + `<th></th></tr></thead><tbody>` + lista.map(filaP).join('') + '</tbody></table>'
     : `<div class="aviso nota">Aún no hay estudiantes en el grupo ${grupoActivo}. Regístrelos con el formulario de arriba.</div>`) + papeleraHtml();
   activarTabs($('#tablaP'), verEstudiantes);
@@ -183,7 +194,7 @@ function verEstudiantes() {
   if (!cod || codigoUsado(cod)) { const n = Math.max(0, ...ps.concat(D.papelera || []).map((p) => Number((p.codigo.match(/^E(\d+)$/) || [])[1]) || 0)) + 1; $('#pCodigo').value = 'E' + z(n); } // siguiente al mayor usado: un código nunca se repite
   $('#tablaP').querySelectorAll('.estado.si, [data-ficha]').forEach((ch) => ch.addEventListener('click', () => verEstudiante(ch.dataset.c || ch.dataset.ficha)));
   $('#tablaP').querySelectorAll('[data-apl]').forEach((ch) => ch.addEventListener('click', () => irAplicar(KEYDE[ch.dataset.apl], ch.dataset.c, ch.dataset.m)));
-  $('#tablaP').querySelectorAll('[data-fam]').forEach((ch) => ch.addEventListener('click', () => ir('familias')));
+  $('#tablaP').querySelectorAll('[data-fam]').forEach((ch) => ch.addEventListener('click', () => { origen = 'estudiantes'; ir('familias'); }));
   $('#tablaP').querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', async () => {
     const c = b.dataset.del, n = nReg(c);
     if (n) {
@@ -229,27 +240,36 @@ $('#btnAddP').addEventListener('click', async () => {
 
 /* ---------- ficha del estudiante ---------- */
 const fmtDur = (seg) => (seg >= 90 ? `${Math.round(seg / 60)} min` : `${seg} s`);
-function dimLabel(et) { const m = et.match(/^(.*?)\s*\(([^)]*)\)\s*$/); return m ? `${esc(m[1])} <small>${esc(m[2])}</small>` : esc(et); }
+function dimLabel(p) { const r = (p.etiqueta.match(/(\d+-\d+)\)\s*$/) || [])[1]; return `<span title="${esc(p.etiqueta)}">${esc(p.corto || p.etiqueta)}${r ? ` <small>${r}</small>` : ''}</span>`; }
+function avatar(sexo) { // niño o niña según el sexo registrado
+  const nina = sexo === 'Femenino', pelo = '#4A3222', piel = '#F5C9A6', ropa = nina ? '#F36A00' : '#1F4FA8', id = nina ? 'av-f' : 'av-m';
+  return `<svg class="avatar" viewBox="0 0 64 64" aria-hidden="true"><defs><clipPath id="${id}"><circle cx="32" cy="32" r="31"/></clipPath></defs><circle cx="32" cy="32" r="31" fill="#E8EEF9"/><g clip-path="url(#${id})">
+    <path d="M10 66c0-12 10-19 22-19s22 7 22 19z" fill="${ropa}"/>${nina ? `<path d="M16 31c0-12 7-19 16-19s16 7 16 19v16H16z" fill="${pelo}"/>` : ''}
+    <circle cx="32" cy="29" r="12.5" fill="${piel}"/>
+    ${nina ? `<path d="M19.5 29.5c0-9.5 5.5-14.5 12.5-14.5s12.5 5 12.5 14.5c-3-5-6-7-9-7-3 2-7 2-10 0-3 0-5 2-6 7z" fill="${pelo}"/>` : `<path d="M19.5 28c0-9 5.5-13.5 12.5-13.5S44.5 19 44.5 28c-3-4.5-6-6.5-9-6.5-3 2-7 2-10 0-3 0-5 2-6 6.5z" fill="${pelo}"/>`}
+    <circle cx="27.5" cy="30.5" r="1.6" fill="#1C2433"/><circle cx="36.5" cy="30.5" r="1.6" fill="#1C2433"/><path d="M28 35.5q4 3 8 0" stroke="#1C2433" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <circle cx="24" cy="34.5" r="2" fill="#F08A8A" opacity=".45"/><circle cx="40" cy="34.5" r="2" fill="#F08A8A" opacity=".45"/></g></svg>`;
+}
 function fichaPrueba(key, codigo) {
   const ins = INS[key], s = STORE[key], panel = key !== 'CFF';
   const regs = panel ? MOMENTOS.map((m) => reg(s, codigo, m)) : [reg(s, codigo)];
   const cab = panel ? '<th></th><th>Pretest</th><th>Postest</th><th title="Postest menos pretest">Cambio</th>' : '<th></th><th>Puntaje</th>';
   const filas = ins.puntajes.map((p) => {
     const v = regs.map((r) => (r ? r[p.variable] : null)), camb = panel && v[0] != null && v[1] != null ? v[1] - v[0] : null;
-    return `<tr><td>${dimLabel(p.etiqueta)}</td>${v.map((x) => `<td>${x ?? '<span class="nada">–</span>'}</td>`).join('')}${panel ? `<td class="camb ${camb > 0 ? 'mas' : camb < 0 ? 'menos' : ''}">${camb == null ? '' : (camb > 0 ? '+' : '') + camb}</td>` : ''}</tr>`;
+    return `<tr><td>${dimLabel(p)}</td>${v.map((x) => `<td>${x ?? '<span class="nada">–</span>'}</td>`).join('')}${panel ? `<td class="camb ${camb > 0 ? 'mas' : camb < 0 ? 'menos' : ''}">${camb == null ? '' : (camb > 0 ? '+' : '') + camb}</td>` : ''}</tr>`;
   }).join('');
   const obs = (r) => (r.observaciones ? ` · <i>${esc(r.observaciones)}</i>` : '');
   const borrar = (m) => `<button class="lnk chico mal" data-borrar data-s="${s}" data-c="${esc(codigo)}" data-m="${m || ''}">Eliminar</button>`;
   const meta = panel
-    ? MOMENTOS.map((m, i) => { const r = regs[i]; return `<div class="meta"><b>${m}</b> ${r ? `${esc(r.fecha)} · aplicó ${esc(r.aplicador)} · ${fmtDur(r.duracion_seg)}${obs(r)} ${borrar(m)}` : `sin aplicar · <button class="lnk chico" data-aplicar data-k="${key}" data-c="${esc(codigo)}" data-m="${m}">Aplicar ahora</button>`}</div>`; }).join('')
-    : (regs[0] ? `<div class="meta"><b>Respondió</b> ${esc(regs[0].informante)} · ${esc(regs[0].fecha)}${obs(regs[0])} ${borrar()}</div>` : '<div class="meta"><b>Pendiente</b> · el enlace para el acudiente está en Acudientes</div>');
-  return `<div class="prueba"><h3>${esc(ins.corto)} <span>${esc(ins.nombre)}</span></h3><table class="dims"><thead><tr>${cab}</tr></thead><tbody>${filas}</tbody></table>${meta}</div>`;
+    ? MOMENTOS.map((m, i) => { const r = regs[i]; return `<div class="meta"><span><b>${m}</b> ${r ? `${esc(r.fecha)} · aplicó ${esc(r.aplicador)} · ${fmtDur(r.duracion_seg)}${obs(r)}` : 'sin aplicar'}</span>${r ? borrar(m) : `<button class="lnk chico" data-aplicar data-k="${key}" data-c="${esc(codigo)}" data-m="${m}">Aplicar ahora</button>`}</div>`; }).join('')
+    : (regs[0] ? `<div class="meta"><span><b>Respondió</b> ${esc(regs[0].informante)} · ${esc(regs[0].fecha)}${obs(regs[0])}</span>${borrar()}</div>` : `<div class="meta"><span><b>Pendiente</b> · el acudiente aún no responde</span><button class="lnk chico" data-acudientes>Ir a Acudientes</button></div>`);
+  return `<div class="prueba"><h3>${esc(ins.corto)}<span>${esc(ins.nombre)}</span></h3><table class="dims"><thead><tr>${cab}</tr></thead><tbody>${filas}</tbody></table>${meta}</div>`;
 }
 function verEstudiante(codigo, editar = false) {
   const p = D.participantes.find((x) => x.codigo === codigo); if (!p) return;
   const op = (lista, v) => lista.map((x) => `<option ${x === v ? 'selected' : ''}>${x}</option>`).join('');
-  $('#fichaCuerpo').innerHTML = `<h2><a href="#" data-editar title="Editar los datos del estudiante">${esc(nom(p))}</a> <span class="gtag g-${p.grupo.toLowerCase()}">${esc(p.grupo)}</span><button class="lnk chico" data-editar style="margin-left:auto">${editar ? 'Cerrar edición' : 'Editar'}</button></h2>
-    <p class="guia" style="margin-bottom:14px">${esc(p.codigo)} · ${esc(p.sexo)} · ${esc(p.edad)} años · registrado el ${esc(p.fecha_registro)}${p.observaciones ? ` · ${esc(p.observaciones)}` : ''}</p>
+  $('#fichaCuerpo').innerHTML = `<div class="ficha-cab">${avatar(p.sexo)}<div><h2><a href="#" data-editar title="Editar los datos del estudiante">${esc(nom(p))}</a> <span class="gtag g-${p.grupo.toLowerCase()}">${esc(p.grupo)}</span><a href="#" class="editar-lnk" data-editar>${editar ? 'Cerrar edición' : 'Editar estudiante'}</a></h2>
+    <p class="guia" style="margin:0">${esc(p.codigo)} · ${esc(p.sexo)} · ${esc(p.edad)} años · registrado el ${esc(p.fecha_registro)}${p.observaciones ? ` · ${esc(p.observaciones)}` : ''}</p></div></div>
     <form class="editar ${editar ? '' : 'oculto'}" id="fichaEdit"><div class="fila">
       <div class="campo" style="flex:1.4"><label for="eNombre">Nombre</label><input id="eNombre" value="${esc(p.nombre)}"></div>
       <div class="campo" style="flex:1.4"><label for="eApellido">Apellido</label><input id="eApellido" value="${esc(p.apellido)}"></div>
@@ -259,7 +279,7 @@ function verEstudiante(codigo, editar = false) {
       <div class="campo" style="margin-top:10px"><label for="eObs">Observaciones (opcional)</label><input id="eObs" value="${esc(p.observaciones || '')}" placeholder="Por ejemplo: repite el grado, usa gafas, se retiró en octubre"></div>
       <p class="guia" style="margin:10px 0;font-size:.88em">El código ${esc(p.codigo)} no se cambia: es el identificador que une todas sus aplicaciones.</p>
       <div class="fila"><button class="btn" type="submit" id="eGuardar">Guardar cambios</button><button class="btn sec" type="button" id="eCancelar">Cancelar</button></div><div id="eMsg" style="margin-top:10px"></div></form>
-    ${['EQI', 'ESMS', 'CFF'].map((k) => fichaPrueba(k, codigo)).join('')}`;
+    <div class="pruebas">${['EQI', 'ESMS', 'CFF'].map((k) => fichaPrueba(k, codigo)).join('')}</div>`;
   $('#ficha').classList.remove('oculto');
   $('#fichaCuerpo').querySelectorAll('[data-editar]').forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); verEstudiante(codigo, !editar); if (!editar) $('#eNombre').focus(); }));
   $('#eCancelar').addEventListener('click', () => verEstudiante(codigo, false));
@@ -270,6 +290,7 @@ function verEstudiante(codigo, editar = false) {
     try { await api('participante', { method: 'PUT', body: { row } }); toast('Datos actualizados'); await cargar(); verEstudiante(codigo, false); ir(vista); } catch (err) { $('#eMsg').innerHTML = `<div class="aviso mal">${esc(err.message)}</div>`; }
   });
   $('#fichaCuerpo').querySelectorAll('[data-aplicar]').forEach((b) => b.addEventListener('click', () => irAplicar(b.dataset.k, b.dataset.c, b.dataset.m)));
+  $('#fichaCuerpo').querySelectorAll('[data-acudientes]').forEach((b) => b.addEventListener('click', () => { $('#ficha').classList.add('oculto'); origen = 'estudiantes'; grupoActivo = p.grupo; localStorage.setItem('grupoActivo', grupoActivo); ir('familias'); }));
   $('#fichaCuerpo').querySelectorAll('[data-borrar]').forEach((b) => b.addEventListener('click', async () => {
     const { s, c, m } = b.dataset, k = KEYDE[s];
     if (!confirm(`¿Eliminar "${INS[k].corto}"${m ? ' (' + m + ')' : ''} de ${c} ${nombreDe(c)}? Esta acción no se puede deshacer.`)) return;
@@ -278,14 +299,14 @@ function verEstudiante(codigo, editar = false) {
 }
 $('#fichaCerrar').addEventListener('click', () => $('#ficha').classList.add('oculto'));
 $('#ficha').addEventListener('click', (e) => { if (e.target === $('#ficha')) $('#ficha').classList.add('oculto'); });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('#ficha').classList.add('oculto'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('#ficha').classList.add('oculto'); if (e.key === 'Enter' && e.target.matches('.estado[tabindex]')) e.target.click(); });
 document.addEventListener('click', (e) => { if (e.target.matches('[data-ficha]')) e.preventDefault(); });
 
 /* ---------- aplicar ---------- */
 let insKey = 'EQI', preApl = null;
 const momA = seg('#aMom');
 function elegirIns(k) { insKey = k; $('#opIns').querySelectorAll('button').forEach((x) => x.classList.toggle('activo', x.dataset.k === k)); $('#ayudaPanel').innerHTML = guionHtml(INS[k]); }
-function irAplicar(key, codigo, momento) { preApl = { key, codigo, momento }; $('#ficha').classList.add('oculto'); ir('aplicar'); }
+function irAplicar(key, codigo, momento) { preApl = { key, codigo, momento }; $('#ficha').classList.add('oculto'); origen = 'estudiantes'; ir('aplicar'); }
 $('#opIns').innerHTML = ['EQI', 'ESMS'].map((k) => `<button data-k="${k}" class="${k === insKey ? 'activo' : ''}"><b>${esc(INS[k].corto)}</b><span>${esc(INS[k].tecnico)}</span></button>`).join('');
 $('#opIns').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => elegirIns(b.dataset.k)));
 $('#ayudaBtn').addEventListener('click', () => { $('#ayudaPanel').innerHTML = guionHtml(INS[insKey]); $('#ayudaPanel').classList.toggle('oculto'); });
@@ -343,7 +364,7 @@ document.addEventListener('keydown', (e) => {
   if (/^[1-5]$/.test(e.key)) { const b = $('#kBody').querySelector(`.opt[data-v="${e.key}"]`); if (b) b.click(); }
   else if (e.key === 'Enter' && !$('#kNext').disabled && !$('#kNav').classList.contains('oculto')) $('#kNext').click();
 });
-function cerrarKid() { K = null; $('#kid').classList.add('oculto'); $('#app').classList.remove('oculto'); recargar(); }
+function cerrarKid(guardado) { K = null; $('#kid').classList.add('oculto'); $('#app').classList.remove('oculto'); if (guardado && origen === 'estudiantes') { origen = null; vista = 'estudiantes'; } recargar(); }
 function finKid() {
   const { ins, codigo, momento, aplicador, resp } = K;
   const items = {}; ins.items.forEach((it) => (items[it.codigo] = resp[it.codigo]));
@@ -356,7 +377,7 @@ function finKid() {
     <div class="fila" style="margin-top:12px"><button class="btn grande" id="kSave">Guardar</button><button class="btn sec grande" id="kDiscard">Descartar</button></div><div id="kMsg" style="margin-top:10px"></div></div>`;
   $('#kSave').addEventListener('click', async () => {
     $('#kSave').disabled = true;
-    try { await api('registro', { method: 'PUT', body: { store: STORE[K.key], row: { codigo, momento, aplicador, duracion_seg: dur, ...items, observaciones: $('#kObs').value.trim() } } }); toast('Guardado'); cerrarKid(); }
+    try { await api('registro', { method: 'PUT', body: { store: STORE[K.key], row: { codigo, momento, aplicador, duracion_seg: dur, ...items, observaciones: $('#kObs').value.trim() } } }); toast('Guardado'); cerrarKid(true); }
     catch (e) { $('#kMsg').innerHTML = `<div class="aviso mal">No se pudo guardar: ${esc(e.message)}. Revise la conexión e intente de nuevo.</div>`; $('#kSave').disabled = false; }
   });
   $('#kDiscard').addEventListener('click', () => { if (confirm('¿Descartar esta aplicación sin guardar?')) cerrarKid(); });
@@ -365,7 +386,7 @@ function finKid() {
 /* ---------- acudientes ---------- */
 let enlaces = [];
 const urlF = (e) => `${location.origin}/familia.html?e=${e.codigo}&t=${e.t}`;
-const msgF = (e) => `Hola. Le pedimos responder el cuestionario de la investigación sobre lectoescritura de ${e.nombre || e.codigo} (toma unos 5 minutos): ${urlF(e)}`;
+const msgF = (e) => `Hola. Le pedimos el favor de responder unas preguntas cortas sobre la lectura y la escritura de ${e.nombre || e.codigo} en casa. Toma 5 minutos y se responde desde el celular: ${urlF(e)}\n¡Muchas gracias!`;
 async function verFamilias() {
   $('#tablaF').innerHTML = '<p class="guia">Cargando…</p>';
   try { await cargar(); enlaces = (await api('enlaces')).enlaces; } catch (e) { $('#tablaF').innerHTML = `<div class="aviso mal">${esc(e.message)}</div>`; return; }
@@ -390,8 +411,8 @@ function verRespuestas() {
   $('#resumenR').textContent = ps.length ? `${ps.filter(completo).length} de ${ps.length} estudiantes con las cinco aplicaciones` : '';
   const bloques = PRUEBAS.map((P) => ({ P, cols: cols.filter((c) => c.key === P.key) })).filter((b) => b.cols.length);
   const clase = (P) => 'p-' + P.pre.toLowerCase();
-  const celdas = (b, p, m) => { const r = buscarReg(D, b.P.key, p.codigo, m); return r ? b.cols.map((c, i) => `<td class="${c.tipo !== 'item' ? 'dim' : ''} ${i === 0 ? 'ini' : ''}">${esc(r[c.campo] ?? '')}</td>`).join('') : `<td colspan="${b.cols.length}" class="vacio ini" ${b.P.panel ? '' : 'rowspan="2"'}>${b.P.panel ? 'Sin aplicar' : 'Pendiente'}</td>`; };
-  const filaEst = (p) => `<tr class="pre"><td rowspan="2" class="fijo r-cod"><b>${esc(p.codigo)}</b></td><td rowspan="2" class="fijo r-nom"><a href="#" data-ficha="${esc(p.codigo)}">${esc(p.nombre)}</a></td><td rowspan="2" class="fijo r-ape">${esc(p.apellido)}</td><td class="fijo r-mom mom">Pretest</td><td rowspan="2">${esc(p.sexo === 'Femenino' ? 'F' : p.sexo === 'Masculino' ? 'M' : '')}</td><td rowspan="2">${esc(p.edad)}</td>${bloques.map((b) => b.P.panel ? celdas(b, p, 'Pretest') : (buscarReg(D, 'CFF', p.codigo) ? b.cols.map((c, i) => `<td rowspan="2" class="${c.tipo !== 'item' ? 'dim' : ''} ${i === 0 ? 'ini' : ''}">${esc(buscarReg(D, 'CFF', p.codigo)[c.campo] ?? '')}</td>`).join('') : celdas(b, p))).join('')}</tr>
+  const celdas = (b, p, m) => { const r = buscarReg(D, b.P.key, p.codigo, m); return r ? b.cols.map((c, i) => `<td class="${c.tipo !== 'item' ? 'dim' : ''} ${i === 0 ? 'ini' : ''}">${esc(r[c.campo] ?? '')}</td>`).join('') : `<td colspan="${b.cols.length}" class="vacio ini" ${b.P.panel ? '' : 'rowspan="2"'}><span>${b.P.panel ? 'Sin aplicar' : 'Pendiente'}</span></td>`; };
+  const filaEst = (p) => `<tr class="pre"><td rowspan="2" class="fijo r-cod"><b>${esc(p.codigo)}</b></td><td rowspan="2" class="fijo r-nom"><a href="#" data-ficha="${esc(p.codigo)}">${esc(p.nombre)}</a></td><td rowspan="2" class="fijo r-ape">${esc(p.apellido)}</td><td class="fijo r-mom mom">Pretest</td><td rowspan="2" class="izq">${esc(p.sexo === 'Femenino' ? 'F' : p.sexo === 'Masculino' ? 'M' : '')}</td><td rowspan="2" class="izq">${esc(p.edad)}</td>${bloques.map((b) => b.P.panel ? celdas(b, p, 'Pretest') : (buscarReg(D, 'CFF', p.codigo) ? b.cols.map((c, i) => `<td rowspan="2" class="${c.tipo !== 'item' ? 'dim' : ''} ${i === 0 ? 'ini' : ''}">${esc(buscarReg(D, 'CFF', p.codigo)[c.campo] ?? '')}</td>`).join('') : celdas(b, p))).join('')}</tr>
     <tr class="post"><td class="fijo r-mom mom">Postest</td>${bloques.filter((b) => b.P.panel).map((b) => celdas(b, p, 'Postest')).join('')}</tr>`;
   $('#tablaR').innerHTML = tabsGrupo(ps, (l) => l.length) + (lista.length ? `<div class="tabla-r"><table class="resp-ancha"><thead>
     <tr><th rowspan="2" class="fijo r-cod">Código</th><th rowspan="2" class="fijo r-nom">Nombre</th><th rowspan="2" class="fijo r-ape">Apellido</th><th rowspan="2" class="fijo r-mom">Momento</th><th rowspan="2">Sexo</th><th rowspan="2">Edad</th>${bloques.map((b) => `<th colspan="${b.cols.length}" class="${clase(b.P)} ini r1"><span>${esc(b.P.nombre)}${b.P.panel ? '' : ' <small>una sola aplicación</small>'}</span></th>`).join('')}</tr>

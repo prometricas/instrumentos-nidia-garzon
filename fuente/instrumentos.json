@@ -174,26 +174,31 @@
     "puntajes": [
       {
         "variable": "Intrapersonal",
+        "corto": "Intrapersonal",
         "etiqueta": "Intrapersonal (4 reactivos, 4-16)",
         "dimension": "Intrapersonal"
       },
       {
         "variable": "Interpersonal",
+        "corto": "Interpersonal",
         "etiqueta": "Interpersonal (5 reactivos, 5-20)",
         "dimension": "Interpersonal"
       },
       {
         "variable": "Adaptabilidad",
+        "corto": "Adaptabilidad",
         "etiqueta": "Adaptabilidad (6 reactivos, 6-24)",
         "dimension": "Adaptabilidad"
       },
       {
         "variable": "Manejo_estres",
+        "corto": "Manejo del estrés",
         "etiqueta": "Manejo del estrés (6 reactivos recodificados, 6-24)",
         "dimension": "Manejo del estrés"
       },
       {
         "variable": "Total_EQi",
+        "corto": "Total EQ-i",
         "etiqueta": "Suma de las cuatro dimensiones (21-84)",
         "dimension": "*"
       }
@@ -364,31 +369,37 @@
     "puntajes": [
       {
         "variable": "Lect_intrinseca",
+        "corto": "Lectura intrínseca",
         "etiqueta": "Lectura, motivación intrínseca (3-15)",
         "dimension": "Lectura · intrínseca"
       },
       {
         "variable": "Lect_identificada",
+        "corto": "Lectura identificada",
         "etiqueta": "Lectura, motivación identificada (3-15)",
         "dimension": "Lectura · identificada"
       },
       {
         "variable": "Lect_controlada",
+        "corto": "Lectura controlada",
         "etiqueta": "Lectura, motivación controlada (3-15)",
         "dimension": "Lectura · controlada"
       },
       {
         "variable": "Escr_intrinseca",
+        "corto": "Escritura intrínseca",
         "etiqueta": "Escritura, motivación intrínseca (3-15)",
         "dimension": "Escritura · intrínseca"
       },
       {
         "variable": "Escr_identificada",
+        "corto": "Escritura identificada",
         "etiqueta": "Escritura, motivación identificada (3-15)",
         "dimension": "Escritura · identificada"
       },
       {
         "variable": "Escr_controlada",
+        "corto": "Escritura controlada",
         "etiqueta": "Escritura, motivación controlada (3-15)",
         "dimension": "Escritura · controlada"
       }
@@ -506,26 +517,31 @@
     "puntajes": [
       {
         "variable": "S31_Ambiente",
+        "corto": "Ambiente del hogar",
         "etiqueta": "3.1 Ambiente alfabetizador del hogar (4-16)",
         "dimension": "3.1 Ambiente alfabetizador del hogar"
       },
       {
         "variable": "S32_Lectura",
+        "corto": "Lectura compartida",
         "etiqueta": "3.2 Lectura compartida y mediación familiar (4-16)",
         "dimension": "3.2 Lectura compartida y mediación familiar"
       },
       {
         "variable": "S33_Apoyo",
+        "corto": "Apoyo emocional",
         "etiqueta": "3.3 Apoyo emocional ante las dificultades (4-16)",
         "dimension": "3.3 Apoyo emocional ante las dificultades"
       },
       {
         "variable": "D3_Familia",
+        "corto": "Acompañamiento familiar",
         "etiqueta": "Dimensión 3 Acompañamiento familiar lector (12-48)",
         "dimension": "3.*"
       },
       {
         "variable": "Total_CFCSAL_F",
+        "corto": "Total CFCSAL-F",
         "etiqueta": "Total Forma Familia (12-48)",
         "dimension": "*"
       }

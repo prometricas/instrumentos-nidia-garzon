@@ -155,6 +155,8 @@ table.datos tr:last-child td{border-bottom:0}
 .fam .pie .btn.sec{flex:0 0 auto}
 
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+.volver{display:inline-block;color:var(--azul);text-decoration:none;font-weight:600;font-size:.92em;margin-bottom:8px}
+.volver:hover{text-decoration:underline}
 @media (max-width:760px){
   header.top{gap:12px} header.top .titulo{display:none} header.top .acciones{margin-left:auto}
   .cuerpo{display:block;min-height:0} aside.lateral{border-right:0;border-bottom:1px solid var(--linea)}
@@ -175,25 +177,32 @@ table.datos tr:last-child td{border-bottom:0}
 .gdesc{flex:1 1 320px;margin:0;padding:6px 0 6px 14px;border-left:4px solid var(--c,#6B7280);color:var(--tinta-2);font-size:.9em;line-height:1.4}
 
 /* ficha del estudiante */
-.modal{position:fixed;inset:0;background:rgba(28,36,51,.45);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;z-index:45;overflow:auto}
-.modal-caja{background:#fff;border-radius:16px;width:min(900px,100%);padding:24px 28px 28px;position:relative;box-shadow:0 20px 60px rgba(28,36,51,.3)}
+.modal{position:fixed;inset:0;background:rgba(28,36,51,.45);display:flex;align-items:center;justify-content:center;padding:20px 16px;z-index:45;overflow:auto}
+.modal-caja{background:#fff;border-radius:16px;width:min(1380px,100%);max-height:100%;overflow:auto;padding:22px 26px 24px;position:relative;box-shadow:0 20px 60px rgba(28,36,51,.3);font-size:.93em}
 .modal-caja .cerrar{position:absolute;right:12px;top:10px;font-size:1.6em}
-.modal-caja h2{display:flex;align-items:center;gap:12px}
+.ficha-cab{display:flex;align-items:center;gap:16px;margin:0 0 16px;padding-right:36px}
+.avatar{width:62px;height:62px;flex:none}
+.modal-caja h2{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 2px}
+.modal-caja h2 a.editar-lnk{font-size:.6em;font-weight:600;color:var(--azul);text-decoration:underline;text-underline-offset:3px;margin-left:4px}
+.modal-caja h2 a.editar-lnk:hover{color:var(--naranja)}
+.pruebas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
 .gtag{font-size:.6em;font-weight:600;color:#fff;background:var(--c,#6B7280);border-radius:999px;padding:3px 12px}
 .modal-caja h2 a{text-decoration:none;color:var(--azul)} .modal-caja h2 a:hover{text-decoration:underline}
 .editar{background:var(--fondo);border:1px solid var(--linea);border-radius:12px;padding:14px 16px;margin:0 0 16px}
-.prueba{border:1px solid var(--linea);border-radius:12px;padding:14px 16px;margin-bottom:12px;background:#fff}
-.prueba h3{margin:0 0 8px;font-size:1.05em;color:var(--azul);font-weight:600}
-.prueba h3 span{font-weight:400;color:var(--tinta-2);font-size:.85em;margin-left:8px}
-table.dims{width:100%;border-collapse:collapse;font-size:.93em}
-table.dims th{text-align:right;font-weight:600;color:var(--tinta-2);font-size:.85em;padding:4px 10px;border-bottom:1px solid var(--linea);white-space:nowrap}
+.prueba{border:1px solid var(--linea);border-radius:12px;padding:12px 14px;background:#fff;container-type:inline-size}
+@container (max-width:430px){table.dims td small{display:none}} /* si la tarjeta es angosta, el rango queda solo en el tooltip */
+.prueba h3{margin:0 0 8px;font-size:1.05em;color:var(--azul);font-weight:600;line-height:1.25}
+.prueba h3 span{display:block;font-weight:400;color:var(--tinta-2);font-size:.78em;margin-top:2px}
+table.dims{width:100%;border-collapse:collapse;font-size:.9em}
+table.dims th{text-align:right;font-weight:600;color:var(--tinta-2);font-size:.85em;padding:4px 6px;border-bottom:1px solid var(--linea);white-space:nowrap}
 table.dims th:first-child{text-align:left}
-table.dims td{padding:7px 10px;border-bottom:1px solid var(--linea);text-align:right;font-weight:700;color:var(--azul);white-space:nowrap;font-variant-numeric:tabular-nums}
-table.dims td:first-child{text-align:left;font-weight:400;color:var(--tinta);white-space:normal;width:100%}
+table.dims td{padding:6px 6px;border-bottom:1px solid var(--linea);text-align:right;font-weight:700;color:var(--azul);white-space:nowrap;font-variant-numeric:tabular-nums}
+table.dims td:first-child{text-align:left;font-weight:400;color:var(--tinta);white-space:nowrap;width:100%;padding-left:2px}
 table.dims td small{color:var(--tinta-2);font-weight:400;margin-left:6px;font-size:.85em}
 table.dims tr:last-child td{border-bottom:0}
 table.dims .nada{color:#B9BEC9;font-weight:400} table.dims .camb{color:var(--tinta-2);font-weight:600} table.dims .camb.mas{color:var(--ok)} table.dims .camb.menos{color:var(--mal)}
-.prueba .meta{font-size:.88em;color:var(--tinta-2);margin-top:8px;padding-top:8px;border-top:1px solid var(--linea)}
+.prueba .meta{display:flex;gap:6px;align-items:baseline;font-size:.86em;color:var(--tinta-2);margin-top:8px;padding-top:8px;border-top:1px solid var(--linea);line-height:1.5}
+.prueba .meta > span{flex:1} .prueba .meta .lnk{flex:none;white-space:nowrap}
 .prueba .meta b{color:var(--tinta);margin-right:4px} .prueba .meta i{font-style:italic}
 table.datos a[data-ficha]{text-decoration:none;font-weight:600}
 table.datos a[data-ficha]:hover{text-decoration:underline}
@@ -206,11 +215,12 @@ table.resp-ancha td{font-variant-numeric:tabular-nums}
 table.resp-ancha thead th{position:sticky;top:0;z-index:2;background:#F3F6FB;color:var(--azul);font-weight:600}
 table.resp-ancha thead th.r2{top:32px;font-weight:500;color:var(--tinta-2);cursor:help}
 table.resp-ancha th[rowspan]{vertical-align:bottom;padding-bottom:8px;text-align:left}
-table.resp-ancha .r1.p-emo{background:#DCE5F6} table.resp-ancha .r1.p-lec{background:#FFE4CF} table.resp-ancha .r1.p-fam{background:#D9EFE2;color:#176B39}
+table.resp-ancha .r1.p-emo{background:#DCE5F6} table.resp-ancha .r1.p-lec{background:#E9E3F7;color:#5B3FA3} table.resp-ancha .r1.p-fam{background:#D9EFE2;color:#176B39}
 table.resp-ancha th.r1{text-align:left;padding:0} table.resp-ancha th.r1 span{position:sticky;left:calc(var(--fijo,0px) + 10px);padding:0 10px} table.resp-ancha th.r1 small{font-weight:400;opacity:.8;margin-left:6px}
 table.resp-ancha .ini{border-left:2px solid #C3CCDC}
 table.resp-ancha td.dim{background:#F3F6FB;font-weight:700;color:var(--azul)} table.resp-ancha th.dim{color:var(--azul);background:#E8EEF9}
-table.resp-ancha td.vacio{color:#A4ACBC;font-weight:400;text-align:left;padding-left:14px;background:#FAFBFC}
+table.resp-ancha td.vacio{color:#A4ACBC;font-weight:400;text-align:left;padding:0;background:#FAFBFC}
+table.resp-ancha td.vacio span{position:sticky;left:calc(var(--fijo,0px) + 14px);padding:0 14px} /* el texto sigue visible al desplazar */
 table.resp-ancha td.mom{color:var(--tinta-2);font-size:.92em;text-align:left;min-width:84px}
 table.resp-ancha tr.post td.mom{color:var(--naranja)}
 table.resp-ancha .fijo{position:sticky;z-index:1;text-align:left}
@@ -219,7 +229,11 @@ table.resp-ancha .r-cod{left:0;min-width:70px}
 table.resp-ancha .r-nom{left:var(--l2,70px)}
 table.resp-ancha .r-ape{left:var(--l3,150px)}
 table.resp-ancha .r-mom{left:var(--l4,230px);border-right:2px solid #C3CCDC}
-table.resp-ancha td:nth-child(-n+5),table.resp-ancha tr.pre td:nth-child(6){text-align:left}
+table.resp-ancha td.izq{text-align:left}
 table.resp-ancha tbody tr.pre > td{border-top:2px solid #E3E8F0}
 table.resp-ancha a[data-ficha]{text-decoration:none;font-weight:600}
 table.resp-ancha a[data-ficha]:hover{text-decoration:underline}
+
+/* ficha en pantallas angostas (al final para que prevalezca sobre las reglas de arriba) */
+@media (max-width:1180px){.pruebas{grid-template-columns:1fr}}
+@media (max-width:760px){.modal{padding:12px 8px} .modal-caja{padding:18px 14px 20px} .avatar{width:48px;height:48px} .ficha-cab{gap:12px;align-items:flex-start}}
