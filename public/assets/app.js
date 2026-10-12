@@ -81,6 +81,7 @@ function ir(v) {
   VISTAS[v]();
 }
 document.querySelectorAll('nav.menu button[data-v]').forEach((b) => b.addEventListener('click', () => { origen = null; ir(b.dataset.v); }));
+$('#logoInicio').addEventListener('click', (e) => { e.preventDefault(); if (D) { origen = null; ir('estudiantes'); } }); // el logo lleva a Estudiantes
 document.querySelectorAll('[data-volver]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); const o = origen; origen = null; ir(o); }));
 window.addEventListener('popstate', () => {
   if (K) { history.pushState(null, '', '#aplicar'); return; } // durante una aplicación, Atrás no hace nada

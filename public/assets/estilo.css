@@ -20,11 +20,11 @@ header.top .titulo b{color:var(--azul);font-weight:600;display:block;font-size:1
 .lnk:hover{background:var(--azul-suave)}
 /* menú lateral */
 #app{min-height:100vh;display:flex;flex-direction:column} /* sin cabecera: el cuerpo ocupa toda la altura, sin desplazamiento obligado */
-.marca{padding:18px 18px 14px;border-bottom:1px solid var(--linea);margin:0 0 6px;line-height:1.3}
-.marca img{display:block;height:40px;width:auto;margin:0 0 10px}
-.marca b{display:block;color:var(--azul);font-size:.92em;font-weight:600}
-.marca span{display:block;color:var(--tinta-2);font-size:.76em}
-.cuerpo{display:grid;grid-template-columns:clamp(240px,16vw,300px) minmax(0,1fr);flex:1}
+.marca{padding:18px 14px 14px;border-bottom:1px solid var(--linea);margin:0 0 6px;line-height:1.3}
+.marca a{display:inline-block;margin:0 0 10px} .marca img{display:block;height:40px;width:auto}
+.marca b{display:block;color:var(--azul);font-size:.78em;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
+.marca span{display:block;color:var(--tinta-2);font-size:.74em;line-height:1.35}
+.cuerpo{display:grid;grid-template-columns:clamp(252px,16vw,300px) minmax(0,1fr);flex:1}
 aside.lateral{background:var(--blanco);border-right:1px solid var(--linea);display:flex;flex-direction:column}
 .pie-lateral{margin-top:auto;position:sticky;bottom:0;background:var(--blanco);padding-top:10px}
 nav.menu.secundario{padding:6px 12px 2px;gap:0;border-top:1px solid var(--linea);margin:0 12px;padding-left:0;padding-right:0}
@@ -179,7 +179,7 @@ table.datos tr:last-child td{border-bottom:0}
 @media (max-width:760px){
   header.top{gap:12px} header.top .titulo{display:none}
   .cuerpo{display:block;min-height:0} aside.lateral{border-right:0;border-bottom:3px solid var(--naranja);display:flex;flex-direction:row;align-items:center;overflow-x:auto}
-  .marca{border:0;margin:0;padding:8px 10px 8px 14px;flex:none} .marca img{height:30px;margin:0} .marca b,.marca span{display:none}
+  .marca{border:0;margin:0;padding:8px 10px 8px 14px;flex:none} .marca a{margin:0} .marca img{height:30px} .marca b,.marca span{display:none}
   .gdesc{white-space:normal}
   .pie-lateral{margin:0;position:static;padding:0;flex:none} nav.menu.secundario{border-top:0;border-left:1px solid var(--linea);flex-direction:row;padding:8px 6px;margin:0}
   nav.menu.secundario button span,nav.menu.secundario label span{display:none} nav.menu.secundario svg{width:22px;height:22px}
@@ -233,9 +233,10 @@ table.datos a[data-ficha]{text-decoration:none;font-weight:600}
 table.datos a[data-ficha]:hover{text-decoration:underline}
 
 /* tabla de respuestas (formato panel: dos filas por estudiante) */
-.barra-r{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0 14px}
-.barra-r .eti{color:var(--tinta-2);font-size:.88em} .barra-r .sep{flex:1}
-.barra-r .seg button{padding:7px 14px;min-height:38px;font-size:.95em} .barra-r .btn{padding:8px 16px;min-height:38px;font-size:.95em}
+.barra-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 14px}
+.barra-r .eti{color:var(--tinta-2);font-size:.88em} .barra-r label.check{font-size:.88em}
+.barra-r .derecha{display:flex;align-items:center;gap:10px;margin-left:auto}
+.barra-r .seg button{padding:7px 12px;min-height:38px;font-size:.9em} .barra-r .btn{padding:8px 16px;min-height:38px;font-size:.95em}
 .tabla-r{overflow:auto;max-height:calc(100vh - 250px);min-height:240px;background:#fff;border:1px solid var(--linea);border-radius:12px}
 table.resp-ancha{border-collapse:separate;border-spacing:0;font-size:.86em}
 table.resp-ancha th,table.resp-ancha td{padding:0 8px;height:32px;border-bottom:1px solid var(--linea);white-space:nowrap;text-align:center;background:#fff;vertical-align:middle}

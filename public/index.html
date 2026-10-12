@@ -27,7 +27,7 @@
 <div id="app" class="oculto">
   <div class="cuerpo">
   <aside class="lateral">
-  <div class="marca"><img src="assets/logo.png" alt="Universidad CESUMA"><b>Instrumentos de la investigación</b><span>Factores socioemocionales y lectoescritura</span><span>2.º grado · I. E. Julio César Turbay Ayala</span></div>
+  <div class="marca"><a href="#estudiantes" id="logoInicio" title="Ir a Estudiantes"><img src="assets/logo.png" alt="Universidad CESUMA"></a><b>Instrumentos de investigación</b><span>Factores socioemocionales y Lectoescritura</span><span>I. E. Julio César Turbay Ayala</span></div>
   <nav class="menu">
     <button data-v="estudiantes" class="activo"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7.6" r="3.3"/><path d="M7.7 8.4q1.3 1.1 2.6 0"/><path d="M3.2 20v-1.6a4.6 4.6 0 0 1 4.6-4.6h2.4a4.6 4.6 0 0 1 4.6 4.6V20"/><circle cx="17.2" cy="9.6" r="2.6"/><path d="M16.2 10.3q1 .8 2 0"/><path d="M16.4 13.8h1.4a3.4 3.4 0 0 1 3.4 3.4V20"/></svg><span>Estudiantes</span></button>
     <button data-v="aplicar"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="2.6"/><circle cx="9.4" cy="9.6" r="1" fill="currentColor" stroke="none"/><circle cx="14.6" cy="9.6" r="1" fill="currentColor" stroke="none"/><path d="M9 13.2q3 2.8 6 0"/><path d="M10.2 18.3h3.6"/></svg><span>Aplicar al estudiante</span></button>
@@ -88,7 +88,7 @@
 
     <section id="v-respuestas" class="oculto">
       <div class="cabeza"><div><h2>Tabla de respuestas</h2><p class="guia" style="margin:0">Formato panel: dos filas por estudiante (pretest y postest); el cuestionario Familiar, de una sola aplicación, acompaña ambas. Las columnas sombreadas son las dimensiones, con los mismos nombres del Excel; cada columna muestra su pregunta al pasar el cursor.</p></div></div>
-      <div class="barra-r"><span class="eti">Mostrar</span><div class="seg" id="rVer"><button data-m="todo" class="activo">Ítems y dimensiones</button><button data-m="dim">Solo dimensiones</button></div><span class="eti" id="resumenR" style="margin-left:6px"></span><span class="sep"></span><label class="check" for="rMeta"><input type="checkbox" id="rMeta"> Incluir fecha, aplicador y duración</label><button class="btn" id="btnExcel" title="Una hoja por grupo, en formato panel">Descargar Excel</button></div>
+      <div class="barra-r"><span class="eti">Mostrar</span><div class="seg" id="rVer"><button data-m="todo" class="activo">Ítems y dimensiones</button><button data-m="dim">Solo dimensiones</button></div><span class="eti" id="resumenR" style="margin-left:6px"></span><div class="derecha"><label class="check" for="rMeta" title="Añade al Excel la fecha y hora, el aplicador y la duración de cada aplicación"><input type="checkbox" id="rMeta"> Fecha, aplicador y duración</label><button class="btn" id="btnExcel" title="Una hoja por grupo, en formato panel">Descargar Excel</button></div></div>
       <div id="tablaR"></div>
     </section>
   </main>
