@@ -27,7 +27,8 @@ const GRUPOS = ["Piloto", "Experimental", "Control"];
 async function leerTodo(name) {
   const s = store(name);
   const { blobs } = await s.list();
-  const rows = await Promise.all(blobs.map((b) => s.get(b.key, { type: "json" })));
+  // En Windows el almacén local entrega las claves codificadas (E03%7CPretest); se prueba también la clave decodificada.
+  const rows = await Promise.all(blobs.map(async (b) => (await s.get(b.key, { type: "json" })) ?? (b.key.includes("%") ? await s.get(decodeURIComponent(b.key), { type: "json" }) : null)));
   return rows.filter(Boolean);
 }
 async function bitacora(evento, detalle) {
@@ -51,7 +52,11 @@ function validarItems(key, items) {
   return null;
 }
 const MOMENTOS = ["Pretest", "Postest"];
-const llaves = (s, codigo) => (s === "cff" ? [codigo] : MOMENTOS.map((m) => `${codigo}|${m}`));
+// Clave de cada aplicación: "E03-Pretest" (solo letras, números y guion, válida en cualquier sistema).
+// Las versiones anteriores usaban "E03|Pretest"; se siguen leyendo y borrando para no dejar registros huérfanos.
+const llave = (codigo, m) => `${codigo}-${m}`;
+const antigua = (codigo, m) => `${codigo}|${m}`;
+const llaves = (s, codigo) => (s === "cff" ? [codigo] : MOMENTOS.flatMap((m) => [llave(codigo, m), antigua(codigo, m)]));
 
 export default async (req) => {
   const url = new URL(req.url);
@@ -129,7 +134,7 @@ export default async (req) => {
     if (!x) return json({ error: "No está en la papelera" }, 404);
     if (await store("participantes").get(codigo, { type: "json" })) return json({ error: `Ya existe un estudiante activo con el código ${codigo}` }, 400);
     await store("participantes").setJSON(codigo, x.participante);
-    for (const s of REGS) for (const r of x.registros[s] || []) await store(s).setJSON(s === "cff" ? codigo : `${codigo}|${r.momento}`, r);
+    for (const s of REGS) for (const r of x.registros[s] || []) await store(s).setJSON(s === "cff" ? codigo : llave(codigo, r.momento), r);
     await store("papelera").delete(codigo);
     await bitacora("restauracion", `Participante ${codigo} restaurado desde la papelera`);
     return json({ ok: true });
@@ -149,16 +154,17 @@ export default async (req) => {
     const err = validarItems(key, r); if (err) return json({ error: err }, 400);
     const items = {}; INS[key].items.forEach((it) => (items[it.codigo] = Number(r[it.codigo])));
     const row = { codigo, ...(momento ? { momento } : {}), fecha: hoy(), ...(s === "cff" ? { informante: r.informante || "Acudiente" } : { aplicador: String(r.aplicador || "").slice(0, 80), duracion_seg: Number(r.duracion_seg) || 0 }), ...items, ...puntajes(key, items), observaciones: String(r.observaciones || "").slice(0, 500) };
-    const k = s === "cff" ? codigo : `${codigo}|${momento}`;
-    const previo = await store(s).get(k, { type: "json" });
+    const k = llave(codigo, momento);
+    const previo = (await store(s).get(k, { type: "json" })) ?? (await store(s).get(antigua(codigo, momento), { type: "json" }));
     await store(s).setJSON(k, row);
+    await store(s).delete(antigua(codigo, momento));
     await bitacora(previo ? "sobrescritura" : "aplicacion", `${INS[key].nombre} ${codigo}${momento ? " " + momento : ""}`);
     return json({ ok: true, row });
   }
   if (ruta === "registro" && req.method === "DELETE") {
     const s = url.searchParams.get("store"), codigo = String(url.searchParams.get("codigo") || "").toUpperCase(), momento = url.searchParams.get("momento");
     if (!KEY[s] || (s !== "cff" && !MOMENTOS.includes(momento))) return json({ error: "Parámetros inválidos" }, 400);
-    await store(s).delete(s === "cff" ? codigo : `${codigo}|${momento}`);
+    for (const k of s === "cff" ? [codigo] : [llave(codigo, momento), antigua(codigo, momento)]) await store(s).delete(k);
     await bitacora("eliminacion", `${INS[KEY[s]].nombre} ${codigo}${s === "cff" ? "" : " " + momento}`);
     return json({ ok: true });
   }
