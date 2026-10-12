@@ -19,7 +19,7 @@ const codigoUsado = (c) => D.participantes.some((p) => p.codigo === c) || (D.pap
 const nombreDe = (c) => { const p = D.participantes.find((p) => p.codigo === c); return p ? nom(p) : ''; };
 const reg = (s, c, m) => D[s].find((r) => r.codigo === c && (s === 'cff' || r.momento === m));
 const nReg = (c) => ['eqi', 'esms', 'cff'].reduce((a, s) => a + D[s].filter((r) => r.codigo === c).length, 0);
-const consentido = (c) => { const f = reg('cff', c); return !!(f && f.consentimiento === 'Sí'); }; // el acudiente aceptó el consentimiento al responder su enlace
+const consentido = (c) => { const f = reg('cff', c); return !!(f && f.consentimiento === 'Sí'); }; // el acudiente aceptó el consentimiento al responder su enlace (condición solo del cuestionario familiar)
 function papeleraHtml() {
   const L = D.papelera || []; if (!L.length) return '';
   return `<details class="papelera"><summary>Papelera: ${L.length} estudiante${L.length > 1 ? 's' : ''} eliminado${L.length > 1 ? 's' : ''} con sus registros guardados</summary><ul>${L.map((x) => `<li><span><b>${esc(x.codigo)}</b> ${esc(nom(x))} · ${x.registros} registro${x.registros === 1 ? '' : 's'} · eliminado el ${esc(x.fecha_papelera)}</span><button class="btn chico sec" data-rest="${esc(x.codigo)}">Recuperar</button><button class="btn chico" style="background:#fff;color:var(--mal);border:1px solid #EFC6C2" data-purga="${esc(x.codigo)}">Borrar definitivamente</button></li>`).join('')}</ul></details>`;
@@ -96,7 +96,7 @@ function verEstudiantes() {
   const ps = D.participantes;
   $('#resumenP').textContent = ps.length ? `${ps.length} estudiante${ps.length > 1 ? 's' : ''} · ` + porGrupo(ps).map(([g, l]) => `${l.length} ${g.toLowerCase()}`).join(' · ') : '';
   const marcaF = (c) => { const r = reg('cff', c); return r ? `<span class="estado si" role="button" tabindex="0" data-s="cff" data-c="${esc(c)}" title="Respondido el ${esc(r.fecha)}. Pulse para ver la ficha">✓ ${esc(r.informante)}</span>` : '<span class="estado pend" role="button" tabindex="0" data-fam title="Pendiente. Pulse para ir a los enlaces de acudientes">Pendiente</span>'; };
-  const marca = (s, c, m) => { const r = reg(s, c, m); const et = m === 'Pretest' ? 'Pre' : 'Post'; return r ? `<span class="estado si" role="button" tabindex="0" data-s="${s}" data-c="${esc(c)}" data-m="${m}" title="Guardado el ${esc(r.fecha)}. Pulse para ver la ficha">${et} ✓</span>` : `<span class="estado pend ${consentido(c) ? '' : 'sin-consent'}" role="button" tabindex="0" data-apl="${s}" data-c="${esc(c)}" data-m="${m}" title="${consentido(c) ? 'Sin aplicar. Pulse para aplicar ahora' : 'Sin aplicar. Falta el consentimiento del acudiente (lo acepta al responder su enlace)'}">${et} ·</span>`; };
+  const marca = (s, c, m) => { const r = reg(s, c, m); const et = m === 'Pretest' ? 'Pre' : 'Post'; return r ? `<span class="estado si" role="button" tabindex="0" data-s="${s}" data-c="${esc(c)}" data-m="${m}" title="Guardado el ${esc(r.fecha)}. Pulse para ver la ficha">${et} ✓</span>` : `<span class="estado pend" role="button" tabindex="0" data-apl="${s}" data-c="${esc(c)}" data-m="${m}" title="Sin aplicar. Pulse para aplicar ahora">${et} ·</span>`; };
   const filaP = (p) => { const n = nReg(p.codigo); return `<tr><td><b>${esc(p.codigo)}</b></td><td><a href="#" data-ficha="${esc(p.codigo)}" title="Abrir la ficha del estudiante">${esc(nom(p))}</a></td><td>${esc(p.sexo)}</td><td>${esc(p.edad)}</td>` +
       ['eqi', 'esms'].map((s) => `<td>${marca(s, p.codigo, 'Pretest')}${marca(s, p.codigo, 'Postest')}</td>`).join('') + `<td>${marcaF(p.codigo)}</td>` +
       `<td><button class="x ${n ? 'con-datos' : ''}" data-del="${esc(p.codigo)}" title="${n ? `Eliminar (tiene ${n} registros; se guardan en la papelera)` : 'Eliminar estudiante'}">×</button></td></tr>`; };
@@ -185,7 +185,7 @@ function verEstudiante(codigo, editar = false) {
   const op = (lista, v) => lista.map((x) => `<option ${x === v ? 'selected' : ''}>${x}</option>`).join('');
   $('#fichaCuerpo').innerHTML = `<div class="ficha-cab">${avatar(p.sexo)}<div><h2><a href="#" data-editar title="Editar los datos del estudiante">${esc(nom(p))}</a> <span class="gtag g-${p.grupo.toLowerCase()}">${esc(p.grupo)}</span><a href="#" class="editar-lnk" data-editar>${editar ? 'Cerrar edición' : 'Editar estudiante'}</a></h2>
     <p class="guia" style="margin:0">${esc(p.codigo)} · ${esc(p.sexo)} · ${esc(p.edad)} años · registrado el ${esc(p.fecha_registro)}${p.observaciones ? ` · ${esc(p.observaciones)}` : ''}</p>
-    <p class="guia consent ${consentido(codigo) ? '' : 'falta'}" style="margin:2px 0 0">${consentido(codigo) ? `Consentimiento informado aceptado por el acudiente (${esc(reg('cff', codigo).informante.toLowerCase())}) el ${esc(reg('cff', codigo).fecha)}` : 'Sin consentimiento informado: el acudiente lo acepta al responder su enlace; hasta entonces no se pueden guardar aplicaciones'}</p></div></div>
+    <p class="guia consent ${consentido(codigo) ? '' : 'falta'}" style="margin:2px 0 0">${consentido(codigo) ? `Consentimiento informado del acudiente: aceptado el ${esc(reg('cff', codigo).fecha)} (${esc(reg('cff', codigo).informante.toLowerCase())})` : 'Consentimiento informado del acudiente: pendiente (lo acepta al responder su enlace)'}</p></div></div>
     <form class="editar ${editar ? '' : 'oculto'}" id="fichaEdit"><div class="fila">
       <div class="campo" style="flex:1.4"><label for="eNombre">Nombre</label><input id="eNombre" value="${esc(p.nombre)}"></div>
       <div class="campo" style="flex:1.4"><label for="eApellido">Apellido</label><input id="eApellido" value="${esc(p.apellido)}"></div>
@@ -229,7 +229,7 @@ $('#ayudaBtn').addEventListener('click', () => { $('#ayudaPanel').innerHTML = gu
 function llenarSelEst(q = '') {
   const sel = $('#aCod'), prev = sel.value, ql = q.trim().toLowerCase();
   const lista = D.participantes.filter((p) => !ql || `${p.codigo} ${nom(p)}`.toLowerCase().includes(ql));
-  sel.innerHTML = porGrupo(lista).map(([g, l]) => `<optgroup label="${g}">` + l.map((p) => `<option value="${esc(p.codigo)}">${esc(p.codigo)} · ${esc(nom(p))}${consentido(p.codigo) ? '' : ' · sin consentimiento'}</option>`).join('') + '</optgroup>').join('') || `<option value="">${ql ? '(sin coincidencias)' : '(registre estudiantes primero)'}</option>`;
+  sel.innerHTML = porGrupo(lista).map(([g, l]) => `<optgroup label="${g}">` + l.map((p) => `<option value="${esc(p.codigo)}">${esc(p.codigo)} · ${esc(nom(p))}</option>`).join('') + '</optgroup>').join('') || `<option value="">${ql ? '(sin coincidencias)' : '(registre estudiantes primero)'}</option>`;
   if (prev && [...sel.options].some((o) => o.value === prev)) sel.value = prev;
 }
 $('#aBuscar').addEventListener('input', () => llenarSelEst($('#aBuscar').value));
@@ -256,7 +256,6 @@ $('#btnStart').addEventListener('click', async () => {
   const codigo = $('#aCod').value, momento = momA(), apl = $('#aApl').value.trim(), m = $('#aMsg');
   if (!codigo) return (m.innerHTML = '<div class="aviso mal">Registre al estudiante antes de aplicar.</div>');
   if (!apl) return (m.innerHTML = '<div class="aviso mal">Escriba el nombre del aplicador.</div>');
-  if (!consentido(codigo)) { m.innerHTML = `<div class="aviso mal">El acudiente de ${esc(codigo)} ${esc(nombreDe(codigo))} aún no ha aceptado el consentimiento informado; lo hace al responder su enlace. <button class="lnk chico" id="irAcudientes">Ir a Acudientes</button></div>`; $('#irAcudientes').addEventListener('click', () => { origen = 'aplicar'; ir('familias'); }); return; }
   localStorage.setItem('aplicador', apl);
   const prev = reg(STORE[insKey], codigo, momento);
   if (prev && !(await dialogo({ titulo: 'Ya existe esta aplicación', texto: `${codigo} ${nombreDe(codigo)} ya tiene "${INS[insKey].corto}" en ${momento} (${prev.fecha}). Si continúa, al guardar se reemplazará ese registro.`, ok: 'Continuar y reemplazar' }))) return;
@@ -362,13 +361,14 @@ async function verFamilias() {
   try { await cargar(); enlaces = (await api('enlaces')).enlaces; } catch (e) { $('#tablaF').innerHTML = `<div class="aviso mal">${esc(e.message)}</div>`; return; }
   const resp = enlaces.filter((e) => reg('cff', e.codigo)).length;
   $('#resumenF').textContent = enlaces.length ? `${resp} de ${enlaces.length} respondidos` : '';
-  const filaF = (e) => { const r = reg('cff', e.codigo); return `<tr><td><b>${esc(e.codigo)}</b></td><td>${esc(e.nombre)}</td><td>${r ? `<span class="estado si" style="cursor:default;pointer-events:none">Respondido ${esc(r.fecha)} · ${esc(r.informante)}</span>` : '<span class="estado">Pendiente</span>'}</td>
+  const filaF = (e) => { const r = reg('cff', e.codigo); return `<tr><td><b>${esc(e.codigo)}</b></td><td><a href="#" data-ficha="${esc(e.codigo)}" title="Abrir la ficha del estudiante">${esc(e.nombre)}</a></td><td>${r ? `<span class="estado si" style="cursor:default;pointer-events:none">Respondido ${esc(r.fecha)} · ${esc(r.informante)}</span>` : '<span class="estado">Pendiente</span>'}</td>
       <td><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msgF(e))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.6-1.2A9 9 0 1 0 12 3z"/></svg>Enviar por WhatsApp</a><button class="lnk chico" data-copy="${esc(urlF(e))}" title="Copiar el enlace para enviarlo por otro medio">Copiar enlace</button></td></tr>`; };
   const lista = enlaces.filter((e) => e.grupo === grupoActivo);
   $('#tablaF').innerHTML = tabsGrupo(enlaces, (l) => `${l.filter((e) => reg('cff', e.codigo)).length}/${l.length}`) + (lista.length ? `<table class="datos"><thead><tr><th>Código</th><th>Nombre</th><th>Estado</th><th>Enlace</th></tr></thead><tbody>` + lista.map(filaF).join('') + '</tbody></table>'
     : `<div class="aviso nota">No hay estudiantes en el grupo ${grupoActivo}.</div>`);
   activarTabs($('#tablaF'), verFamilias);
   $('#tablaF').querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', async () => { await navigator.clipboard.writeText(b.dataset.copy); toast('Enlace copiado'); }));
+  $('#tablaF').querySelectorAll('[data-ficha]').forEach((a) => a.addEventListener('click', () => verEstudiante(a.dataset.ficha)));
 }
 /* ---------- tabla de respuestas (formato panel) ---------- */
 let verR = 'todo';

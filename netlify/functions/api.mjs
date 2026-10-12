@@ -191,9 +191,6 @@ export default async (req) => {
     const r = body.row || {}, codigo = String(r.codigo || "").toUpperCase(), momento = s === "cff" ? undefined : r.momento;
     if (s !== "cff" && !MOMENTOS.includes(momento)) return json({ error: "Momento inválido" }, 400);
     if (!(await store("participantes").get(codigo, { type: "json" }))) return json({ error: "Estudiante no registrado" }, 404);
-    // Ninguna aplicación se guarda sin el consentimiento informado, que el acudiente acepta al responder su enlace
-    const fam = await store("cff").get(codigo, { type: "json" });
-    if (!fam || fam.consentimiento !== "Sí") return json({ error: "El acudiente aún no ha aceptado el consentimiento informado (lo hace al responder su enlace); no se puede guardar la aplicación" }, 409);
     const err = validarItems(key, r); if (err) return json({ error: err }, 400);
     const items = {}; INS[key].items.forEach((it) => (items[it.codigo] = Number(r[it.codigo])));
     const row = { codigo, momento, fecha: hoy(), fecha_hora: ahora(), aplicador: String(r.aplicador || "").slice(0, 80), duracion_seg: Number(r.duracion_seg) || 0, ...items, ...puntajes(key, items), observaciones: String(r.observaciones || "").slice(0, 500) };
