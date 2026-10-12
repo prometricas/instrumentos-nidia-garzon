@@ -11,17 +11,19 @@
 
 //            código, nombre,    apellido,   grupo,          sexo,        edad, emocional, lector, familia,     aplicaciones (EmoPre EmoPost LecPre LecPost Fam)
 const PLAN = [
-  ['E11', 'Mario',   'Neta',     'Piloto',       'Masculino', 8, 'medio', 'alto',  'acompaña', 'EmoPre EmoPost LecPre LecPost Fam'],
-  ['E12', 'Lola',    'Mento',    'Piloto',       'Femenino',  7, 'alto',  'medio', 'medio',    'EmoPre EmoPost LecPre Fam'],
-  ['E13', 'Débora',  'Plata',    'Piloto',       'Femenino',  7, 'bajo',  'bajo',  'poco',     'EmoPre'],
-  ['E02', 'Aquiles', 'Estudio',  'Experimental', 'Masculino', 8, 'alto',  'alto',  'acompaña', 'EmoPre LecPre'],
-  ['E03', 'Elsa',    'Pato',     'Experimental', 'Femenino',  8, 'medio', 'medio', 'medio',    'EmoPre EmoPost LecPre LecPost Fam'],
-  ['E04', 'Armando', 'Paredes',  'Experimental', 'Masculino', 7, 'bajo',  'medio', 'poco',     'EmoPre EmoPost LecPre LecPost Fam'],
-  ['E05', 'Susana',  'Oria',     'Experimental', 'Femenino',  9, 'alto',  'bajo',  'acompaña', 'EmoPre EmoPost LecPre Fam'],
-  ['E07', 'Elena',   'Nito',     'Control',      'Femenino',  7, 'medio', 'alto',  'acompaña', 'EmoPre EmoPost LecPre LecPost Fam'],
-  ['E08', 'Dolores', 'Fuertes',  'Control',      'Femenino',  8, 'bajo',  'bajo',  'poco',     'EmoPre EmoPost LecPre LecPost'],
-  ['E09', 'Alan',    'Brito',    'Control',      'Masculino', 8, 'alto',  'medio', 'medio',    'EmoPre LecPre Fam'],
-  ['E10', 'Aitor',   'Tilla',    'Control',      'Masculino', 9, 'medio', 'bajo',  'acompaña', 'EmoPre EmoPost LecPre Fam'],
+  ['E11', 'Solomeo',   'Paredes',           'Piloto',       'Masculino', 8, 'medio', 'alto',  'acompaña', 'EmoPre EmoPost LecPre LecPost Fam'],
+  ['E12', 'Lola',      'Mento',             'Piloto',       'Femenino',  7, 'alto',  'medio', 'medio',    'EmoPre EmoPost LecPre Fam'],
+  ['E13', 'Débora',    'Plata Ajena',       'Piloto',       'Femenino',  7, 'bajo',  'bajo',  'poco',     'EmoPre'],
+  ['E15', 'Esperanza', 'Perdida',           'Piloto',       'Femenino',  8, 'bajo',  'bajo',  'poco',     'EmoPre LecPre'],
+  ['E02', 'Aquiles',   'Esquivel Madrazo',  'Experimental', 'Masculino', 8, 'alto',  'alto',  'acompaña', 'EmoPre LecPre'],
+  ['E03', 'Elsa',      'Pato Roto',         'Experimental', 'Femenino',  8, 'medio', 'medio', 'medio',    'EmoPre EmoPost LecPre LecPost Fam'],
+  ['E04', 'Armando',   'Casas de Bareque',  'Experimental', 'Masculino', 7, 'bajo',  'medio', 'poco',     'EmoPre EmoPost LecPre LecPost Fam'],
+  ['E05', 'Ana',       'Tomía Forense',     'Experimental', 'Femenino',  9, 'alto',  'bajo',  'acompaña', 'EmoPre EmoPost LecPre Fam'],
+  ['E07', 'Elena',     'Nito del Bosque',   'Control',      'Femenino',  7, 'medio', 'alto',  'acompaña', 'EmoPre EmoPost LecPre LecPost Fam'],
+  ['E08', 'Dolores',   'Fuertes de Barriga','Control',      'Femenino',  8, 'bajo',  'bajo',  'poco',     'EmoPre EmoPost LecPre LecPost'],
+  ['E09', 'Alan',      'Brito Delgado',     'Control',      'Masculino', 8, 'alto',  'medio', 'medio',    'EmoPre LecPre Fam'],
+  ['E10', 'Aitor',     'Tilla',             'Control',      'Masculino', 9, 'medio', 'bajo',  'acompaña', 'EmoPre EmoPost LecPre Fam'],
+  ['E14', 'Joe',       'Hurtado Plata',     'Control',      'Masculino', 9, 'bajo',  'medio', 'poco',     'EmoPre EmoPost LecPre LecPost'],
 ];
 const NIVEL = { alto: 0.82, medio: 0.5, bajo: 0.22, acompaña: 0.82, poco: 0.22 }; // posición típica en la escala (0 = mínimo, 1 = máximo)
 const INFORMANTES = ['Madre', 'Madre', 'Madre', 'Padre', 'Acudiente'];
