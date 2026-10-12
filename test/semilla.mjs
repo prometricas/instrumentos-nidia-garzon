@@ -9,21 +9,22 @@
 //      En el grupo Experimental el postest mejora un poco; en Control se mantiene.
 // Nunca reemplaza una aplicación ya guardada ni borra nada. Algunas aplicaciones quedan pendientes a propósito.
 
-//            código, nombre,    apellido,   grupo,          sexo,        edad, emocional, lector, familia,     aplicaciones (EmoPre EmoPost LecPre LecPost Fam)
+//            código, nombre,     apellido,            grupo,          sexo,        edad, emocional, lector, familia,  aplicaciones (EmoPre EmoPost LecPre LecPost Fam), observaciones
 const PLAN = [
   ['E11', 'Solomeo',   'Paredes',           'Piloto',       'Masculino', 8, 'medio', 'alto',  'acompaña', 'EmoPre EmoPost LecPre LecPost Fam'],
-  ['E12', 'Lola',      'Mento',             'Piloto',       'Femenino',  7, 'alto',  'medio', 'medio',    'EmoPre EmoPost LecPre Fam'],
-  ['E13', 'Débora',    'Plata Ajena',       'Piloto',       'Femenino',  7, 'bajo',  'bajo',  'poco',     'EmoPre'],
-  ['E15', 'Esperanza', 'Perdida',           'Piloto',       'Femenino',  8, 'bajo',  'bajo',  'poco',     'EmoPre LecPre'],
-  ['E02', 'Aquiles',   'Esquivel Madrazo',  'Experimental', 'Masculino', 8, 'alto',  'alto',  'acompaña', 'EmoPre LecPre'],
+  ['E09', 'Alan',      'Brito Delgado',     'Piloto',       'Masculino', 8, 'alto',  'medio', 'medio',    'EmoPre LecPre Fam'],
+  ['E02', 'Aquiles',   'Esquivel Madrazo',  'Piloto',       'Masculino', 8, 'alto',  'alto',  'acompaña', 'EmoPre LecPre'],
+  ['E14', 'Joe',       'Hurtado Plata',     'Piloto',       'Masculino', 9, 'bajo',  'medio', 'poco',     'EmoPre EmoPost LecPre LecPost', 'Medio hermano de Débora Plata (E13)'],
+  ['E13', 'Débora',    'Plata',             'Piloto',       'Femenino',  7, 'bajo',  'bajo',  'poco',     'EmoPre', 'Media hermana de Joe Hurtado Plata (E14)'],
   ['E03', 'Elsa',      'Pato Roto',         'Experimental', 'Femenino',  8, 'medio', 'medio', 'medio',    'EmoPre EmoPost LecPre LecPost Fam'],
   ['E04', 'Armando',   'Casas de Bareque',  'Experimental', 'Masculino', 7, 'bajo',  'medio', 'poco',     'EmoPre EmoPost LecPre LecPost Fam'],
   ['E05', 'Ana',       'Tomía Forense',     'Experimental', 'Femenino',  9, 'alto',  'bajo',  'acompaña', 'EmoPre EmoPost LecPre Fam'],
+  ['E12', 'Lola',      'Mento',             'Experimental', 'Femenino',  7, 'alto',  'medio', 'medio',    'EmoPre EmoPost LecPre Fam'],
   ['E07', 'Elena',     'Nito del Bosque',   'Control',      'Femenino',  7, 'medio', 'alto',  'acompaña', 'EmoPre EmoPost LecPre LecPost Fam'],
   ['E08', 'Dolores',   'Fuertes de Barriga','Control',      'Femenino',  8, 'bajo',  'bajo',  'poco',     'EmoPre EmoPost LecPre LecPost'],
-  ['E09', 'Alan',      'Brito Delgado',     'Control',      'Masculino', 8, 'alto',  'medio', 'medio',    'EmoPre LecPre Fam'],
+  ['E15', 'Esperanza', 'Perdida',           'Control',      'Femenino',  8, 'bajo',  'bajo',  'poco',     'EmoPre LecPre'],
   ['E10', 'Aitor',     'Tilla',             'Control',      'Masculino', 9, 'medio', 'bajo',  'acompaña', 'EmoPre EmoPost LecPre Fam'],
-  ['E14', 'Joe',       'Hurtado Plata',     'Control',      'Masculino', 9, 'bajo',  'medio', 'poco',     'EmoPre EmoPost LecPre LecPost'],
+  ['E16', 'Esteban',   'Dido Prieto',       'Control',      'Masculino', 8, 'medio', 'medio', 'medio',    'EmoPre EmoPost LecPre LecPost Fam'],
 ];
 const NIVEL = { alto: 0.82, medio: 0.5, bajo: 0.22, acompaña: 0.82, poco: 0.22 }; // posición típica en la escala (0 = mínimo, 1 = máximo)
 const INFORMANTES = ['Madre', 'Madre', 'Madre', 'Padre', 'Acudiente'];
@@ -52,13 +53,13 @@ async function semilla({ base = '', clave, INS, log = console.log }) {
   // 1 y 2: nombres, apellidos y plantel
   for (const p of D.participantes) {
     const f = plan[p.codigo]; let row;
-    if (f) row = { ...p, nombre: f[1], apellido: f[2], grupo: f[3], sexo: f[4], edad: f[5] };
+    if (f) row = { ...p, nombre: f[1], apellido: f[2], grupo: f[3], sexo: f[4], edad: f[5], ...(f[10] ? { observaciones: f[10] } : {}) };
     else if (!p.apellido && p.nombre.trim().split(/\s+/).length > 1) { const w = p.nombre.trim().split(/\s+/); row = { ...p, nombre: w[0], apellido: w.slice(1).join(' ') }; }
     if (row && JSON.stringify(row) !== JSON.stringify(p)) { await api('participante', { method: 'PUT', body: { row } }); log(`ajustado ${row.codigo} ${row.nombre} ${row.apellido} (${row.grupo})`); }
   }
   const omitidos = new Set();
   for (const f of PLAN) if (!porCodigo[f[0]]) {
-    try { await api('participante', { method: 'PUT', body: { row: { codigo: f[0], nombre: f[1], apellido: f[2], grupo: f[3], sexo: f[4], edad: f[5] }, nuevo: true } }); log(`registrado ${f[0]} ${f[1]} ${f[2]} (${f[3]})`); }
+    try { await api('participante', { method: 'PUT', body: { row: { codigo: f[0], nombre: f[1], apellido: f[2], grupo: f[3], sexo: f[4], edad: f[5], observaciones: f[10] || '' }, nuevo: true } }); log(`registrado ${f[0]} ${f[1]} ${f[2]} (${f[3]})`); }
     catch (e) { omitidos.add(f[0]); log(`omitido ${f[0]}: ${e.message}`); } // p. ej. el código está en la papelera
   }
   // 3: aplicaciones que falten

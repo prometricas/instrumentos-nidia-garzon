@@ -155,7 +155,7 @@ table.datos tr:last-child td{border-bottom:0}
 .fam .pie .btn.sec{flex:0 0 auto}
 
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
-.volver{display:inline-block;color:var(--azul);text-decoration:none;font-weight:600;font-size:.92em;margin-bottom:8px}
+.volver{display:inline-block;color:var(--azul);text-decoration:none;font-weight:600;font-size:.95em;margin:6px 0 0;padding:8px 0}
 .volver:hover{text-decoration:underline}
 @media (max-width:760px){
   header.top{gap:12px} header.top .titulo{display:none} header.top .acciones{margin-left:auto}
@@ -227,8 +227,7 @@ table.resp-ancha .fijo{position:sticky;z-index:1;text-align:left}
 table.resp-ancha thead .fijo{z-index:3}
 table.resp-ancha .r-cod{left:0;min-width:70px}
 table.resp-ancha .r-nom{left:var(--l2,70px)}
-table.resp-ancha .r-ape{left:var(--l3,150px)}
-table.resp-ancha .r-mom{left:var(--l4,230px);border-right:2px solid #C3CCDC}
+table.resp-ancha .r-mom{left:var(--l3,230px);border-right:2px solid #C3CCDC}
 table.resp-ancha td.izq{text-align:left}
 table.resp-ancha td.num,table.resp-ancha th.r2{text-align:center} /* todas las respuestas y dimensiones centradas, en ambas filas */
 table.resp-ancha tbody tr.pre > td{border-top:2px solid #E3E8F0}

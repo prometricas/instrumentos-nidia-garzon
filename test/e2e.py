@@ -78,7 +78,7 @@ async def main():
         await pg.screenshot(path="test/w12_estudiantes_final.png")
         await pg.click("nav.menu button[data-v=respuestas]"); await pg.click("#tablaR .gtabs button[data-g=Control]"); await pg.wait_for_selector("#tablaR table")
         print("tabla respuestas Control:", len(await pg.query_selector_all("#tablaR tbody tr")), "filas (2 por estudiante),", len(await pg.query_selector_all("#tablaR thead tr:nth-child(2) th")), "columnas de respuesta | momentos:", [ (await c.text_content()) for c in await pg.query_selector_all("#tablaR td.mom")], "|", await pg.text_content("#resumenR"))
-        print("fijas:", await pg.evaluate("getComputedStyle(document.querySelector('#tablaR td.r-ape')).position + ' ' + getComputedStyle(document.querySelector('#tablaR td.r-ape')).left"))
+        print("fijas:", await pg.evaluate("getComputedStyle(document.querySelector('#tablaR td.r-mom')).position + ' ' + getComputedStyle(document.querySelector('#tablaR td.r-mom')).left"))
         await pg.screenshot(path="test/w14_respuestas.png")
         await pg.click("#rVer button[data-m=dim]"); await pg.wait_for_timeout(200); print("solo dimensiones:", len(await pg.query_selector_all("#tablaR thead tr:nth-child(2) th")), "columnas"); await pg.screenshot(path="test/w15_dimensiones.png")
         async with pg.expect_download() as dl: await pg.click("#btnExcel")
