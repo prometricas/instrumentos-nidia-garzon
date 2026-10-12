@@ -45,8 +45,9 @@ async def main():
         mov = await b.new_context(viewport={"width":390,"height":844}, device_scale_factor=2, is_mobile=True, has_touch=True)
         fp = await mov.new_page(); fp.on("pageerror", lambda e: errs.append("familia: "+str(e)))
         await fp.goto(link); await fp.wait_for_selector("#comenzar"); await fp.screenshot(path="test/w9_familia_movil.png")
-        await fp.select_option("#quien", "Padre"); await fp.click("#comenzar"); await fp.wait_for_timeout(200); print("sin aceptar consentimiento:", await fp.text_content("#msg"))
-        await fp.check("#acepto"); await fp.click("#comenzar"); await fp.wait_for_selector("#sig")
+        print("comenzar deshabilitado al inicio:", await fp.is_disabled("#comenzar"), "| quién responde sin valor:", await fp.input_value("#quien") == "")
+        await fp.check("#acepto"); print("solo con consentimiento sigue deshabilitado:", await fp.is_disabled("#comenzar"))
+        await fp.select_option("#quien", "Padre"); print("con los dos, habilitado:", not await fp.is_disabled("#comenzar")); await fp.click("#comenzar"); await fp.wait_for_selector("#sig")
         await fp.click("#sig"); await fp.wait_for_timeout(300); print("faltan:", await fp.text_content("#msg"))
         for paso in range(3):
             for it in await fp.query_selector_all(".item"):

@@ -93,10 +93,11 @@ export default async (req) => {
     if (req.method === "GET") return json({ ok: true, codigo: e, nombre: nomDe(p), respondido: !!previo, fecha: previo?.fecha || null, informante: previo?.informante || null });
     if (req.method === "POST") {
       if (body.acepta !== true) return json({ error: "Debe aceptar el consentimiento informado para responder" }, 400);
+      if (!["Madre", "Padre", "Acudiente"].includes(body.informante)) return json({ error: "Indique quién responde: madre, padre o acudiente" }, 400);
       const err = validarItems("CFF", body.items || {});
       if (err) return json({ error: err }, 400);
       const items = {}; INS.CFF.items.forEach((it) => (items[it.codigo] = Number(body.items[it.codigo])));
-      const row = { codigo: e, fecha: hoy(), fecha_hora: ahora(), informante: ["Madre", "Padre", "Acudiente"].includes(body.informante) ? body.informante : "Acudiente", consentimiento: "Sí", ...items, ...puntajes("CFF", items), observaciones: String(body.observaciones || "").slice(0, 500) };
+      const row = { codigo: e, fecha: hoy(), fecha_hora: ahora(), informante: body.informante, consentimiento: "Sí", ...items, ...puntajes("CFF", items), observaciones: String(body.observaciones || "").slice(0, 500) };
       await store("cff").setJSON(e, row);
       await bitacora(previo ? "sobrescritura" : "aplicacion", `CFCSAL-F ${e} (acudiente por enlace)`);
       return json({ ok: true });

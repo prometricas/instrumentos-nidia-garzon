@@ -15,13 +15,18 @@ function render() {
       <p class="guia">Gracias por participar. Le haremos ${ins.items.length} preguntas breves, en ${SEC.length} partes, sobre la lectura y la escritura en su casa. Toma unos 5 minutos y no hay respuestas buenas ni malas.</p>
       ${info.respondido ? `<div class="aviso nota">Este cuestionario ya fue respondido el ${esc(info.fecha)}. Si lo envía de nuevo, reemplazará las respuestas anteriores.</div>` : ''}
       <div class="tarjeta consentimiento"><h3>${esc(ins.consentimiento.titulo)}</h3><p>${esc(ins.consentimiento.texto)}</p><label class="check" for="acepto"><input type="checkbox" id="acepto"> ${esc(ins.consentimiento.acepto)}</label></div>
-      <div class="tarjeta"><div class="campo"><label for="quien">Quién responde</label><select id="quien"><option>Madre</option><option>Padre</option><option>Acudiente</option></select></div></div>
+      <div class="tarjeta"><div class="campo"><label for="quien">Quién responde</label><select id="quien" class="vacio"><option value="" disabled selected>Seleccione quién responde</option><option>Madre</option><option>Padre</option><option>Acudiente</option></select></div></div>
       <div id="msg"></div>
-      <div class="pie"><button class="btn grande naranja" id="comenzar">Comenzar</button></div>`;
-    $('#quien').value = info.informante || 'Madre';
+      <div class="pie"><div style="flex:1"><button class="btn grande naranja" id="comenzar" style="width:100%" disabled>Comenzar</button><p class="guia pista" id="pista" style="margin:8px 0 0;font-size:.88em;text-align:center">Marque la casilla y elija quién responde para comenzar.</p></div></div>`;
+    if (info.informante) $('#quien').value = info.informante; // si ya respondió antes, se recuerda; si no, debe elegir
+    $('#quien').classList.toggle('vacio', !$('#quien').value);
     $('#acepto').checked = !!info.acepta;
+    const listo = () => { const ok = $('#acepto').checked && !!$('#quien').value; $('#comenzar').disabled = !ok; $('#pista').classList.toggle('oculto', ok); return ok; };
+    $('#quien').addEventListener('change', () => { $('#quien').classList.toggle('vacio', !$('#quien').value); listo(); });
+    $('#acepto').addEventListener('change', listo);
+    listo();
     $('#comenzar').addEventListener('click', () => {
-      if (!$('#acepto').checked) { $('#msg').innerHTML = '<div class="aviso mal">Para continuar, marque la casilla de aceptación del consentimiento informado.</div>'; $('#acepto').focus(); return; }
+      if (!listo()) { $('#msg').innerHTML = `<div class="aviso mal">${!$('#acepto').checked ? 'Marque la casilla de aceptación del consentimiento informado.' : 'Elija quién responde: madre, padre o acudiente.'}</div>`; return; }
       info.acepta = true; info.informante = $('#quien').value; paso = 0; render();
     });
     return;
