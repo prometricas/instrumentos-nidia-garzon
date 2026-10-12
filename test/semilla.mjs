@@ -54,12 +54,17 @@ async function semilla({ base = '', clave, INS, log = console.log }) {
     else if (!p.apellido && p.nombre.trim().split(/\s+/).length > 1) { const w = p.nombre.trim().split(/\s+/); row = { ...p, nombre: w[0], apellido: w.slice(1).join(' ') }; }
     if (row && JSON.stringify(row) !== JSON.stringify(p)) { await api('participante', { method: 'PUT', body: { row } }); log(`ajustado ${row.codigo} ${row.nombre} ${row.apellido} (${row.grupo})`); }
   }
-  for (const f of PLAN) if (!porCodigo[f[0]]) { await api('participante', { method: 'PUT', body: { row: { codigo: f[0], nombre: f[1], apellido: f[2], grupo: f[3], sexo: f[4], edad: f[5] }, nuevo: true } }); log(`registrado ${f[0]} ${f[1]} ${f[2]} (${f[3]})`); }
+  const omitidos = new Set();
+  for (const f of PLAN) if (!porCodigo[f[0]]) {
+    try { await api('participante', { method: 'PUT', body: { row: { codigo: f[0], nombre: f[1], apellido: f[2], grupo: f[3], sexo: f[4], edad: f[5] }, nuevo: true } }); log(`registrado ${f[0]} ${f[1]} ${f[2]} (${f[3]})`); }
+    catch (e) { omitidos.add(f[0]); log(`omitido ${f[0]}: ${e.message}`); } // p. ej. el código está en la papelera
+  }
   // 3: aplicaciones que falten
   const hay = (s, c, m) => D[s].some((r) => r.codigo === c && (s === 'cff' || r.momento === m));
   const tokens = Object.fromEntries((await api('enlaces')).enlaces.map((e) => [e.codigo, e.t]));
   let n = 0;
   for (const [codigo, , , grupo, , , emo, lec, fam, apl] of PLAN) {
+    if (omitidos.has(codigo)) continue;
     for (const [tag, key, s, nivel] of [['Emo', 'EQI', 'eqi', emo], ['Lec', 'ESMS', 'esms', lec]]) {
       for (const m of ['Pretest', 'Postest']) {
         if (!apl.includes(tag + (m === 'Pretest' ? 'Pre' : 'Post')) || hay(s, codigo, m)) continue;
