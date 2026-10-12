@@ -170,6 +170,7 @@ table.datos tr:last-child td{border-bottom:0}
   .cuerpo{display:block;min-height:0} aside.lateral{border-right:0;border-bottom:1px solid var(--linea);display:block}
   aside.lateral .credito{display:none} .credito-movil{display:block}
   nav.menu{position:static;flex-direction:row;overflow-x:auto;padding:8px 10px;gap:2px}
+  .gtabs button{padding:7px 13px;font-size:.95em}
   nav.menu button{flex:none;padding:9px 12px;gap:8px;font-size:.95em} nav.menu button svg{width:22px;height:22px} nav.menu button.activo::before{left:10px;right:10px;top:auto;bottom:0;width:auto;height:3px;border-radius:3px 3px 0 0}
   .opt{width:140px;min-height:170px} .opt .ico{height:84px} .opt .ico svg{width:84px;height:84px} .kid-body{padding:14px 12px} .escala{gap:10px}
   .opciones-ins{grid-template-columns:1fr} .cabeza .resumen{text-align:left}
@@ -177,7 +178,7 @@ table.datos tr:last-child td{border-bottom:0}
 
 /* pestañas por grupo, con la explicación del grupo al lado */
 .gbar{display:flex;align-items:center;gap:10px 18px;flex-wrap:wrap;margin:4px 0 14px}
-.gtabs{display:flex;gap:8px;flex-wrap:wrap;flex:none}
+.gtabs{display:flex;gap:8px;flex-wrap:wrap;flex:0 1 auto;min-width:0;max-width:100%}
 .gtabs button{background:#fff;border:2px solid var(--c,#6B7280);color:var(--c,#6B7280);border-radius:999px;padding:8px 18px;font-weight:600;display:inline-flex;gap:8px;align-items:center}
 .gtabs button b{font-weight:600;background:var(--c,#6B7280);color:#fff;border-radius:999px;padding:1px 9px;font-size:.85em;opacity:.85}
 .gtabs button.activo{background:var(--c,#6B7280);color:#fff}
@@ -263,8 +264,13 @@ table.resp-ancha a[data-ficha]:hover{text-decoration:underline}
 .buscar span{color:var(--tinta-2);font-size:.88em;white-space:nowrap}
 label.check{display:inline-flex;align-items:center;gap:8px;color:var(--tinta-2);font-size:.92em;cursor:pointer;white-space:nowrap}
 label.check input{width:17px;height:17px;accent-color:var(--azul)}
-table.avance{border-collapse:collapse;font-size:.9em;background:#fff;border:1px solid var(--linea);border-radius:12px;overflow:hidden;display:inline-table}
-table.avance th,table.avance td{padding:8px 14px;border-bottom:1px solid var(--linea);text-align:center;font-variant-numeric:tabular-nums}
+.dos-col{display:flex;gap:14px;align-items:stretch;flex-wrap:wrap;margin-top:14px}
+.dos-col #avance{min-width:0;max-width:100%;overflow-x:auto}
+.dos-col .controles{flex:1 1 300px;margin:0;padding:16px 18px;display:flex;flex-direction:column;justify-content:center}
+.dos-col .controles .seg button{padding:8px 14px;min-height:40px}
+.dos-col .controles{min-width:0} .dos-col .controles label.check{white-space:normal;line-height:1.3}
+table.avance{border-collapse:collapse;font-size:.9em;background:#fff;border:1px solid var(--linea);border-radius:12px;overflow:hidden;display:inline-table;align-self:flex-start}
+table.avance th,table.avance td{padding:8px 10px;border-bottom:1px solid var(--linea);text-align:center;font-variant-numeric:tabular-nums}
 table.avance th{background:var(--azul-suave);color:var(--azul);font-weight:600;white-space:nowrap}
 table.avance th:first-child,table.avance td:first-child{text-align:left}
 table.avance tr:last-child td{border-bottom:0}
