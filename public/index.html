@@ -42,8 +42,7 @@
           <div class="campo" style="max-width:110px"><label for="pCodigo">Código</label><input id="pCodigo"></div>
           <div class="campo" style="flex:1.4"><label for="pNombre">Nombre</label><input id="pNombre" placeholder="Nombre"></div>
           <div class="campo" style="flex:1.4"><label for="pApellido">Apellido</label><input id="pApellido" placeholder="Apellido"></div>
-          <div class="campo"><label for="pGrupo">Grupo</label><select id="pGrupo" class="vacio"><option value="" disabled selected>Seleccione el grupo</option><option>Experimental</option><option>Control</option></select></div>
-          <div class="campo" style="max-width:100px"><label for="pCurso">Curso</label><input id="pCurso" placeholder="201"></div>
+          <div class="campo"><label for="pGrupo">Grupo</label><select id="pGrupo" class="vacio"><option value="" disabled selected>Seleccione el grupo</option><option>Piloto</option><option>Experimental</option><option>Control</option></select></div>
           <div class="campo"><label for="pSexo">Sexo</label><select id="pSexo" class="vacio"><option value="" disabled selected>Seleccione el sexo</option><option>Femenino</option><option>Masculino</option></select></div>
           <div class="campo" style="max-width:90px"><label for="pEdad">Edad</label><input id="pEdad" type="number" min="5" max="12"></div>
           <button class="btn" id="btnAddP">Registrar</button>
@@ -69,13 +68,8 @@
     </section>
 
     <section id="v-familias" class="oculto">
-      <div class="cabeza"><div><h2>Acudientes</h2><p class="guia" style="margin:0">Cada acudiente responde el cuestionario de acompañamiento familiar desde su celular con un enlace propio, que identifica al estudiante y al momento; no pide clave.</p></div></div>
-      <div class="tarjeta" style="margin-top:14px">
-        <div class="fila">
-          <div class="campo" style="flex:0 0 auto"><label>Momento</label><div class="seg" id="fMom"><button data-m="Pretest" class="activo">Pretest</button><button data-m="Postest">Postest</button></div></div>
-          <button class="btn sec" id="btnCopiarTodos">Copiar todos los enlaces</button>
-        </div>
-      </div>
+      <div class="cabeza"><div><h2>Acudientes</h2><p class="guia" style="margin:0">Cada acudiente responde una sola vez el cuestionario de acompañamiento familiar desde su celular, con un enlace propio que identifica al estudiante; no pide clave.</p></div><div class="resumen" id="resumenF"></div></div>
+      <div class="tarjeta" style="margin-top:14px"><div class="fila"><button class="btn sec" id="btnCopiarTodos">Copiar todos los enlaces</button><button class="btn sec" id="btnCopiarPend">Copiar solo los pendientes</button></div></div>
       <div class="tabla" id="tablaF"></div>
     </section>
   </main>
@@ -109,9 +103,11 @@
 let D = null; // datos: {participantes, eqi, esms, cff, bitacora}
 let vista = 'estudiantes';
 const STORE = { EQI: 'eqi', ESMS: 'esms', CFF: 'cff' };
+const GRUPOS = ['Piloto', 'Experimental', 'Control'];
+const porGrupo = (lista) => GRUPOS.map((g) => [g, lista.filter((x) => x.grupo === g)]).filter(([, l]) => l.length);
 const nom = (p) => [p.nombre, p.apellido].filter(Boolean).join(' ');
 const nombreDe = (c) => { const p = D.participantes.find((p) => p.codigo === c); return p ? nom(p) : ''; };
-const reg = (s, c, m) => D[s].find((r) => r.codigo === c && r.momento === m);
+const reg = (s, c, m) => D[s].find((r) => r.codigo === c && (s === 'cff' || r.momento === m));
 const nReg = (c) => ['eqi', 'esms', 'cff'].reduce((a, s) => a + D[s].filter((r) => r.codigo === c).length, 0);
 function papeleraHtml() {
   const L = D.papelera || []; if (!L.length) return '';
@@ -153,20 +149,22 @@ function guionHtml(ins) { return `<h4>Guion · ${esc(ins.corto)}</h4>${esc(ins.i
 /* ---------- estudiantes ---------- */
 function verEstudiantes() {
   const ps = D.participantes;
-  $('#resumenP').textContent = ps.length ? `${ps.length} estudiantes · ${ps.filter((p) => p.grupo === 'Experimental').length} experimental · ${ps.filter((p) => p.grupo === 'Control').length} control` : '';
+  $('#resumenP').textContent = ps.length ? `${ps.length} estudiante${ps.length > 1 ? 's' : ''} · ` + porGrupo(ps).map(([g, l]) => `${l.length} ${g.toLowerCase()}`).join(' · ') : '';
+  const marcaF = (c) => { const r = reg('cff', c); return r ? `<span class="estado si" data-s="cff" data-c="${esc(c)}" title="Respondido el ${esc(r.fecha)}">✓ ${esc(r.informante)}</span>` : '<span class="estado">Pendiente</span>'; };
   const marca = (s, c, m) => { const r = reg(s, c, m); const et = m === 'Pretest' ? 'Pre' : 'Post'; return r ? `<span class="estado si" data-s="${s}" data-c="${esc(c)}" data-m="${m}" title="Guardado el ${esc(r.fecha)}">${et} ✓</span>` : `<span class="estado">${et} ·</span>`; };
-  $('#tablaP').innerHTML = ps.length ? `<table class="datos"><thead><tr><th>Código</th><th>Nombre</th><th>Apellido</th><th>Grupo</th><th>Curso</th><th>Sexo</th><th>Edad</th>` +
+  const filaP = (p) => { const n = nReg(p.codigo); return `<tr><td><b>${esc(p.codigo)}</b></td><td>${esc(p.nombre)}</td><td>${esc(p.apellido)}</td><td>${esc(p.sexo)}</td><td>${esc(p.edad)}</td>` +
+      ['eqi', 'esms'].map((s) => `<td>${marca(s, p.codigo, 'Pretest')}${marca(s, p.codigo, 'Postest')}</td>`).join('') + `<td>${marcaF(p.codigo)}</td>` +
+      `<td><button class="x ${n ? 'con-datos' : ''}" data-del="${esc(p.codigo)}" title="${n ? `Eliminar (tiene ${n} registros; se guardan en la papelera)` : 'Eliminar estudiante'}">×</button></td></tr>`; };
+  $('#tablaP').innerHTML = (ps.length ? `<table class="datos"><thead><tr><th>Código</th><th>Nombre</th><th>Apellido</th><th>Sexo</th><th>Edad</th>` +
     ['EQI', 'ESMS', 'CFF'].map((k) => `<th>${esc(INS[k].tabla)}<small>${esc(INS[k].nombre)}</small></th>`).join('') + `<th></th></tr></thead><tbody>` +
-    ps.map((p) => { const n = nReg(p.codigo); return `<tr><td><b>${esc(p.codigo)}</b></td><td>${esc(p.nombre)}</td><td>${esc(p.apellido)}</td><td>${esc(p.grupo)}</td><td>${esc(p.curso)}</td><td>${esc(p.sexo)}</td><td>${esc(p.edad)}</td>` +
-      ['eqi', 'esms', 'cff'].map((s) => `<td>${marca(s, p.codigo, 'Pretest')}${marca(s, p.codigo, 'Postest')}</td>`).join('') +
-      `<td><button class="x ${n ? 'con-datos' : ''}" data-del="${esc(p.codigo)}" title="${n ? `Eliminar (tiene ${n} registros; se guardan en la papelera)` : 'Eliminar estudiante'}">×</button></td></tr>`; }).join('') + '</tbody></table>' + papeleraHtml()
-    : `<div class="aviso nota">Aún no hay estudiantes. Regístrelos arriba o <button class="btn chico" id="btnPrueba">añada 7 estudiantes ficticios de prueba</button> para ensayar la app.</div>` + papeleraHtml();
+    porGrupo(ps).map(([g, l]) => `<tr class="grupo"><td colspan="9">${g}<small>${l.length} estudiante${l.length > 1 ? 's' : ''}</small></td></tr>` + l.map(filaP).join('')).join('') + '</tbody></table>'
+    : `<div class="aviso nota">Aún no hay estudiantes registrados. Use el formulario de arriba.</div>`) + papeleraHtml();
   const cod = $('#pCodigo').value.trim().toUpperCase();
   if (!cod || ps.some((p) => p.codigo === cod)) { let n = ps.length + 1; while (ps.some((p) => p.codigo === 'E' + z(n))) n++; $('#pCodigo').value = 'E' + z(n); }
   $('#tablaP').querySelectorAll('.estado.si').forEach((ch) => ch.addEventListener('click', async () => {
     const { s, c, m } = ch.dataset, k = Object.keys(STORE).find((k) => STORE[k] === s);
-    if (!confirm(`¿Eliminar "${INS[k].corto}" (${INS[k].nombre}) de ${c} ${nombreDe(c)}, ${m}?`)) return;
-    try { await api(`registro?store=${s}&codigo=${c}&momento=${m}`, { method: 'DELETE' }); toast('Registro eliminado'); await recargar(); } catch (e) { toast(e.message, true); }
+    if (!confirm(`¿Eliminar "${INS[k].corto}" (${INS[k].nombre}) de ${c} ${nombreDe(c)}${m ? ', ' + m : ''}?`)) return;
+    try { await api(`registro?store=${s}&codigo=${c}${m ? '&momento=' + m : ''}`, { method: 'DELETE' }); toast('Registro eliminado'); await recargar(); } catch (e) { toast(e.message, true); }
   }));
   $('#tablaP').querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', async () => {
     const c = b.dataset.del, n = nReg(c);
@@ -185,12 +183,11 @@ function verEstudiantes() {
     if (prompt(`Esto borra definitivamente a ${c} y sus registros de la papelera. Para confirmar, escriba el código ${c}:`)?.trim().toUpperCase() !== c) return toast('No se borró nada', true);
     try { await api(`papelera?codigo=${c}`, { method: 'DELETE' }); toast('Borrado definitivamente'); await recargar(); } catch (e) { toast(e.message, true); }
   }));
-  const bp = $('#btnPrueba'); if (bp) bp.addEventListener('click', async () => { try { await api('prueba', { method: 'POST' }); toast('7 estudiantes de prueba añadidos'); await recargar(); } catch (e) { toast(e.message, true); } });
 }
 ['#pGrupo', '#pSexo'].forEach((id) => $(id).addEventListener('change', () => $(id).classList.toggle('vacio', !$(id).value)));
 document.querySelectorAll('#v-estudiantes .campo input, #v-estudiantes .campo select').forEach((el) => el.addEventListener('input', () => el.closest('.campo').classList.remove('falta')));
 $('#btnAddP').addEventListener('click', async () => {
-  const row = { codigo: $('#pCodigo').value.trim().toUpperCase(), nombre: $('#pNombre').value.trim(), apellido: $('#pApellido').value.trim(), grupo: $('#pGrupo').value, curso: $('#pCurso').value.trim(), sexo: $('#pSexo').value, edad: $('#pEdad').value };
+  const row = { codigo: $('#pCodigo').value.trim().toUpperCase(), nombre: $('#pNombre').value.trim(), apellido: $('#pApellido').value.trim(), grupo: $('#pGrupo').value, sexo: $('#pSexo').value, edad: $('#pEdad').value };
   const m = $('#pMsg'), faltan = [];
   document.querySelectorAll('#v-estudiantes .campo').forEach((c) => c.classList.remove('falta'));
   const falta = (id, texto) => { $(id).closest('.campo').classList.add('falta'); faltan.push(texto); };
@@ -286,25 +283,28 @@ function finKid() {
 }
 
 /* ---------- acudientes ---------- */
-const momF = seg('#fMom', () => verFamilias());
 let enlaces = [];
+const urlF = (e) => `${location.origin}/familia.html?e=${e.codigo}&t=${e.t}`;
+const msgF = (e) => `Hola. Le pedimos responder el cuestionario de la investigación sobre lectoescritura de ${e.nombre || e.codigo} (toma unos 5 minutos): ${urlF(e)}`;
 async function verFamilias() {
-  const m = momF();
   $('#tablaF').innerHTML = '<p class="guia">Cargando…</p>';
-  try { await cargar(); enlaces = (await api('enlaces?m=' + m)).enlaces; } catch (e) { $('#tablaF').innerHTML = `<div class="aviso mal">${esc(e.message)}</div>`; return; }
-  const url = (e) => `${location.origin}/familia.html?e=${e.codigo}&m=${m}&t=${e.t}`;
-  const msg = (e) => `Hola. Le pedimos responder el cuestionario de la investigación sobre lectoescritura de ${e.nombre || e.codigo} (toma unos 5 minutos): ${url(e)}`;
-  $('#tablaF').innerHTML = enlaces.length ? `<table class="datos"><thead><tr><th>Código</th><th>Nombre</th><th>Estado<small>${m}</small></th><th>Enlace</th></tr></thead><tbody>` +
-    enlaces.map((e) => { const r = reg('cff', e.codigo, m); return `<tr><td><b>${esc(e.codigo)}</b></td><td>${esc(e.nombre)}</td><td>${r ? `<span class="estado si" style="cursor:default;pointer-events:none">Respondido ${esc(r.fecha)}</span>` : '<span class="estado">Pendiente</span>'}</td>
-      <td><button class="btn chico sec" data-copy="${esc(url(e))}">Copiar</button> <a class="btn chico sec" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msg(e))}">WhatsApp</a></td></tr>`; }).join('') + '</tbody></table>'
+  try { await cargar(); enlaces = (await api('enlaces')).enlaces; } catch (e) { $('#tablaF').innerHTML = `<div class="aviso mal">${esc(e.message)}</div>`; return; }
+  const resp = enlaces.filter((e) => reg('cff', e.codigo)).length;
+  $('#resumenF').textContent = enlaces.length ? `${resp} de ${enlaces.length} respondidos` : '';
+  const filaF = (e) => { const r = reg('cff', e.codigo); return `<tr><td><b>${esc(e.codigo)}</b></td><td>${esc(e.nombre)}</td><td>${r ? `<span class="estado si" style="cursor:default;pointer-events:none">Respondido ${esc(r.fecha)} · ${esc(r.informante)}</span>` : '<span class="estado">Pendiente</span>'}</td>
+      <td><button class="btn chico sec" data-copy="${esc(urlF(e))}">Copiar</button> <a class="btn chico sec" style="text-decoration:none;display:inline-block" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msgF(e))}">WhatsApp</a></td></tr>`; };
+  $('#tablaF').innerHTML = enlaces.length ? `<table class="datos"><thead><tr><th>Código</th><th>Nombre</th><th>Estado</th><th>Enlace</th></tr></thead><tbody>` +
+    porGrupo(enlaces).map(([g, l]) => `<tr class="grupo"><td colspan="4">${g}<small>${l.filter((e) => reg('cff', e.codigo)).length} de ${l.length} respondidos</small></td></tr>` + l.map(filaF).join('')).join('') + '</tbody></table>'
     : '<div class="aviso nota">Registre estudiantes para generar sus enlaces.</div>';
   $('#tablaF').querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', async () => { await navigator.clipboard.writeText(b.dataset.copy); toast('Enlace copiado'); }));
 }
-$('#btnCopiarTodos').addEventListener('click', async () => {
-  const m = momF();
-  await navigator.clipboard.writeText(enlaces.map((e) => `${e.codigo} ${e.nombre}: ${location.origin}/familia.html?e=${e.codigo}&m=${m}&t=${e.t}`).join('\n'));
-  toast('Enlaces copiados');
-});
+async function copiarEnlaces(lista) {
+  if (!lista.length) return toast('No hay enlaces para copiar', true);
+  await navigator.clipboard.writeText(porGrupo(lista).map(([g, l]) => `${g}\n` + l.map((e) => `${e.codigo} ${e.nombre}: ${urlF(e)}`).join('\n')).join('\n\n'));
+  toast(`${lista.length} enlace${lista.length > 1 ? 's' : ''} copiado${lista.length > 1 ? 's' : ''}`);
+}
+$('#btnCopiarTodos').addEventListener('click', () => copiarEnlaces(enlaces));
+$('#btnCopiarPend').addEventListener('click', () => copiarEnlaces(enlaces.filter((e) => !reg('cff', e.codigo))));
 
 /* ---------- Excel ---------- */
 $('#btnExcel').addEventListener('click', async () => {

@@ -75,7 +75,7 @@ function iconFace(v) {
 }
 
 // Libro de Excel con la misma estructura de la base local: una hoja por instrumento, bitácora y diccionario.
-const META = { EQI: ['codigo', 'momento', 'fecha', 'aplicador', 'duracion_seg'], ESMS: ['codigo', 'momento', 'fecha', 'aplicador', 'duracion_seg'], CFF: ['codigo', 'momento', 'fecha', 'informante'] };
+const META = { EQI: ['codigo', 'momento', 'fecha', 'aplicador', 'duracion_seg'], ESMS: ['codigo', 'momento', 'fecha', 'aplicador', 'duracion_seg'], CFF: ['codigo', 'fecha', 'informante'] };
 const META_LABEL = { codigo: ['Código del estudiante', 'texto', 'Debe existir en Participantes'], momento: ['Momento de medición', 'texto', 'Pretest | Postest'], fecha: ['Fecha de aplicación', 'fecha AAAA-MM-DD', ''], aplicador: ['Persona que aplicó el instrumento', 'texto', ''], informante: ['Parentesco del informante', 'texto', 'Madre | Padre | Acudiente'], duracion_seg: ['Duración de la aplicación en segundos', 'entero', '>= 0'] };
 function construirExcel(datos) {
   const wb = XLSX.utils.book_new();
@@ -85,14 +85,14 @@ function construirExcel(datos) {
     XLSX.utils.book_append_sheet(wb, ws, nombre);
   };
   const dic = [];
-  const ph = ['codigo', 'nombre', 'apellido', 'grupo', 'curso', 'sexo', 'edad', 'fecha_registro', 'observaciones'];
+  const ph = ['codigo', 'nombre', 'apellido', 'grupo', 'sexo', 'edad', 'fecha_registro', 'observaciones'];
   hoja('Participantes', ph, datos.participantes);
   dic.push(['Participantes', 'codigo', 'Código del estudiante', 'texto', 'único, p. ej. E01', 'Clave de vinculación entre hojas'], ['Participantes', 'nombre', 'Nombre del estudiante', 'texto', '', 'Solo para identificarlo en la aplicación; no se usa en los análisis'], ['Participantes', 'apellido', 'Apellido del estudiante', 'texto', '', ''],
-    ['Participantes', 'grupo', 'Condición del diseño cuasiexperimental', 'texto', 'Experimental | Control', ''], ['Participantes', 'curso', 'Curso o sección', 'texto', '', ''], ['Participantes', 'sexo', 'Sexo', 'texto', 'Femenino | Masculino', ''],
+    ['Participantes', 'grupo', 'Grupo del diseño', 'texto', 'Piloto | Experimental | Control', ''], ['Participantes', 'sexo', 'Sexo', 'texto', 'Femenino | Masculino', ''],
     ['Participantes', 'edad', 'Edad en años cumplidos', 'entero', '7 a 9', ''], ['Participantes', 'fecha_registro', 'Fecha de registro', 'fecha AAAA-MM-DD', '', ''], ['Participantes', 'observaciones', 'Notas', 'texto', '', '']);
   for (const [key, lista] of [['EQI', datos.eqi], ['ESMS', datos.esms], ['CFF', datos.cff]]) {
     const ins = INS[key], headers = META[key].concat(ins.items.map((i) => i.codigo), ins.puntajes.map((p) => p.variable), ['observaciones']);
-    hoja(ins.hoja, headers, [...lista].sort((a, b) => (a.codigo + a.momento).localeCompare(b.codigo + b.momento)));
+    hoja(ins.hoja, headers, [...lista].sort((a, b) => (a.codigo + (a.momento || '')).localeCompare(b.codigo + (b.momento || ''))));
     const vals = ins.escala.map((e) => `${e.valor} = ${e.etiqueta}`).join(' | ');
     for (const m of META[key]) dic.push([ins.hoja, m, ...META_LABEL[m], '']);
     for (const it of ins.items) dic.push([ins.hoja, it.codigo, `${it.dimension}: ${it.texto}`, 'entero', vals, it.inverso ? `Reactivo inverso: se recodifica (${ins.escala.length} + 1 - x) antes de sumar` : 'Respuesta bruta']);

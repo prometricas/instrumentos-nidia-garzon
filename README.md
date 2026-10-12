@@ -25,5 +25,5 @@ Una sola variable de entorno: `APP_CLAVE`, la clave del aplicador (también firm
 
 ```
 npm install
-node dev-local.mjs      # http://localhost:8888, clave de .env (APP_CLAVE=prueba123)
+node dev-local.mjs      # http://localhost:8888, clave APP_CLAVE de .env o, si no existe, la misma del sitio
 ```

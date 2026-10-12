@@ -48,11 +48,17 @@ p.guia{color:var(--tinta-2);margin:0 0 20px;max-width:80ch}
 .seg{display:inline-flex;border:1px solid var(--linea);border-radius:10px;overflow:hidden;background:#fff}
 .seg button{background:none;border:0;padding:10px 18px;color:var(--tinta-2);font-weight:600;min-height:44px}
 .seg button.activo{background:var(--azul);color:#fff}
+.grupo-cab{display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 8px}
+.grupo-cab h3{margin:0;color:var(--azul);font-size:1.1em;font-weight:600}
+.grupo-cab span{color:var(--tinta-2);font-size:.9em}
+.grupo-cab:first-child{margin-top:4px}
 table.datos{width:100%;border-collapse:collapse;font-size:.95em;background:#fff;border:1px solid var(--linea);border-radius:12px;overflow:hidden}
 table.datos th,table.datos td{padding:11px 14px;border-bottom:1px solid var(--linea);text-align:left;white-space:nowrap;vertical-align:middle}
 table.datos th{background:var(--azul-suave);color:var(--azul);font-weight:600;white-space:normal;line-height:1.25;vertical-align:bottom}
 table.datos th small{display:block;font-weight:400;color:var(--tinta-2);font-size:.8em}
 table.datos tbody tr:hover td{background:#FAFBFE}
+table.datos tr.grupo td{background:#F3F6FB;color:var(--azul);font-weight:600;padding-top:9px;padding-bottom:9px;border-top:2px solid var(--linea)}
+table.datos tr.grupo td small{font-weight:400;color:var(--tinta-2);margin-left:8px}
 table.datos tr:last-child td{border-bottom:0}
 .tabla{overflow:auto;border-radius:12px}
 .estado{display:inline-flex;align-items:center;gap:6px;font-size:.85em;padding:4px 10px;border-radius:999px;background:#EEF1F6;color:var(--tinta-2);margin-right:6px;border:1px solid transparent}

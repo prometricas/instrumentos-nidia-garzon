@@ -21,7 +21,8 @@ async function firmar(clave, texto) {
   const sig = new Uint8Array(await crypto.subtle.sign("HMAC", k, new TextEncoder().encode(texto)));
   return [...sig].slice(0, 12).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
-const token = (clave, codigo, momento) => firmar(clave, `familia|${codigo}|${momento}`);
+const token = (clave, codigo) => firmar(clave, `familia|${codigo}`);
+const GRUPOS = ["Piloto", "Experimental", "Control"];
 
 async function leerTodo(name) {
   const s = store(name);
@@ -50,12 +51,8 @@ function validarItems(key, items) {
   return null;
 }
 const MOMENTOS = ["Pretest", "Postest"];
-const PRUEBA = [
-  ["E01", "Débora Plata", "Experimental", "201", "Femenino", 7], ["E02", "Aquiles Estudio", "Experimental", "201", "Masculino", 8],
-  ["E03", "Elsa Pato", "Experimental", "201", "Femenino", 8],
-  ["E04", "Elena Nito", "Control", "202", "Femenino", 7], ["E05", "Dolores Fuertes", "Control", "202", "Femenino", 8],
-  ["E06", "Alan Brito", "Control", "202", "Masculino", 8], ["E07", "Aitor Tilla", "Control", "202", "Masculino", 7],
-];
+const claves = (s, codigo) => (s === "cff" ? [codigo] : MOMENTOS.map((m) => `${codigo}|${m}`));
+const llaves = (s, codigo) => (s === "cff" ? [codigo] : MOMENTOS.map((m) => `${codigo}|${m}`));
 
 export default async (req) => {
   const url = new URL(req.url);
@@ -66,19 +63,19 @@ export default async (req) => {
 
   // ---- familias (enlace firmado, sin clave) ----
   if (ruta === "familia") {
-    const e = String(url.searchParams.get("e") || body.e || "").toUpperCase(), m = url.searchParams.get("m") || body.m, t = url.searchParams.get("t") || body.t;
-    if (!e || !MOMENTOS.includes(m) || !t || t !== (await token(clave, e, m))) return json({ error: "Enlace no válido" }, 403);
+    const e = String(url.searchParams.get("e") || body.e || "").toUpperCase(), t = url.searchParams.get("t") || body.t;
+    if (!e || !t || t !== (await token(clave, e))) return json({ error: "Enlace no válido" }, 403);
     const p = await store("participantes").get(e, { type: "json" });
     if (!p) return json({ error: "Estudiante no registrado" }, 404);
-    const previo = await store("cff").get(`${e}|${m}`, { type: "json" });
-    if (req.method === "GET") return json({ ok: true, codigo: e, nombre: nomDe(p), momento: m, respondido: !!previo, fecha: previo?.fecha || null, informante: previo?.informante || null });
+    const previo = await store("cff").get(e, { type: "json" });
+    if (req.method === "GET") return json({ ok: true, codigo: e, nombre: nomDe(p), respondido: !!previo, fecha: previo?.fecha || null, informante: previo?.informante || null });
     if (req.method === "POST") {
       const err = validarItems("CFF", body.items || {});
       if (err) return json({ error: err }, 400);
       const items = {}; INS.CFF.items.forEach((it) => (items[it.codigo] = Number(body.items[it.codigo])));
-      const row = { codigo: e, momento: m, fecha: hoy(), informante: ["Madre", "Padre", "Acudiente"].includes(body.informante) ? body.informante : "Acudiente", ...items, ...puntajes("CFF", items), observaciones: String(body.observaciones || "").slice(0, 500) };
-      await store("cff").setJSON(`${e}|${m}`, row);
-      await bitacora(previo ? "sobrescritura" : "aplicacion", `CFCSAL-F ${e} ${m} (familia por enlace)`);
+      const row = { codigo: e, fecha: hoy(), informante: ["Madre", "Padre", "Acudiente"].includes(body.informante) ? body.informante : "Acudiente", ...items, ...puntajes("CFF", items), observaciones: String(body.observaciones || "").slice(0, 500) };
+      await store("cff").setJSON(e, row);
+      await bitacora(previo ? "sobrescritura" : "aplicacion", `CFCSAL-F ${e} (acudiente por enlace)`);
       return json({ ok: true });
     }
     return json({ error: "Método no permitido" }, 405);
@@ -98,9 +95,9 @@ export default async (req) => {
     const r = body.row || {};
     const codigo = String(r.codigo || "").trim().toUpperCase();
     if (!/^[A-Z0-9]{1,8}$/.test(codigo)) return json({ error: "Código inválido (letras y números, máximo 8)" }, 400);
-    if (!["Experimental", "Control"].includes(r.grupo)) return json({ error: "Seleccione el grupo" }, 400);
+    if (!GRUPOS.includes(r.grupo)) return json({ error: "Seleccione el grupo" }, 400);
     if (!["Femenino", "Masculino"].includes(r.sexo)) return json({ error: "Seleccione el sexo" }, 400);
-    const row = { codigo, nombre: String(r.nombre || "").trim().slice(0, 60), apellido: String(r.apellido || "").trim().slice(0, 60), grupo: r.grupo, curso: String(r.curso || "").trim().slice(0, 10), sexo: r.sexo, edad: Number(r.edad) || "", fecha_registro: r.fecha_registro || hoy(), observaciones: String(r.observaciones || "").slice(0, 300) };
+    const row = { codigo, nombre: String(r.nombre || "").trim().slice(0, 60), apellido: String(r.apellido || "").trim().slice(0, 60), grupo: r.grupo, sexo: r.sexo, edad: Number(r.edad) || "", fecha_registro: r.fecha_registro || hoy(), observaciones: String(r.observaciones || "").slice(0, 300) };
     const existia = await store("participantes").get(codigo, { type: "json" });
     await store("participantes").setJSON(codigo, row);
     await bitacora(existia ? "edicion" : "registro", `Participante ${codigo} ${row.nombre} ${row.apellido} (${row.grupo})`);
@@ -111,9 +108,9 @@ export default async (req) => {
     const p = await store("participantes").get(codigo, { type: "json" });
     if (!p) return json({ error: "Estudiante no encontrado" }, 404);
     const registros = {};
-    for (const s of REGS) { registros[s] = []; for (const m of MOMENTOS) { const r = await store(s).get(`${codigo}|${m}`, { type: "json" }); if (r) registros[s].push(r); } }
+    for (const s of REGS) { registros[s] = []; for (const k of llaves(s, codigo)) { const r = await store(s).get(k, { type: "json" }); if (r) registros[s].push(r); } }
     await store("papelera").setJSON(codigo, { participante: p, registros, fecha: ahora() });
-    for (const s of REGS) for (const m of MOMENTOS) await store(s).delete(`${codigo}|${m}`);
+    for (const s of REGS) for (const k of llaves(s, codigo)) await store(s).delete(k);
     await store("participantes").delete(codigo);
     const n = REGS.reduce((a, s) => a + registros[s].length, 0);
     await bitacora("papelera", `Participante ${codigo} ${p.nombre} ${p.apellido || ""} movido a la papelera con ${n} registro(s)`);
@@ -129,7 +126,7 @@ export default async (req) => {
     if (!x) return json({ error: "No está en la papelera" }, 404);
     if (await store("participantes").get(codigo, { type: "json" })) return json({ error: `Ya existe un estudiante activo con el código ${codigo}` }, 400);
     await store("participantes").setJSON(codigo, x.participante);
-    for (const s of REGS) for (const r of x.registros[s] || []) await store(s).setJSON(`${codigo}|${r.momento}`, r);
+    for (const s of REGS) for (const r of x.registros[s] || []) await store(s).setJSON(s === "cff" ? codigo : `${codigo}|${r.momento}`, r);
     await store("papelera").delete(codigo);
     await bitacora("restauracion", `Participante ${codigo} restaurado desde la papelera`);
     return json({ ok: true });
@@ -142,38 +139,30 @@ export default async (req) => {
   }
   if (ruta === "registro" && req.method === "PUT") {
     const s = body.store, key = KEY[s];
-    if (!key) return json({ error: "Instrumento desconocido" }, 400);
-    const r = body.row || {}, codigo = String(r.codigo || "").toUpperCase(), momento = r.momento;
-    if (!MOMENTOS.includes(momento)) return json({ error: "Momento inválido" }, 400);
+    if (!key || s === "cff") return json({ error: "Instrumento desconocido" }, 400);
+    const r = body.row || {}, codigo = String(r.codigo || "").toUpperCase(), momento = s === "cff" ? undefined : r.momento;
+    if (s !== "cff" && !MOMENTOS.includes(momento)) return json({ error: "Momento inválido" }, 400);
     if (!(await store("participantes").get(codigo, { type: "json" }))) return json({ error: "Estudiante no registrado" }, 404);
     const err = validarItems(key, r); if (err) return json({ error: err }, 400);
     const items = {}; INS[key].items.forEach((it) => (items[it.codigo] = Number(r[it.codigo])));
-    const row = { codigo, momento, fecha: hoy(), ...(s === "cff" ? { informante: r.informante || "Acudiente" } : { aplicador: String(r.aplicador || "").slice(0, 80), duracion_seg: Number(r.duracion_seg) || 0 }), ...items, ...puntajes(key, items), observaciones: String(r.observaciones || "").slice(0, 500) };
-    const previo = await store(s).get(`${codigo}|${momento}`, { type: "json" });
-    await store(s).setJSON(`${codigo}|${momento}`, row);
-    await bitacora(previo ? "sobrescritura" : "aplicacion", `${INS[key].nombre} ${codigo} ${momento}`);
+    const row = { codigo, ...(momento ? { momento } : {}), fecha: hoy(), ...(s === "cff" ? { informante: r.informante || "Acudiente" } : { aplicador: String(r.aplicador || "").slice(0, 80), duracion_seg: Number(r.duracion_seg) || 0 }), ...items, ...puntajes(key, items), observaciones: String(r.observaciones || "").slice(0, 500) };
+    const k = s === "cff" ? codigo : `${codigo}|${momento}`;
+    const previo = await store(s).get(k, { type: "json" });
+    await store(s).setJSON(k, row);
+    await bitacora(previo ? "sobrescritura" : "aplicacion", `${INS[key].nombre} ${codigo}${momento ? " " + momento : ""}`);
     return json({ ok: true, row });
   }
   if (ruta === "registro" && req.method === "DELETE") {
     const s = url.searchParams.get("store"), codigo = String(url.searchParams.get("codigo") || "").toUpperCase(), momento = url.searchParams.get("momento");
-    if (!KEY[s] || !MOMENTOS.includes(momento)) return json({ error: "Parámetros inválidos" }, 400);
-    await store(s).delete(`${codigo}|${momento}`);
-    await bitacora("eliminacion", `${INS[KEY[s]].nombre} ${codigo} ${momento}`);
+    if (!KEY[s] || (s !== "cff" && !MOMENTOS.includes(momento))) return json({ error: "Parámetros inválidos" }, 400);
+    await store(s).delete(s === "cff" ? codigo : `${codigo}|${momento}`);
+    await bitacora("eliminacion", `${INS[KEY[s]].nombre} ${codigo}${s === "cff" ? "" : " " + momento}`);
     return json({ ok: true });
   }
   if (ruta === "enlaces" && req.method === "GET") {
-    const m = url.searchParams.get("m");
-    if (!MOMENTOS.includes(m)) return json({ error: "Momento inválido" }, 400);
     const participantes = await leerTodo("participantes");
-    const out = await Promise.all(participantes.sort((a, b) => a.codigo.localeCompare(b.codigo)).map(async (p) => ({ codigo: p.codigo, nombre: nomDe(p), t: await token(clave, p.codigo, m) })));
-    return json({ momento: m, enlaces: out });
-  }
-  if (ruta === "prueba" && req.method === "POST") {
-    const existentes = await leerTodo("participantes");
-    if (existentes.length) return json({ error: "Ya hay estudiantes registrados" }, 400);
-    for (const [codigo, nom, grupo, curso, sexo, edad] of PRUEBA) { const [nombre, ...ap] = nom.split(" "), apellido = ap.join(" "); await store("participantes").setJSON(codigo, { codigo, nombre, apellido, grupo, curso, sexo, edad, fecha_registro: hoy(), observaciones: "Registro ficticio de prueba" }); }
-    await bitacora("registro", "7 estudiantes ficticios de prueba");
-    return json({ ok: true });
+    const out = await Promise.all(participantes.sort((a, b) => a.codigo.localeCompare(b.codigo)).map(async (p) => ({ codigo: p.codigo, nombre: nomDe(p), grupo: p.grupo, t: await token(clave, p.codigo) })));
+    return json({ enlaces: out });
   }
   return json({ error: "Ruta no encontrada" }, 404);
 };

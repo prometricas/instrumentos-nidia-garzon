@@ -20,7 +20,7 @@
 <script src="assets/comun.js"></script>
 <script>
 const ins = INS.CFF, q = new URLSearchParams(location.search);
-const par = { e: (q.get('e') || '').toUpperCase(), m: q.get('m') || '', t: q.get('t') || '' };
+const par = { e: (q.get('e') || '').toUpperCase(), t: q.get('t') || '' };
 const SEC = ins.secciones.map((s) => ({ ...s, items: ins.items.filter((it) => it.dimension === s.dimension) }));
 const resp = {};
 let info = null, paso = -1; // -1 = presentación, 0..n-1 = secciones
@@ -79,7 +79,7 @@ async function enviar() {
 }
 
 (async () => {
-  try { info = await api(`familia?e=${encodeURIComponent(par.e)}&m=${encodeURIComponent(par.m)}&t=${encodeURIComponent(par.t)}`); render(); }
+  try { info = await api(`familia?e=${encodeURIComponent(par.e)}&t=${encodeURIComponent(par.t)}`); render(); }
   catch (e) { final(`<h2>Enlace no válido</h2><p class="guia" style="margin:0">${esc(e.message)}. Pida a la docente investigadora que le envíe de nuevo el enlace.</p>`); }
 })();
 </script>

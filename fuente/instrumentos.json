@@ -398,7 +398,7 @@
     "titulo": "Cuestionario de factores contextuales socioemocionales del aprendizaje lectoescritor, Forma Familia (12 reactivos)",
     "variable": "Factores contextuales socioemocionales (hogar)",
     "fuente": "Garzón Peña (2026), elaboración propia",
-    "instruccion_aplicador": "Lo diligencia la madre, el padre o el acudiente del estudiante. Marque la frecuencia con que ocurre lo planteado en su casa.",
+    "instruccion_aplicador": "Lo responde la madre, el padre o el acudiente del estudiante, una sola vez, desde el enlace que le envía la investigadora. Marca la frecuencia con que ocurre lo planteado en su casa.",
     "pregunta": "¿Con qué frecuencia ocurre?",
     "escala": [
       {
@@ -525,7 +525,7 @@
       }
     ],
     "corto": "Acompañamiento familiar",
-    "tecnico": "CFCSAL-F · 12 preguntas",
+    "tecnico": "CFCSAL-F · 12 preguntas · una sola aplicación",
     "secciones": [
       {
         "titulo": "El hogar y la lectura",
