@@ -1,4 +1,4 @@
-import asyncio, random, sys, json
+import asyncio, random, sys, json, openpyxl
 from playwright.async_api import async_playwright
 U = "http://localhost:8888"
 CLAVE = open("../.env").read().split("APP_CLAVE=")[1].strip() if __import__("os").path.exists("../.env") else open(".env").read().split("APP_CLAVE=")[1].strip()
@@ -90,15 +90,15 @@ async def main():
         async with pg.expect_download() as dl: await pg.click("#btnExcel")
         d = await dl.value; await d.save_as("test/descarga.xlsx"); print("excel:", d.suggested_filename)
         await pg.check("#rMeta")
-        async with pg.expect_download() as dl: await pg.click("#btnCSV")
-        d = await dl.value; await d.save_as("test/descarga.csv"); csv = open("test/descarga.csv", encoding="utf-8-sig").read().splitlines(); print("csv:", d.suggested_filename, "|", len(csv) - 1, "filas |", csv[0][:60], "... metadatos:", [c for c in csv[0].split(",") if c.endswith("_FechaHora") or c.endswith("_Dur")])
+        async with pg.expect_download() as dl: await pg.click("#btnExcel")
+        d = await dl.value; await d.save_as("test/descarga_meta.xlsx"); wbm = openpyxl.load_workbook("test/descarga_meta.xlsx"); print("excel con metadatos:", [c.value for c in wbm["Experimental"][1] if c.value and (c.value.endswith("_FechaHora") or c.value.endswith("_Dur") or c.value.endswith("_Aplicador"))])
         async with pg.expect_download() as dl: await pg.click("#btnCopia")
         d = await dl.value; await d.save_as("test/copia.json"); copia = json.load(open("test/copia.json")); print("copia:", d.suggested_filename, "|", {k: len(v) for k, v in copia.items() if isinstance(v, list)})
         await pg.click("nav.menu button[data-v=estudiantes]"); await pg.wait_for_timeout(200)
         await pg.fill("#pCodigo", "E05"); await pg.fill("#pNombre", "Otro"); await pg.fill("#pApellido", "Más"); await pg.select_option("#pGrupo", "Control"); await pg.select_option("#pSexo", "Femenino"); await pg.fill("#pEdad", "8"); await pg.click("#btnAddP"); await pg.wait_for_timeout(300)
         print("código repetido (E05 en papelera):", await pg.text_content("#pMsg"))
         await pg.hover("#tablaP .estado.si"); await pg.wait_for_timeout(150); print("chip al pasar el cursor:", repr(await pg.evaluate("(() => { const e = document.querySelector('#tablaP .estado.si'); return e.textContent + ' | ' + getComputedStyle(e, '::after').content + ' | ' + getComputedStyle(e).color })()")))
-        import openpyxl; wb = openpyxl.load_workbook("test/descarga.xlsx")
+        wb = openpyxl.load_workbook("test/descarga.xlsx")
         for ws in wb: print("  hoja", ws.title, ws.max_row - 1, "filas,", ws.max_column, "columnas:", [c.value for c in ws[1]][:9], "...", [c.value for c in ws[1]][-2:], "| momentos:", [r[4] for r in ws.iter_rows(min_row=2, values_only=True)][:4])
         # --- aplicación interrumpida: se retoma donde iba
         await pg.click("nav.menu button[data-v=aplicar]"); await pg.click("#opIns button[data-k=EQI]"); await pg.fill("#aBuscar", "elsa"); print("buscador en aplicar:", [ (await o.text_content()) for o in await pg.query_selector_all("#aCod option")])

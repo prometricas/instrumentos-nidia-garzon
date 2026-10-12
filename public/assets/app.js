@@ -397,15 +397,11 @@ function verRespuestas() {
   $('#tablaR').querySelectorAll('[data-ficha]').forEach((a) => a.addEventListener('click', () => verEstudiante(a.dataset.ficha)));
 }
 
-/* ---------- Excel, CSV y copia de seguridad ---------- */
+/* ---------- Excel y copia de seguridad ---------- */
 async function conXLSX() { if (!window.XLSX) await new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'assets/xlsx.full.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
 $('#btnExcel').addEventListener('click', async () => {
   try { await conXLSX(); await cargar(); descargar(construirExcel(D, $('#rMeta').checked), `Respuestas_instrumentos_${hoy()}.xlsx`); }
   catch (e) { toast('No se pudo generar el Excel: ' + e.message, true); }
-});
-$('#btnCSV').addEventListener('click', async () => {
-  try { await conXLSX(); await cargar(); descargar(construirCSV(D, $('#rMeta').checked), `Respuestas_instrumentos_${hoy()}.csv`, 'text/csv;charset=utf-8'); }
-  catch (e) { toast('No se pudo generar el CSV: ' + e.message, true); }
 });
 $('#btnCopia').addEventListener('click', async () => {
   try { const c = await api('copia'); descargar(JSON.stringify(c, null, 1), `Copia_instrumentos_${c.fecha_hora.replace(/[: ]/g, '-')}.json`, 'application/json'); toast('Copia de seguridad descargada'); }

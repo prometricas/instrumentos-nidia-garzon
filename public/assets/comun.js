@@ -124,11 +124,6 @@ function construirExcel(datos, meta = false) { // una hoja por grupo
   }
   return XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
 }
-function construirCSV(datos, meta = false) { // un solo archivo con todos los grupos (la columna Grupo los distingue), UTF-8 con BOM para Excel
-  const cols = columnasRespuestas(meta), enc = FIJAS.map(([, t]) => t).concat(cols.map((c) => c.id));
-  const ws = XLSX.utils.aoa_to_sheet([enc].concat(GRUPOS.flatMap((g) => matrizRespuestas(datos, cols, g))));
-  return '\ufeff' + XLSX.utils.sheet_to_csv(ws);
-}
 function descargar(data, nombre, tipo = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: tipo })); a.download = nombre; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
