@@ -3,7 +3,7 @@
 import { getStore } from "@netlify/blobs";
 import INS from "../lib/instrumentos.mjs";
 
-const STORES = ["participantes", "eqi", "esms", "cff", "bitacora"];
+const STORES = ["participantes", "eqi", "esms", "cff"];
 const REGS = ["eqi", "esms", "cff"];
 const nomDe = (p) => [p.nombre, p.apellido].filter(Boolean).join(" ").trim();
 const KEY = { eqi: "EQI", esms: "ESMS", cff: "CFF" };
@@ -21,7 +21,24 @@ async function firmar(clave, texto) {
   const sig = new Uint8Array(await crypto.subtle.sign("HMAC", k, new TextEncoder().encode(texto)));
   return [...sig].slice(0, 12).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
-const token = (clave, codigo) => firmar(clave, `familia|${codigo}`);
+const token = (secreto, codigo) => firmar(secreto, `familia|${codigo}`);
+const FECHA = /^\d{4}-\d{2}-\d{2}$/;
+// Intentos fallidos de clave por dirección IP: espera de 1,5 s tras cada fallo y bloqueo de 5 minutos tras 5 fallos en 10 minutos.
+const ipDe = (req) => req.headers.get("x-nf-client-connection-ip") || "local";
+async function bloqueo(req) {
+  const r = await store("intentos").get(ipDe(req), { type: "json" });
+  if (r && r.hasta > Date.now()) return json({ error: `Demasiados intentos fallidos. Espere ${Math.ceil((r.hasta - Date.now()) / 60000)} minuto(s).` }, 429);
+  return null;
+}
+async function fallo(req) {
+  const st = store("intentos"), ip = ipDe(req), r = (await st.get(ip, { type: "json" })) || { n: 0, t: 0, hasta: 0 };
+  if (Date.now() - r.t > 10 * 60000) r.n = 0; // los intentos se cuentan dentro de 10 minutos
+  r.n += 1; r.t = Date.now();
+  if (r.n >= 5) { r.hasta = Date.now() + 5 * 60000; r.n = 0; }
+  await st.setJSON(ip, r);
+  await new Promise((res) => setTimeout(res, 1500));
+  return json({ error: r.hasta > Date.now() ? "Demasiados intentos fallidos. Espere 5 minutos." : "Clave incorrecta" }, r.hasta > Date.now() ? 429 : 401);
+}
 const GRUPOS = ["Piloto", "Experimental", "Control"];
 
 async function leerTodo(name) {
@@ -63,21 +80,23 @@ export default async (req) => {
   const ruta = url.pathname.replace(/^\/api\/?/, "").replace(/\/$/, "");
   const clave = Netlify.env.get("APP_CLAVE");
   if (!clave) return json({ error: "Falta definir la variable APP_CLAVE en Netlify" }, 500);
+  const secreto = Netlify.env.get("FIRMA_SECRETA") || clave; // firma de los enlaces de acudientes; separada de la clave para poder cambiarla sin invalidar enlaces
   const body = req.method === "GET" || req.method === "DELETE" ? {} : await req.json().catch(() => ({}));
 
   // ---- familias (enlace firmado, sin clave) ----
   if (ruta === "familia") {
     const e = String(url.searchParams.get("e") || body.e || "").toUpperCase(), t = url.searchParams.get("t") || body.t;
-    if (!e || !t || t !== (await token(clave, e))) return json({ error: "Enlace no válido" }, 403);
+    if (!e || !t || t !== (await token(secreto, e))) return json({ error: "Enlace no válido" }, 403);
     const p = await store("participantes").get(e, { type: "json" });
     if (!p) return json({ error: "Estudiante no registrado" }, 404);
     const previo = await store("cff").get(e, { type: "json" });
     if (req.method === "GET") return json({ ok: true, codigo: e, nombre: nomDe(p), respondido: !!previo, fecha: previo?.fecha || null, informante: previo?.informante || null });
     if (req.method === "POST") {
+      if (body.acepta !== true) return json({ error: "Debe aceptar el consentimiento informado para responder" }, 400);
       const err = validarItems("CFF", body.items || {});
       if (err) return json({ error: err }, 400);
       const items = {}; INS.CFF.items.forEach((it) => (items[it.codigo] = Number(body.items[it.codigo])));
-      const row = { codigo: e, fecha: hoy(), informante: ["Madre", "Padre", "Acudiente"].includes(body.informante) ? body.informante : "Acudiente", ...items, ...puntajes("CFF", items), observaciones: String(body.observaciones || "").slice(0, 500) };
+      const row = { codigo: e, fecha: hoy(), fecha_hora: ahora(), informante: ["Madre", "Padre", "Acudiente"].includes(body.informante) ? body.informante : "Acudiente", consentimiento: "Sí", ...items, ...puntajes("CFF", items), observaciones: String(body.observaciones || "").slice(0, 500) };
       await store("cff").setJSON(e, row);
       await bitacora(previo ? "sobrescritura" : "aplicacion", `CFCSAL-F ${e} (acudiente por enlace)`);
       return json({ ok: true });
@@ -86,14 +105,35 @@ export default async (req) => {
   }
 
   // ---- aplicador (clave) ----
-  if (ruta === "entrar") return body.clave === clave ? json({ ok: true }) : json({ error: "Clave incorrecta" }, 401);
-  if (req.headers.get("x-clave") !== clave) return json({ error: "Clave requerida" }, 401);
+  const bloq = await bloqueo(req); if (bloq) return bloq;
+  if (ruta === "entrar") { if (body.clave === clave) { await store("intentos").delete(ipDe(req)); return json({ ok: true }); } return fallo(req); }
+  if (req.headers.get("x-clave") !== clave) return fallo(req);
 
-  if (ruta === "datos" && req.method === "GET") {
-    const [participantes, eqi, esms, cff, bit] = await Promise.all(STORES.map(leerTodo));
+  if (ruta === "datos" && req.method === "GET") { // la bitácora no viaja aquí: solo con /api/bitacora o en la copia de seguridad
+    const [participantes, eqi, esms, cff] = await Promise.all(STORES.map(leerTodo));
     participantes.sort((a, b) => a.codigo.localeCompare(b.codigo));
+    return json({ participantes, eqi, esms, cff });
+  }
+  if (ruta === "bitacora" && req.method === "GET") {
+    const bit = await leerTodo("bitacora"); bit.sort((a, b) => a.fecha_hora.localeCompare(b.fecha_hora));
+    return json({ bitacora: bit });
+  }
+  if (ruta === "copia" && req.method === "GET") { // copia de seguridad completa
+    const [participantes, eqi, esms, cff, papelera, bit] = await Promise.all([...STORES, "papelera", "bitacora"].map(leerTodo));
     bit.sort((a, b) => a.fecha_hora.localeCompare(b.fecha_hora));
-    return json({ participantes, eqi, esms, cff, bitacora: bit });
+    await bitacora("copia", "Descarga de copia de seguridad");
+    return json({ version: 1, fecha_hora: ahora(), participantes, eqi, esms, cff, papelera, bitacora: bit });
+  }
+  if (ruta === "copia" && req.method === "POST") { // restaurar: escribe lo que trae la copia sin borrar lo demás
+    const c = body.copia || {};
+    if (!Array.isArray(c.participantes)) return json({ error: "El archivo no es una copia de seguridad válida" }, 400);
+    let n = 0;
+    for (const p of c.participantes) if (p && /^[A-Z0-9]{1,8}$/.test(String(p.codigo || ""))) { await store("participantes").setJSON(p.codigo, p); n++; }
+    for (const s of ["eqi", "esms"]) for (const r of c[s] || []) if (r && r.codigo && MOMENTOS.includes(r.momento)) { await store(s).setJSON(llave(r.codigo, r.momento), r); n++; }
+    for (const r of c.cff || []) if (r && r.codigo) { await store("cff").setJSON(r.codigo, r); n++; }
+    for (const x of c.papelera || []) if (x && x.participante && x.participante.codigo) { await store("papelera").setJSON(x.participante.codigo, x); n++; }
+    await bitacora("restauracion_copia", `${n} registros escritos desde una copia de seguridad del ${c.fecha_hora || "?"}`);
+    return json({ ok: true, n });
   }
   if (ruta === "participante" && req.method === "PUT") {
     const r = body.row || {};
@@ -101,7 +141,8 @@ export default async (req) => {
     if (!/^[A-Z0-9]{1,8}$/.test(codigo)) return json({ error: "Código inválido (letras y números, máximo 8)" }, 400);
     if (!GRUPOS.includes(r.grupo)) return json({ error: "Seleccione el grupo" }, 400);
     if (!["Femenino", "Masculino"].includes(r.sexo)) return json({ error: "Seleccione el sexo" }, 400);
-    const row = { codigo, nombre: String(r.nombre || "").trim().slice(0, 60), apellido: String(r.apellido || "").trim().slice(0, 60), grupo: r.grupo, sexo: r.sexo, edad: Number(r.edad) || "", fecha_registro: r.fecha_registro || hoy(), observaciones: String(r.observaciones || "").slice(0, 300) };
+    for (const k of ["consentimiento", "asentimiento"]) if (r[k] && !FECHA.test(r[k])) return json({ error: "Fecha inválida en " + k }, 400);
+    const row = { codigo, nombre: String(r.nombre || "").trim().slice(0, 60), apellido: String(r.apellido || "").trim().slice(0, 60), grupo: r.grupo, sexo: r.sexo, edad: Number(r.edad) || "", fecha_registro: r.fecha_registro || hoy(), consentimiento: r.consentimiento || "", asentimiento: r.asentimiento || "", observaciones: String(r.observaciones || "").slice(0, 300) };
     const existia = await store("participantes").get(codigo, { type: "json" });
     if (body.nuevo) { // el código identifica al estudiante en todas las pruebas: nunca se reutiliza
       if (existia) return json({ error: `Ya existe un estudiante con el código ${codigo}` }, 409);
@@ -153,7 +194,7 @@ export default async (req) => {
     if (!(await store("participantes").get(codigo, { type: "json" }))) return json({ error: "Estudiante no registrado" }, 404);
     const err = validarItems(key, r); if (err) return json({ error: err }, 400);
     const items = {}; INS[key].items.forEach((it) => (items[it.codigo] = Number(r[it.codigo])));
-    const row = { codigo, ...(momento ? { momento } : {}), fecha: hoy(), ...(s === "cff" ? { informante: r.informante || "Acudiente" } : { aplicador: String(r.aplicador || "").slice(0, 80), duracion_seg: Number(r.duracion_seg) || 0 }), ...items, ...puntajes(key, items), observaciones: String(r.observaciones || "").slice(0, 500) };
+    const row = { codigo, momento, fecha: hoy(), fecha_hora: ahora(), aplicador: String(r.aplicador || "").slice(0, 80), duracion_seg: Number(r.duracion_seg) || 0, ...items, ...puntajes(key, items), observaciones: String(r.observaciones || "").slice(0, 500) };
     const k = llave(codigo, momento);
     const previo = (await store(s).get(k, { type: "json" })) ?? (await store(s).get(antigua(codigo, momento), { type: "json" }));
     await store(s).setJSON(k, row);
@@ -170,7 +211,7 @@ export default async (req) => {
   }
   if (ruta === "enlaces" && req.method === "GET") {
     const participantes = await leerTodo("participantes");
-    const out = await Promise.all(participantes.sort((a, b) => a.codigo.localeCompare(b.codigo)).map(async (p) => ({ codigo: p.codigo, nombre: nomDe(p), grupo: p.grupo, t: await token(clave, p.codigo) })));
+    const out = await Promise.all(participantes.sort((a, b) => a.codigo.localeCompare(b.codigo)).map(async (p) => ({ codigo: p.codigo, nombre: nomDe(p), grupo: p.grupo, t: await token(secreto, p.codigo) })));
     return json({ enlaces: out });
   }
   return json({ error: "Ruta no encontrada" }, 404);

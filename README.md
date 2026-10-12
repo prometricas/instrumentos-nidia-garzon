@@ -6,6 +6,8 @@ App web para aplicar los instrumentos de la investigación *Factores socioemocio
 - **Acudientes** (`familia.html`, enlace firmado por estudiante, sin clave): cuestionario CFCSAL-F desde el celular, una sola aplicación.
 - **Datos**: Netlify Blobs (almacenes `participantes`, `eqi`, `esms`, `cff`, `bitacora`), una entrada por estudiante y momento. La bitácora queda solo en el servidor como registro de auditoría. El módulo **Tabla de respuestas** y el Excel descargado están en formato largo (panel): dos filas por estudiante, una por momento (columna `Momento` = Pretest | Postest), con Grupo, Codigo, Nombre, Apellido, Momento, Sexo, Edad y, en columnas, las respuestas brutas y las dimensiones (inversos recodificados): Emocional `Emo1`…`Emo30` (número original del EQ-i, `R` = reactivo inverso) con `Emo_Intra`, `Emo_Inter`, `Emo_Adapt`, `Emo_Estres`, `Emo_Total`; Lectoescritura `Lec1`…`Lec9`, `Esc1`…`Esc9` con `Lec_Intrin`, `Lec_Ident`, `Lec_Contr`, `Esc_Intrin`, `Esc_Ident`, `Esc_Contr`; el cuestionario Familiar `Fam_Informante`, `Fam1`…`Fam12` con `Fam_Ambiente`, `Fam_Lectura`, `Fam_Apoyo`, `Fam_Total`, de una sola aplicación, se repite en ambas filas como variable fija del estudiante. Los nombres de columna (`col` en `fuente/instrumentos.json`) son independientes de las claves internas con que se guardan las respuestas, así que pueden cambiarse sin migrar datos. El Excel trae una hoja por grupo (Piloto, Experimental, Control). El código del estudiante es único y nunca se reutiliza (ni si está en la papelera; el sugerido es siempre el siguiente al mayor usado). Desde la ficha del estudiante (avatar según el sexo, tres pruebas lado a lado) se editan sus datos (no el código) y se ven sus dimensiones pre y post con el cambio. Cada módulo tiene su dirección (`#estudiantes`, `#aplicar`, `#familias`, `#respuestas`), así que el botón Atrás del navegador vuelve al módulo anterior.
 
+Además: consentimiento informado (fechas de consentimiento del acudiente y asentimiento del estudiante en la ficha; aceptación obligatoria en la página del acudiente), copia de seguridad completa en JSON y restauración (en Tabla de respuestas), aplicación interrumpida que se retoma en el mismo dispositivo, cola de envío cuando no hay conexión, panel de avance por grupo, buscador, CSV, Excel con metadatos opcionales (fecha y hora, aplicador, duración).
+
 La documentación de uso y mantenimiento está en `app-web-instrumentos.md`.
 
 ## Estructura
@@ -22,13 +24,15 @@ test/              e2e.py (prueba de punta a punta con Playwright) y semilla.mjs
 
 ## Configuración en Netlify
 
-Una sola variable de entorno: `APP_CLAVE`, la clave del aplicador (también firma los enlaces de las familias; si se cambia, los enlaces enviados dejan de servir y hay que generarlos de nuevo).
+Variables de entorno: `APP_CLAVE` (clave del aplicador) y, recomendada, `FIRMA_SECRETA` (firma los enlaces de los acudientes; si no existe se usa la clave, y entonces cambiar la clave invalida los enlaces ya enviados). Tras 5 claves incorrectas en 10 minutos desde una misma dirección, el acceso se bloquea 5 minutos; cada fallo espera 1,5 s. `netlify.toml` fija Node 20 y las cabeceras de seguridad (CSP solo con scripts propios, sin marcos).
 
 ## Pruebas locales
 
 ```
 npm install
-node dev-local.mjs      # http://localhost:8888, clave APP_CLAVE de .env o, si no existe, la misma del sitio
+echo "APP_CLAVE=su_clave" > .env     # la clave nunca va en el código
+node dev-local.mjs                    # http://localhost:8888
+python3 test/e2e.py                   # prueba de punta a punta (Playwright); también corre en GitHub en cada subida
 ```
 
 ## Datos ficticios para revisar en local

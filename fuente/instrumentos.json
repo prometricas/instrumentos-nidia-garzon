@@ -466,6 +466,11 @@
     "variable": "Factores contextuales socioemocionales (hogar)",
     "fuente": "Garzón Peña (2026), elaboración propia",
     "instruccion_aplicador": "Lo responde la madre, el padre o el acudiente del estudiante, una sola vez, desde el enlace que le envía la investigadora. Marca la frecuencia con que ocurre lo planteado en su casa.",
+    "consentimiento": {
+      "titulo": "Consentimiento informado",
+      "texto": "Este cuestionario hace parte de la investigación doctoral «Factores socioemocionales y su incidencia en la lectoescritura», de la Universidad CESUMA, que se desarrolla en la I. E. Julio César Turbay Ayala. Sus respuestas son confidenciales, se usan solo con fines académicos y no afectan las calificaciones de su hijo o hija. Participar es voluntario y puede dejar de responder en cualquier momento. Si tiene preguntas, puede comunicarse con la docente investigadora Nidia Marcela Garzón Peña.",
+      "acepto": "He leído esta información y acepto participar."
+    },
     "pregunta": "¿Con qué frecuencia ocurre?",
     "escala": [
       {

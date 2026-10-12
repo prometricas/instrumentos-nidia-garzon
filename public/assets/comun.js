@@ -82,14 +82,19 @@ const STORE = { EQI: 'eqi', ESMS: 'esms', CFF: 'cff' };
 const GRUPOS = ['Piloto', 'Experimental', 'Control'];
 const MOMENTOS = ['Pretest', 'Postest'];
 const PRUEBAS = [{ key: 'EQI', nombre: 'Emocional', pre: 'Emo', panel: true }, { key: 'ESMS', nombre: 'Lectoescritura', pre: 'Lec', panel: true }, { key: 'CFF', nombre: 'Familiar', pre: 'Fam', panel: false }];
-const FIJAS = [['grupo', 'Grupo'], ['codigo', 'Codigo'], ['nombre', 'Nombre'], ['apellido', 'Apellido'], ['momento', 'Momento'], ['sexo', 'Sexo'], ['edad', 'Edad']];
-function columnasRespuestas() {
+const FIJAS = [['grupo', 'Grupo'], ['codigo', 'Codigo'], ['nombre', 'Nombre'], ['apellido', 'Apellido'], ['momento', 'Momento'], ['sexo', 'Sexo'], ['edad', 'Edad'], ['consentimiento', 'Consentimiento'], ['asentimiento', 'Asentimiento']];
+// meta = true añade fecha y hora, aplicador y duración de cada aplicación (y quién respondió en Familiar)
+function columnasRespuestas(meta = false) {
   const cols = [];
   for (const P of PRUEBAS) {
     const ins = INS[P.key];
     // id = nombre de la columna en la tabla y en el Excel (corto y específico); campo = clave interna del registro
     const c = (campo, tipo, id, texto) => cols.push({ id, key: P.key, prueba: P.nombre, panel: P.panel, campo, tipo, texto });
     if (P.key === 'CFF') c('informante', 'meta', 'Fam_Informante', 'Quién respondió el cuestionario');
+    if (meta) {
+      c('fecha_hora', 'meta', `${P.pre}_FechaHora`, 'Fecha y hora de la aplicación');
+      if (P.panel) { c('aplicador', 'meta', `${P.pre}_Aplicador`, 'Quién aplicó el instrumento'); c('duracion_seg', 'meta', `${P.pre}_Dur`, 'Duración de la aplicación en segundos'); }
+    }
     ins.items.forEach((it) => c(it.codigo, 'item', it.col, `${it.codigo} · ${it.dimension}: ${it.texto}${it.inverso ? ' (inverso)' : ''}`));
     ins.puntajes.forEach((p) => c(p.variable, 'dim', p.col, p.etiqueta));
   }
@@ -101,23 +106,29 @@ function filasRespuestas(datos, cols, grupo) {
   for (const p of datos.participantes.filter((p) => !grupo || p.grupo === grupo).sort((a, b) => a.codigo.localeCompare(b.codigo))) {
     for (const m of MOMENTOS) {
       const o = {}; FIJAS.forEach(([k]) => (o[k] = k === 'momento' ? m : (p[k] ?? '')));
-      for (const c of cols) { const r = buscarReg(datos, c.key, p.codigo, m); o[c.id] = r ? (r[c.campo] ?? '') : ''; }
+      for (const c of cols) { const r = buscarReg(datos, c.key, p.codigo, m); o[c.id] = r ? (c.campo === 'fecha_hora' ? (r.fecha_hora || r.fecha || '') : (r[c.campo] ?? '')) : ''; }
       out.push(o);
     }
   }
   return out;
 }
-function construirExcel(datos) {
-  const wb = XLSX.utils.book_new(), cols = columnasRespuestas();
+const anchoCol = (k) => ({ wch: k === 'nombre' || k === 'apellido' ? 16 : k === 'grupo' || k === 'momento' || k === 'consentimiento' || k === 'asentimiento' ? 13 : 8 });
+function matrizRespuestas(datos, cols, g) { return filasRespuestas(datos, cols, g).map((o) => FIJAS.map(([k]) => o[k]).concat(cols.map((c) => o[c.id]))); }
+function construirExcel(datos, meta = false) { // una hoja por grupo
+  const wb = XLSX.utils.book_new(), cols = columnasRespuestas(meta);
   const enc = FIJAS.map(([, t]) => t).concat(cols.map((c) => c.id));
   for (const g of GRUPOS) {
-    const filas = filasRespuestas(datos, cols, g).map((o) => FIJAS.map(([k]) => o[k]).concat(cols.map((c) => o[c.id])));
-    const ws = XLSX.utils.aoa_to_sheet([enc].concat(filas));
-    ws['!cols'] = FIJAS.map(([k]) => ({ wch: k === 'nombre' || k === 'apellido' ? 16 : k === 'grupo' || k === 'momento' ? 12 : 8 })).concat(cols.map((c) => ({ wch: Math.max(8, c.id.length + 1) })));
+    const ws = XLSX.utils.aoa_to_sheet([enc].concat(matrizRespuestas(datos, cols, g)));
+    ws['!cols'] = FIJAS.map(([k]) => anchoCol(k)).concat(cols.map((c) => ({ wch: Math.max(8, c.id.length + 1) })));
     XLSX.utils.book_append_sheet(wb, ws, g);
   }
   return XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
 }
-function descargar(data, nombre) {
-  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })); a.download = nombre; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+function construirCSV(datos, meta = false) { // un solo archivo con todos los grupos (la columna Grupo los distingue), UTF-8 con BOM para Excel
+  const cols = columnasRespuestas(meta), enc = FIJAS.map(([, t]) => t).concat(cols.map((c) => c.id));
+  const ws = XLSX.utils.aoa_to_sheet([enc].concat(GRUPOS.flatMap((g) => matrizRespuestas(datos, cols, g))));
+  return '\ufeff' + XLSX.utils.sheet_to_csv(ws);
+}
+function descargar(data, nombre, tipo = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: tipo })); a.download = nombre; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }

@@ -55,6 +55,7 @@ async function semilla({ base = '', clave, INS, log = console.log }) {
     const f = plan[p.codigo]; let row;
     if (f) row = { ...p, nombre: f[1], apellido: f[2], grupo: f[3], sexo: f[4], edad: f[5], ...(f[10] ? { observaciones: f[10] } : {}) };
     else if (!p.apellido && p.nombre.trim().split(/\s+/).length > 1) { const w = p.nombre.trim().split(/\s+/); row = { ...p, nombre: w[0], apellido: w.slice(1).join(' ') }; }
+    if ((row || p).observaciones === 'Registro ficticio de prueba') row = { ...(row || p), observaciones: '' }; // nota heredada de la primera versión
     if (row && JSON.stringify(row) !== JSON.stringify(p)) { await api('participante', { method: 'PUT', body: { row } }); log(`ajustado ${row.codigo} ${row.nombre} ${row.apellido} (${row.grupo})`); }
   }
   const omitidos = new Set();
@@ -77,7 +78,7 @@ async function semilla({ base = '', clave, INS, log = console.log }) {
       }
     }
     if (apl.includes('Fam') && !hay('cff', codigo)) {
-      await api('familia', { method: 'POST', body: { e: codigo, t: tokens[codigo], informante: INFORMANTES[Math.floor(Math.random() * INFORMANTES.length)], items: respuestas(INS.CFF, fam, 0), observaciones: '' } });
+      await api('familia', { method: 'POST', body: { e: codigo, t: tokens[codigo], acepta: true, informante: INFORMANTES[Math.floor(Math.random() * INFORMANTES.length)], items: respuestas(INS.CFF, fam, 0), observaciones: '' } });
       n++; log(`${codigo} ${INS.CFF.corto} (acudiente)`);
     }
   }
@@ -88,5 +89,6 @@ if (typeof process !== 'undefined' && process.versions?.node) { // desde Node: n
   const fs = await import('node:fs');
   const env = {}; if (fs.existsSync('.env')) for (const l of fs.readFileSync('.env', 'utf8').split(/\r?\n/)) { const m = l.match(/^\s*([A-Z_]+)\s*=\s*(.*?)\s*$/); if (m) env[m[1]] = m[2]; }
   const INS = (await import('../netlify/lib/instrumentos.mjs')).default;
-  await semilla({ base: process.env.BASE || 'http://localhost:8888', clave: env.APP_CLAVE || 'nidia.2026', INS });
+  if (!env.APP_CLAVE) { console.error('Falta el archivo .env con la línea APP_CLAVE=su_clave'); process.exit(1); }
+  await semilla({ base: process.env.BASE || 'http://localhost:8888', clave: env.APP_CLAVE, INS });
 }

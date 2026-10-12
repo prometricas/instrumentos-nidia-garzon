@@ -1,0 +1,9 @@
+﻿Grupo,Codigo,Nombre,Apellido,Momento,Sexo,Edad,Consentimiento,Asentimiento,Emo_FechaHora,Emo_Aplicador,Emo_Dur,Emo1,Emo2,Emo5R,Emo6,Emo8R,Emo9R,Emo10,Emo13,Emo14,Emo16,Emo17R,Emo18,Emo19,Emo21,Emo22,Emo23,Emo24,Emo27R,Emo28,Emo29R,Emo30,Emo_Intra,Emo_Inter,Emo_Adapt,Emo_Estres,Emo_Total,Lec_FechaHora,Lec_Aplicador,Lec_Dur,Lec1,Lec2,Lec3,Lec4,Lec5,Lec6,Lec7,Lec8,Lec9,Esc1,Esc2,Esc3,Esc4,Esc5,Esc6,Esc7,Esc8,Esc9,Lec_Intrin,Lec_Ident,Lec_Contr,Esc_Intrin,Esc_Ident,Esc_Contr,Fam_Informante,Fam_FechaHora,Fam1,Fam2,Fam3,Fam4,Fam5,Fam6,Fam7,Fam8,Fam9,Fam10,Fam11,Fam12,Fam_Ambiente,Fam_Lectura,Fam_Apoyo,Fam_Total
+Piloto,E01,Débora,Plata,Pretest,Femenino,7,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Padre,2026-10-12 17:00:09,4,2,2,2,2,3,2,1,4,4,2,1,10,8,12,30
+Piloto,E01,Débora,Plata,Postest,Femenino,7,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Padre,2026-10-12 17:00:09,4,2,2,2,2,3,2,1,4,4,2,1,10,8,12,30
+Experimental,E02,Aquiles,Estudio,Pretest,Masculino,8,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Experimental,E02,Aquiles,Estudio,Postest,Masculino,8,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Experimental,E03,Elsa,Pato Lucas,Pretest,Femenino,8,2026-10-01,2026-10-02,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Experimental,E03,Elsa,Pato Lucas,Postest,Femenino,8,2026-10-01,2026-10-02,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Control,E04,Elena,Nito,Pretest,Femenino,7,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Control,E04,Elena,Nito,Postest,Femenino,7,,,2026-10-12 17:00:02,Nidia Garzón,0,2,4,2,4,3,1,2,1,2,4,4,3,1,4,4,1,3,2,3,2,3,14,12,15,16,57,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

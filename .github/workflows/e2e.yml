@@ -1,0 +1,23 @@
+# Prueba de punta a punta en cada subida a GitHub: levanta el servidor local con una clave de prueba y recorre la app con Playwright.
+name: Prueba de punta a punta
+on:
+  push:
+    branches: [revision, main]
+  workflow_dispatch:
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: npm ci
+      - run: pip install playwright openpyxl && python -m playwright install --with-deps chromium
+      - run: echo "APP_CLAVE=clave-de-prueba" > .env
+      - run: (node dev-local.mjs > servidor.log 2>&1 &) && for i in $(seq 1 30); do curl -s localhost:8888/ > /dev/null && break; sleep 1; done
+      - run: python test/e2e.py
+      - if: failure()
+        run: cat servidor.log

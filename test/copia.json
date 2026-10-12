@@ -1,0 +1,207 @@
+{
+ "version": 1,
+ "fecha_hora": "2026-10-12 17:00:23",
+ "participantes": [
+  {
+   "codigo": "E01",
+   "nombre": "Débora",
+   "apellido": "Plata",
+   "grupo": "Piloto",
+   "sexo": "Femenino",
+   "edad": 7,
+   "fecha_registro": "2026-10-12",
+   "consentimiento": "",
+   "asentimiento": "",
+   "observaciones": ""
+  },
+  {
+   "codigo": "E02",
+   "nombre": "Aquiles",
+   "apellido": "Estudio",
+   "grupo": "Experimental",
+   "sexo": "Masculino",
+   "edad": 8,
+   "fecha_registro": "2026-10-12",
+   "consentimiento": "",
+   "asentimiento": "",
+   "observaciones": ""
+  },
+  {
+   "codigo": "E03",
+   "nombre": "Elsa",
+   "apellido": "Pato Lucas",
+   "grupo": "Experimental",
+   "sexo": "Femenino",
+   "edad": 8,
+   "fecha_registro": "2026-10-12",
+   "consentimiento": "2026-10-01",
+   "asentimiento": "2026-10-02",
+   "observaciones": "usa gafas"
+  },
+  {
+   "codigo": "E04",
+   "nombre": "Elena",
+   "apellido": "Nito",
+   "grupo": "Control",
+   "sexo": "Femenino",
+   "edad": 7,
+   "fecha_registro": "2026-10-12",
+   "consentimiento": "",
+   "asentimiento": "",
+   "observaciones": ""
+  }
+ ],
+ "eqi": [
+  {
+   "codigo": "E04",
+   "momento": "Postest",
+   "fecha": "2026-10-12",
+   "fecha_hora": "2026-10-12 17:00:02",
+   "aplicador": "Nidia Garzón",
+   "duracion_seg": 0,
+   "IE1": 2,
+   "IE2": 4,
+   "IE5R": 2,
+   "IE6": 4,
+   "IE8R": 3,
+   "IE9R": 1,
+   "IE10": 2,
+   "IE13": 1,
+   "IE14": 2,
+   "IE16": 4,
+   "IE17R": 4,
+   "IE18": 3,
+   "IE19": 1,
+   "IE21": 4,
+   "IE22": 4,
+   "IE23": 1,
+   "IE24": 3,
+   "IE27R": 2,
+   "IE28": 3,
+   "IE29R": 2,
+   "IE30": 3,
+   "Intrapersonal": 14,
+   "Interpersonal": 12,
+   "Adaptabilidad": 15,
+   "Manejo_estres": 16,
+   "Total_EQi": 57,
+   "observaciones": ""
+  }
+ ],
+ "esms": [],
+ "cff": [
+  {
+   "codigo": "E01",
+   "fecha": "2026-10-12",
+   "fecha_hora": "2026-10-12 17:00:09",
+   "informante": "Padre",
+   "consentimiento": "Sí",
+   "F311": 4,
+   "F312": 2,
+   "F313": 2,
+   "F314": 2,
+   "F321": 2,
+   "F322": 3,
+   "F323": 2,
+   "F324": 1,
+   "F331": 4,
+   "F332": 4,
+   "F333": 2,
+   "F334": 1,
+   "S31_Ambiente": 10,
+   "S32_Lectura": 8,
+   "S33_Apoyo": 12,
+   "Total_CFCSAL_F": 30,
+   "observaciones": ""
+  }
+ ],
+ "papelera": [
+  {
+   "participante": {
+    "codigo": "E05",
+    "nombre": "Alan",
+    "apellido": "Brito",
+    "grupo": "Control",
+    "sexo": "Masculino",
+    "edad": 8,
+    "fecha_registro": "2026-10-12",
+    "consentimiento": "",
+    "asentimiento": "",
+    "observaciones": ""
+   },
+   "registros": {
+    "eqi": [],
+    "esms": [],
+    "cff": []
+   },
+   "fecha": "2026-10-12 17:00:18"
+  }
+ ],
+ "bitacora": [
+  {
+   "fecha_hora": "2026-10-12 16:59:54",
+   "evento": "registro",
+   "detalle": "Participante E01 Débora Plata (Piloto)"
+  },
+  {
+   "fecha_hora": "2026-10-12 16:59:55",
+   "evento": "registro",
+   "detalle": "Participante E02 Aquiles Estudio (Experimental)"
+  },
+  {
+   "fecha_hora": "2026-10-12 16:59:56",
+   "evento": "registro",
+   "detalle": "Participante E03 Elsa Pato (Experimental)"
+  },
+  {
+   "fecha_hora": "2026-10-12 16:59:57",
+   "evento": "registro",
+   "detalle": "Participante E04 Elena Nito (Control)"
+  },
+  {
+   "fecha_hora": "2026-10-12 16:59:58",
+   "evento": "registro",
+   "detalle": "Participante E05 Alan Brito (Control)"
+  },
+  {
+   "fecha_hora": "2026-10-12 17:00:00",
+   "evento": "aplicacion",
+   "detalle": "ESMS-E E03 Pretest"
+  },
+  {
+   "fecha_hora": "2026-10-12 17:00:02",
+   "evento": "aplicacion",
+   "detalle": "EQ-i:YV(S) / ICE:NA E04 Postest"
+  },
+  {
+   "fecha_hora": "2026-10-12 17:00:09",
+   "evento": "aplicacion",
+   "detalle": "CFCSAL-F E01 (acudiente por enlace)"
+  },
+  {
+   "fecha_hora": "2026-10-12 17:00:13",
+   "evento": "edicion",
+   "detalle": "Participante E03 Elsa Pato Lucas (Experimental)"
+  },
+  {
+   "fecha_hora": "2026-10-12 17:00:14",
+   "evento": "eliminacion",
+   "detalle": "ESMS-E E03 Pretest"
+  },
+  {
+   "fecha_hora": "2026-10-12 17:00:18",
+   "evento": "papelera",
+   "detalle": "Participante E05 Alan Brito movido a la papelera con 0 registro(s)"
+  },
+  {
+   "fecha_hora": "2026-10-12 17:00:19",
+   "evento": "papelera",
+   "detalle": "Participante E04 Elena Nito movido a la papelera con 1 registro(s)"
+  },
+  {
+   "fecha_hora": "2026-10-12 17:00:20",
+   "evento": "restauracion",
+   "detalle": "Participante E04 restaurado desde la papelera"
+  }
+ ]
+}
