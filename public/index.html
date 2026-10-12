@@ -156,11 +156,11 @@ function verEstudiantes() {
   $('#resumenP').textContent = ps.length ? `${ps.length} estudiantes · ${ps.filter((p) => p.grupo === 'Experimental').length} experimental · ${ps.filter((p) => p.grupo === 'Control').length} control` : '';
   const marca = (s, c, m) => { const r = reg(s, c, m); const et = m === 'Pretest' ? 'Pre' : 'Post'; return r ? `<span class="estado si" data-s="${s}" data-c="${esc(c)}" data-m="${m}" title="Guardado el ${esc(r.fecha)}">${et} ✓</span>` : `<span class="estado">${et} ·</span>`; };
   $('#tablaP').innerHTML = ps.length ? `<table class="datos"><thead><tr><th>Código</th><th>Nombre</th><th>Apellido</th><th>Grupo</th><th>Curso</th><th>Sexo</th><th>Edad</th>` +
-    ['EQI', 'ESMS', 'CFF'].map((k) => `<th>${esc(INS[k].corto)}<small>${esc(INS[k].nombre)}</small></th>`).join('') + `<th></th></tr></thead><tbody>` +
+    ['EQI', 'ESMS', 'CFF'].map((k) => `<th>${esc(INS[k].tabla)}<small>${esc(INS[k].nombre)}</small></th>`).join('') + `<th></th></tr></thead><tbody>` +
     ps.map((p) => { const n = nReg(p.codigo); return `<tr><td><b>${esc(p.codigo)}</b></td><td>${esc(p.nombre)}</td><td>${esc(p.apellido)}</td><td>${esc(p.grupo)}</td><td>${esc(p.curso)}</td><td>${esc(p.sexo)}</td><td>${esc(p.edad)}</td>` +
       ['eqi', 'esms', 'cff'].map((s) => `<td>${marca(s, p.codigo, 'Pretest')}${marca(s, p.codigo, 'Postest')}</td>`).join('') +
       `<td><button class="x ${n ? 'con-datos' : ''}" data-del="${esc(p.codigo)}" title="${n ? `Eliminar (tiene ${n} registros; se guardan en la papelera)` : 'Eliminar estudiante'}">×</button></td></tr>`; }).join('') + '</tbody></table>' + papeleraHtml()
-    : `<div class="aviso nota">Aún no hay estudiantes. Regístrelos arriba o <button class="btn chico" id="btnPrueba">añada 12 estudiantes ficticios de prueba</button> para ensayar la app.</div>` + papeleraHtml();
+    : `<div class="aviso nota">Aún no hay estudiantes. Regístrelos arriba o <button class="btn chico" id="btnPrueba">añada 7 estudiantes ficticios de prueba</button> para ensayar la app.</div>` + papeleraHtml();
   const cod = $('#pCodigo').value.trim().toUpperCase();
   if (!cod || ps.some((p) => p.codigo === cod)) { let n = ps.length + 1; while (ps.some((p) => p.codigo === 'E' + z(n))) n++; $('#pCodigo').value = 'E' + z(n); }
   $('#tablaP').querySelectorAll('.estado.si').forEach((ch) => ch.addEventListener('click', async () => {
@@ -185,7 +185,7 @@ function verEstudiantes() {
     if (prompt(`Esto borra definitivamente a ${c} y sus registros de la papelera. Para confirmar, escriba el código ${c}:`)?.trim().toUpperCase() !== c) return toast('No se borró nada', true);
     try { await api(`papelera?codigo=${c}`, { method: 'DELETE' }); toast('Borrado definitivamente'); await recargar(); } catch (e) { toast(e.message, true); }
   }));
-  const bp = $('#btnPrueba'); if (bp) bp.addEventListener('click', async () => { try { await api('prueba', { method: 'POST' }); toast('12 estudiantes de prueba añadidos'); await recargar(); } catch (e) { toast(e.message, true); } });
+  const bp = $('#btnPrueba'); if (bp) bp.addEventListener('click', async () => { try { await api('prueba', { method: 'POST' }); toast('7 estudiantes de prueba añadidos'); await recargar(); } catch (e) { toast(e.message, true); } });
 }
 ['#pGrupo', '#pSexo'].forEach((id) => $(id).addEventListener('change', () => $(id).classList.toggle('vacio', !$(id).value)));
 document.querySelectorAll('#v-estudiantes .campo input, #v-estudiantes .campo select').forEach((el) => el.addEventListener('input', () => el.closest('.campo').classList.remove('falta')));

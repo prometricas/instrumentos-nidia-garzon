@@ -196,7 +196,8 @@
       }
     ],
     "corto": "Factores socioemocionales",
-    "tecnico": "EQ-i:YV(S) · 21 frases"
+    "tecnico": "EQ-i:YV(S) · 21 frases",
+    "tabla": "Factores socioemocionales"
   },
   "ESMS": {
     "id": "ESMS",
@@ -205,8 +206,8 @@
     "titulo": "Escala de motivación escolar, dominios de lectura y escritura (ESMS-E, 18 reactivos)",
     "variable": "Motivación hacia la lectoescritura",
     "fuente": "Guay et al. (2010); Ramos et al. (2022)",
-    "instruccion_aplicador": "Diga al niño o niña: «Ahora te voy a leer unas frases sobre leer y escribir. Me vas a decir cuánto se parece cada frase a lo que tú piensas o haces. Mira las caritas: nunca, a veces no, no lo sé, a veces sí, siempre sí. Vamos a practicar primero.» Lea cada frase en voz alta y espere a que el niño toque una carita. Repita la frase si lo pide; no explique ni sugiera la respuesta.",
-    "pregunta": "¿Cuánto se parece a ti?",
+    "instruccion_aplicador": "Diga al niño o niña: «Ahora te voy a leer unas frases sobre leer y escribir. Me vas a decir si tú piensas o haces lo que dice cada frase. Mira las caritas: nunca, a veces no, no lo sé, a veces sí, siempre sí. No hay respuestas buenas ni malas. Vamos a practicar primero.» Lea cada frase en voz alta y espere a que el niño toque una carita. Repita la frase si lo pide; no explique ni sugiera la respuesta.",
+    "pregunta": "¿Tú piensas o haces esto?",
     "escala": [
       {
         "valor": 1,
@@ -387,7 +388,8 @@
       }
     ],
     "corto": "Motivación hacia la lectoescritura",
-    "tecnico": "ESMS-E · 18 frases"
+    "tecnico": "ESMS-E · 18 frases",
+    "tabla": "Motivación lectoescritura"
   },
   "CFF": {
     "id": "CFF",
@@ -540,6 +542,7 @@
         "dimension": "3.3 Apoyo emocional ante las dificultades",
         "intro": "Sobre cómo acompaña a su hijo o hija cuando leer o escribir se le dificulta."
       }
-    ]
+    ],
+    "tabla": "Acompañamiento familiar"
   }
 }

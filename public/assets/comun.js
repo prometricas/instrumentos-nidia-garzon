@@ -53,20 +53,25 @@ function iconSure(v) {
   }
   return `<svg width="104" height="104" viewBox="0 0 104 104" aria-hidden="true"><g${tilt}><circle cx="${c}" cy="${c}" r="${r}" fill="${fill}" stroke="${edge}" stroke-width="4"/><ellipse cx="${(c - r * 0.3).toFixed(1)}" cy="${(c - r * 0.45).toFixed(1)}" rx="${(r * 0.26).toFixed(1)}" ry="${(r * 0.14).toFixed(1)}" fill="#fff" opacity=".5"/>${brows}${eyes}${mouth}${extra}</g></svg>`;
 }
-// ESMS-E: caritas de emoción ("¿cuánto se parece a ti?")
+// ESMS-E: caras de acuerdo ("¿tú piensas o haces esto?"): de "no" a "sí", sin enojo ni euforia, mismo color para todas
 function iconFace(v) {
-  const fill = ['#E8463C', '#F58B2B', '#F5C21B', '#8BC63F', '#2EB55D'][v - 1];
-  const dark = ['#B32A22', '#C2651A', '#C29A0E', '#5F9A22', '#1F8A45'][v - 1];
-  const eyes = v === 5 ? '<path d="M28 44 q8 -9 16 0 M60 44 q8 -9 16 0" stroke="#1E1A14" stroke-width="5.5" fill="none" stroke-linecap="round"/>'
-    : v === 1 ? '<circle cx="36" cy="44" r="5.5" fill="#1E1A14"/><circle cx="68" cy="44" r="5.5" fill="#1E1A14"/><path d="M26 32 l18 7 M78 32 l-18 7" stroke="#1E1A14" stroke-width="5" stroke-linecap="round"/>'
-    : v === 2 ? '<circle cx="36" cy="44" r="5.5" fill="#1E1A14"/><circle cx="68" cy="44" r="5.5" fill="#1E1A14"/><path d="M27 33 l16 4 M77 33 l-16 4" stroke="#1E1A14" stroke-width="5" stroke-linecap="round"/>'
-    : '<circle cx="36" cy="44" r="5.5" fill="#1E1A14"/><circle cx="68" cy="44" r="5.5" fill="#1E1A14"/>';
-  const mouth = ['<path d="M32 76 Q52 56 72 76" stroke="#1E1A14" stroke-width="6" fill="none" stroke-linecap="round"/>',
-    '<path d="M34 72 Q52 64 70 72" stroke="#1E1A14" stroke-width="6" fill="none" stroke-linecap="round"/>',
-    '<path d="M34 70 L70 70" stroke="#1E1A14" stroke-width="6" fill="none" stroke-linecap="round"/>',
-    '<path d="M32 64 Q52 80 72 64" stroke="#1E1A14" stroke-width="6" fill="none" stroke-linecap="round"/>',
-    '<path d="M28 60 Q52 90 76 60 Z" fill="#1E1A14"/><path d="M38 72 Q52 80 66 72 Q52 86 38 72 Z" fill="#fff"/>'][v - 1];
-  return `<svg width="104" height="104" viewBox="0 0 104 104" aria-hidden="true"><circle cx="52" cy="52" r="46" fill="${fill}" stroke="${dark}" stroke-width="4"/><ellipse cx="38" cy="30" rx="12" ry="7" fill="#fff" opacity=".35"/>${eyes}${mouth}</svg>`;
+  const c = 52, k = '#1C2433', sh = '#B89A5A';
+  const fill = '#FFE9BE', edge = '#E6C98A';
+  const tilt = [0, 0, 4, -4, -7][v - 1];
+  const px = [-3, -1, 0, 0, 0][v - 1], py = [0, 0, -3, 0, 0][v - 1]; // mirada: a un lado (no), hacia arriba (duda)
+  const eyes = `<circle cx="${36 + px}" cy="${45 + py}" r="5" fill="${k}"/><circle cx="${68 + px}" cy="${45 + py}" r="5" fill="${k}"/>`;
+  const mouth = [
+    `<path d="M38 72 q14 -9 28 0" stroke="${k}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    `<path d="M39 70 q13 -5 26 0" stroke="${k}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    `<path d="M39 69 l26 0" stroke="${k}" stroke-width="5" stroke-linecap="round"/>`,
+    `<path d="M39 66 q13 6 26 0" stroke="${k}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    `<path d="M37 64 q15 11 30 0" stroke="${k}" stroke-width="5" fill="none" stroke-linecap="round"/>`
+  ][v - 1];
+  const shake = v === 1 ? `<path d="M9 40 q-6 12 0 24 M3 44 q-4 8 0 16 M95 40 q6 12 0 24 M101 44 q4 8 0 16" stroke="${sh}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
+    : v === 2 ? `<path d="M9 42 q-5 10 0 20 M95 42 q5 10 0 20" stroke="${sh}" stroke-width="3.5" fill="none" stroke-linecap="round"/>` : '';
+  const nod = v === 4 ? `<path d="M44 8 q8 -5 16 0" stroke="${sh}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
+    : v === 5 ? `<path d="M44 9 q8 -5 16 0 M40 3 q12 -7 24 0" stroke="${sh}" stroke-width="3.5" fill="none" stroke-linecap="round"/>` : '';
+  return `<svg width="104" height="104" viewBox="0 0 104 104" aria-hidden="true">${shake}${nod}<g transform="rotate(${tilt} ${c} ${c})"><rect x="14" y="14" width="76" height="76" rx="24" fill="${fill}" stroke="${edge}" stroke-width="4"/><ellipse cx="38" cy="30" rx="11" ry="6" fill="#fff" opacity=".45"/>${eyes}${mouth}</g></svg>`;
 }
 
 // Libro de Excel con la misma estructura de la base local: una hoja por instrumento, bitácora y diccionario.

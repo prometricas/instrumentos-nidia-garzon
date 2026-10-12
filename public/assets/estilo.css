@@ -80,9 +80,9 @@ table.datos tr:last-child td{border-bottom:0}
 .opciones-ins span{font-size:.88em;color:var(--tinta-2)}
 
 /* guion flotante */
-.ayuda-btn{position:fixed;right:22px;bottom:22px;width:54px;height:54px;border-radius:50%;background:var(--naranja);color:#fff;border:0;font-size:1.5em;font-weight:700;box-shadow:0 8px 22px rgba(243,106,0,.35);z-index:40;display:flex;align-items:center;justify-content:center}
-.ayuda-btn:hover{background:#D95E00}
-.ayuda-panel{position:fixed;right:22px;bottom:86px;width:min(420px, calc(100vw - 44px));background:#fff;border:1px solid #F8CFA8;border-left:5px solid var(--naranja);border-radius:12px;padding:16px 18px;line-height:1.55;box-shadow:0 14px 36px rgba(28,36,51,.18);z-index:40;font-size:.95em}
+.ayuda-btn{position:fixed;right:18px;bottom:18px;width:40px;height:40px;border-radius:50%;background:#fff;color:var(--azul);border:1.5px solid var(--linea);font-size:1.1em;font-weight:700;box-shadow:0 3px 10px rgba(28,36,51,.12);z-index:40;display:flex;align-items:center;justify-content:center;opacity:.85}
+.ayuda-btn:hover{opacity:1;border-color:var(--azul)}
+.ayuda-panel{position:fixed;right:18px;bottom:66px;width:min(420px, calc(100vw - 44px));background:#fff;border:1px solid #F8CFA8;border-left:5px solid var(--naranja);border-radius:12px;padding:16px 18px;line-height:1.55;box-shadow:0 14px 36px rgba(28,36,51,.18);z-index:40;font-size:.95em}
 .ayuda-panel h4{margin:0 0 6px;color:var(--azul);font-size:1em}
 .ayuda-panel p{margin:8px 0 0;color:var(--tinta-2);font-size:.9em}
 
@@ -114,8 +114,8 @@ table.datos tr:last-child td{border-bottom:0}
 .opt .lab{font-size:1.3em;font-weight:600;line-height:1.2}
 .opt .sub{font-size:.82em;color:var(--tinta-2);line-height:1.25}
 .opt .sub:empty{display:none}
-.kid-nav{display:flex;justify-content:space-between;align-items:center;padding:14px clamp(16px,3vw,40px);border-top:1px solid var(--linea)}
-.kid-nav .btn.grande{min-width:200px}
+.kid-nav{display:flex;justify-content:center;gap:14px;align-items:center;padding:14px clamp(16px,3vw,40px);border-top:1px solid var(--linea)}
+.kid-nav .btn.grande{min-width:180px}
 .kid-fin{max-width:760px;text-align:left}
 .kid-fin table{width:100%;border-collapse:collapse;margin:14px 0}
 .kid-fin td{padding:7px 8px;border-bottom:1px solid var(--linea)}

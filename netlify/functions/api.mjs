@@ -52,11 +52,9 @@ function validarItems(key, items) {
 const MOMENTOS = ["Pretest", "Postest"];
 const PRUEBA = [
   ["E01", "Débora Plata", "Experimental", "201", "Femenino", 7], ["E02", "Aquiles Estudio", "Experimental", "201", "Masculino", 8],
-  ["E03", "Elsa Pato", "Experimental", "201", "Femenino", 8], ["E04", "Armando Paredes", "Experimental", "201", "Masculino", 7],
-  ["E05", "Susana Oria", "Experimental", "201", "Femenino", 9], ["E06", "Esteban Dido", "Experimental", "201", "Masculino", 7],
-  ["E07", "Elena Nito", "Control", "202", "Femenino", 7], ["E08", "Dolores Fuertes", "Control", "202", "Femenino", 8],
-  ["E09", "Alan Brito", "Control", "202", "Masculino", 8], ["E10", "Aitor Tilla", "Control", "202", "Masculino", 7],
-  ["E11", "Mario Neta", "Control", "202", "Masculino", 9], ["E12", "Lola Mento", "Control", "202", "Femenino", 7],
+  ["E03", "Elsa Pato", "Experimental", "201", "Femenino", 8],
+  ["E04", "Elena Nito", "Control", "202", "Femenino", 7], ["E05", "Dolores Fuertes", "Control", "202", "Femenino", 8],
+  ["E06", "Alan Brito", "Control", "202", "Masculino", 8], ["E07", "Aitor Tilla", "Control", "202", "Masculino", 7],
 ];
 
 export default async (req) => {
@@ -174,7 +172,7 @@ export default async (req) => {
     const existentes = await leerTodo("participantes");
     if (existentes.length) return json({ error: "Ya hay estudiantes registrados" }, 400);
     for (const [codigo, nom, grupo, curso, sexo, edad] of PRUEBA) { const [nombre, ...ap] = nom.split(" "), apellido = ap.join(" "); await store("participantes").setJSON(codigo, { codigo, nombre, apellido, grupo, curso, sexo, edad, fecha_registro: hoy(), observaciones: "Registro ficticio de prueba" }); }
-    await bitacora("registro", "12 estudiantes ficticios de prueba");
+    await bitacora("registro", "7 estudiantes ficticios de prueba");
     return json({ ok: true });
   }
   return json({ error: "Ruta no encontrada" }, 404);
