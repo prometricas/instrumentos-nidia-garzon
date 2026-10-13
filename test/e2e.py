@@ -43,10 +43,21 @@ async def main():
         await pg.wait_for_selector("#kSave"); await pg.click("#kSave"); await pg.wait_for_timeout(1500)
         await pg.click("#opIns button[data-k=EQI]"); await pg.select_option("#aCod", "E04"); await pg.click("#aMom button[data-m=Postest]"); await pg.click("#btnStart"); await pg.wait_for_selector("#kid:not(.oculto)")
         await pg.click(".opt[data-v='2']"); await pg.screenshot(path="test/w7_kid_eqi.png")
+        orig = await pg.evaluate("INS.EQI.items.map(it => it.codigo)"); orden = await pg.evaluate("K.orden"); seq = await pg.evaluate("K.seq.filter(x => !x.prac).map(x => x.codigo)")
+        print("postest barajado:", sorted(orden) == sorted(orig) and orden != orig, "| práctica primero:", await pg.evaluate("K.seq[0].prac && K.seq[1].prac"), "| pantalla sigue el orden:", seq == orden)
+        if not (sorted(orden) == sorted(orig) and orden != orig and seq == orden): errs.append("el postest no baraja las frases")
+        await pg.keyboard.press("Enter"); await pg.keyboard.press("3"); await pg.keyboard.press("Enter"); await pg.keyboard.press("1"); await pg.keyboard.press("Enter")  # tres frases y salir: el avance debe conservar el mismo orden
+        await pg.click("#kExit"); await confirmar(); await pg.wait_for_selector("#btnContinuar"); await pg.click("#btnContinuar"); await pg.wait_for_selector("#kid:not(.oculto)")
+        print("retoma con el mismo orden:", await pg.evaluate("K.orden") == orden, "| frase actual:", await pg.evaluate("K.seq[K.i].codigo") == orden[1])
+        if await pg.evaluate("K.orden") != orden: errs.append("al retomar cambió el orden del postest")
         while True:
             await pg.keyboard.press(str(random.randint(1,4))); t = await pg.text_content("#kNext"); await pg.keyboard.press("Enter")
             if t.strip()=="Terminar": break
         await pg.wait_for_selector("#kSave"); await pg.click("#kSave"); await pg.wait_for_timeout(1500)
+        fila = await pg.evaluate("""async () => { const H = { 'x-clave': sessionStorage.getItem('clave') }; const d = await fetch('/api/datos', { headers: H }).then(r => r.json());
+            return { post: d.eqi.find(r => r.codigo === 'E04' && r.momento === 'Postest').orden, pre: d.esms.find(r => r.codigo === 'E03' && r.momento === 'Pretest').orden }; }""")
+        print("orden guardado en el postest:", fila["post"] == orden, "| el pretest no lleva orden:", fila["pre"] is None)
+        if fila["post"] != orden or fila["pre"] is not None: errs.append("el orden del postest no quedó guardado como se presentó")
         await pg.click("nav.menu button[data-v=familias]"); await pg.wait_for_selector("#tablaF table"); await pg.click("#tablaF .gtabs button[data-g=Piloto]"); await pg.wait_for_selector("#tablaF table"); await pg.wait_for_timeout(300); await pg.screenshot(path="test/w8_familias.png")
         await pg.click("#tablaF a[data-ficha]"); await pg.wait_for_selector("#ficha:not(.oculto)"); print("ficha desde Acudientes:", (await pg.text_content("#ficha h2")).strip()[:30]); await pg.keyboard.press("Escape")
         link = await pg.get_attribute("#tablaF [data-copy]", "data-copy"); print("enlace:", link, "| WhatsApp:", await pg.text_content("#tablaF a.wa"), "| botones de copiar en bloque:", len(await pg.query_selector_all("#btnCopiarTodos, #btnCopiarPend")))

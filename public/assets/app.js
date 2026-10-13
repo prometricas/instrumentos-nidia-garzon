@@ -185,7 +185,7 @@ function verEstudiante(codigo, editar = false) {
   const op = (lista, v) => lista.map((x) => `<option ${x === v ? 'selected' : ''}>${x}</option>`).join('');
   $('#fichaCuerpo').innerHTML = `<div class="ficha-cab">${avatar(p.sexo)}<div><h2><a href="#" data-editar title="Editar los datos del estudiante">${esc(nom(p))}</a> <span class="gtag g-${p.grupo.toLowerCase()}">${esc(p.grupo)}</span><a href="#" class="editar-lnk" data-editar>${editar ? 'Cerrar edición' : 'Editar estudiante'}</a></h2>
     <p class="guia" style="margin:0">${esc(p.codigo)} · ${esc(p.sexo)} · ${esc(p.edad)} años · registrado el ${esc(p.fecha_registro)}${p.observaciones ? ` · ${esc(p.observaciones)}` : ''}</p>
-    <p class="guia consent ${consentido(codigo) ? '' : 'falta'}" style="margin:2px 0 0">${consentido(codigo) ? `Consentimiento informado del acudiente: aceptado el ${esc(reg('cff', codigo).fecha)} (${esc(reg('cff', codigo).informante.toLowerCase())})` : 'Consentimiento informado del acudiente: pendiente (lo acepta al responder su enlace)'}</p></div></div>
+    <p class="guia consent ${consentido(codigo) ? 'ok' : 'falta'}" style="margin:2px 0 0">${consentido(codigo) ? `Consentimiento informado del acudiente: aceptado el ${esc(reg('cff', codigo).fecha)} (${esc(reg('cff', codigo).informante.toLowerCase())}) · cuestionario familiar respondido` : 'Consentimiento informado del acudiente: pendiente (lo acepta al responder su enlace)'}</p></div></div>
     <form class="editar ${editar ? '' : 'oculto'}" id="fichaEdit"><div class="fila">
       <div class="campo" style="flex:1.4"><label for="eNombre">Nombre</label><input id="eNombre" value="${esc(p.nombre)}"></div>
       <div class="campo" style="flex:1.4"><label for="eApellido">Apellido</label><input id="eApellido" value="${esc(p.apellido)}"></div>
@@ -266,9 +266,15 @@ $('#btnStart').addEventListener('click', async () => {
 
 /* ---------- pantalla del niño ---------- */
 let K = null;
+// Postest: las frases salen en un orden al azar, distinto en cada aplicación, para que el estudiante no repita de memoria
+// (ni en espejo) lo que respondió en el pretest. Cada respuesta se guarda con el código de su frase, así que en la base de
+// datos y en el Excel el orden de las columnas no cambia; el orden presentado queda en el registro (campo "orden").
+function barajar(lista) { const a = lista.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function startKid(cfg, avance = null) {
   const ins = INS[cfg.key];
-  K = { ...cfg, ins, seq: ins.practica.map((p) => ({ ...p, prac: true })).concat(ins.items), i: avance ? Math.min(avance.i, ins.practica.length + ins.items.length - 1) : 0, resp: avance ? avance.resp : {}, t0: avance ? Date.now() - (avance.transcurrido || 0) : Date.now() };
+  const orden = (avance && avance.orden) || (cfg.momento === 'Postest' ? barajar(ins.items.map((it) => it.codigo)) : null);
+  const items = orden ? orden.map((c) => ins.items.find((it) => it.codigo === c)) : ins.items;
+  K = { ...cfg, ins, orden, seq: ins.practica.map((p) => ({ ...p, prac: true })).concat(items), i: avance ? Math.min(avance.i, ins.practica.length + ins.items.length - 1) : 0, resp: avance ? avance.resp : {}, t0: avance ? Date.now() - (avance.transcurrido || 0) : Date.now() };
   $('#kTag').innerHTML = `<b>${esc(ins.corto)}</b> · ${esc(ins.nombre)} · ${esc(cfg.codigo)} ${esc(nombreDe(cfg.codigo))} · ${esc(cfg.momento)}`;
   $('#kAyudaPanel').innerHTML = guionHtml(ins); $('#kAyudaPanel').classList.add('oculto');
   $('#kid').classList.remove('oculto'); $('#app').classList.add('oculto');
@@ -289,7 +295,7 @@ function renderKid() {
   $('#kBack').disabled = i === 0;
   $('#kNav').classList.remove('oculto');
 }
-function guardarAvance() { if (!K) return; localStorage.setItem('avance', JSON.stringify({ key: K.key, codigo: K.codigo, momento: K.momento, aplicador: K.aplicador, i: K.i, resp: K.resp, transcurrido: Date.now() - K.t0, fecha: new Date().toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' }) })); }
+function guardarAvance() { if (!K) return; localStorage.setItem('avance', JSON.stringify({ key: K.key, codigo: K.codigo, momento: K.momento, aplicador: K.aplicador, orden: K.orden, i: K.i, resp: K.resp, transcurrido: Date.now() - K.t0, fecha: new Date().toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' }) })); }
 $('#kNext').addEventListener('click', () => { if (K.i < K.seq.length - 1) { K.i++; guardarAvance(); renderKid(); } else finKid(); });
 $('#kBack').addEventListener('click', () => { if (K.i > 0) { K.i--; guardarAvance(); renderKid(); } });
 $('#kExit').addEventListener('click', async () => {
@@ -320,7 +326,7 @@ function finKid() {
     <div class="fila" style="margin-top:12px"><button class="btn grande" id="kSave">Guardar</button><button class="btn sec grande" id="kDiscard">Descartar</button></div><div id="kMsg" style="margin-top:10px"></div></div>`;
   $('#kSave').addEventListener('click', async () => {
     $('#kSave').disabled = true;
-    const cuerpo = { store: STORE[K.key], row: { codigo, momento, aplicador, duracion_seg: dur, ...items, observaciones: $('#kObs').value.trim() } };
+    const cuerpo = { store: STORE[K.key], row: { codigo, momento, aplicador, duracion_seg: dur, ...items, ...(K.orden ? { orden: K.orden } : {}), observaciones: $('#kObs').value.trim() } };
     try { await api('registro', { method: 'PUT', body: cuerpo }); localStorage.removeItem('avance'); toast('Guardado'); cerrarKid(true); }
     catch (e) {
       if (e.status && e.status < 500) { $('#kMsg').innerHTML = `<div class="aviso mal">No se pudo guardar: ${esc(e.message)}.</div>`; $('#kSave').disabled = false; return; }
@@ -356,9 +362,12 @@ let enlaces = [];
 const urlF = (e) => `${location.origin}/familia.html?e=${e.codigo}&t=${e.t}`;
 // *nombre* = negrita en WhatsApp. El enlace va solo, al final, para que WhatsApp lo convierta en hipervínculo (solo lo hace con dominios reales, no con localhost).
 const msgF = (e) => `Hola. Por favor responda este cuestionario corto (5 minutos) sobre la lectura y la escritura de *${(e.nombre || e.codigo).replace(/[*_~]/g, '')}* en casa:\n${urlF(e)}`;
-async function verFamilias() {
-  $('#tablaF').innerHTML = '<p class="guia">Cargando…</p>';
+async function verFamilias() { // al entrar al módulo se traen los datos y los enlaces firmados; cambiar de grupo solo vuelve a pintar
+  if (!$('#tablaF').querySelector('table, .aviso')) $('#tablaF').innerHTML = '<p class="guia">Cargando…</p>';
   try { await cargar(); enlaces = (await api('enlaces')).enlaces; } catch (e) { $('#tablaF').innerHTML = `<div class="aviso mal">${esc(e.message)}</div>`; return; }
+  pintarFamilias();
+}
+function pintarFamilias() {
   const resp = enlaces.filter((e) => reg('cff', e.codigo)).length;
   $('#resumenF').textContent = enlaces.length ? `${resp} de ${enlaces.length} respondidos` : '';
   const filaF = (e) => { const r = reg('cff', e.codigo); return `<tr><td><b>${esc(e.codigo)}</b></td><td><a href="#" data-ficha="${esc(e.codigo)}" title="Abrir la ficha del estudiante">${esc(e.nombre)}</a></td><td>${r ? `<span class="estado si" style="cursor:default;pointer-events:none">Respondido ${esc(r.fecha)} · ${esc(r.informante)}</span>` : '<span class="estado">Pendiente</span>'}</td>
@@ -366,7 +375,7 @@ async function verFamilias() {
   const lista = enlaces.filter((e) => e.grupo === grupoActivo);
   $('#tablaF').innerHTML = tabsGrupo(enlaces, (l) => `${l.filter((e) => reg('cff', e.codigo)).length}/${l.length}`) + (lista.length ? `<table class="datos"><thead><tr><th>Código</th><th>Nombre</th><th>Estado</th><th>Enlace</th></tr></thead><tbody>` + lista.map(filaF).join('') + '</tbody></table>'
     : `<div class="aviso nota">No hay estudiantes en el grupo ${grupoActivo}.</div>`);
-  activarTabs($('#tablaF'), verFamilias);
+  activarTabs($('#tablaF'), pintarFamilias);
   $('#tablaF').querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', async () => { await navigator.clipboard.writeText(b.dataset.copy); toast('Enlace copiado'); }));
   $('#tablaF').querySelectorAll('[data-ficha]').forEach((a) => a.addEventListener('click', () => verEstudiante(a.dataset.ficha)));
 }

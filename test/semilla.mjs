@@ -82,7 +82,8 @@ async function semilla({ base = '', clave, INS, log = console.log, reiniciar = f
       for (const m of ['Pretest', 'Postest']) {
         if (!apl.includes(tag + (m === 'Pretest' ? 'Pre' : 'Post')) || hay(s, codigo, m)) continue;
         const ajuste = m === 'Postest' ? (grupo === 'Experimental' ? 0.15 : (Math.random() - 0.5) * 0.06) : 0;
-        await api('registro', { method: 'PUT', body: { store: s, row: { codigo, momento: m, aplicador: 'Nidia Garzón', duracion_seg: 240 + Math.floor(Math.random() * 200), ...respuestas(INS[key], nivel, ajuste), observaciones: '' } } });
+        const orden = m === 'Postest' ? INS[key].items.map((it) => it.codigo).sort(() => Math.random() - 0.5) : undefined; // en el postest la app baraja las frases y guarda el orden
+        await api('registro', { method: 'PUT', body: { store: s, row: { codigo, momento: m, aplicador: 'Nidia Garzón', duracion_seg: 240 + Math.floor(Math.random() * 200), ...respuestas(INS[key], nivel, ajuste), ...(orden ? { orden } : {}), observaciones: '' } } });
         n++; log(`${codigo} ${INS[key].corto} ${m}`);
       }
     }

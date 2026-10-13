@@ -193,7 +193,10 @@ export default async (req) => {
     if (!(await store("participantes").get(codigo, { type: "json" }))) return json({ error: "Estudiante no registrado" }, 404);
     const err = validarItems(key, r); if (err) return json({ error: err }, 400);
     const items = {}; INS[key].items.forEach((it) => (items[it.codigo] = Number(r[it.codigo])));
-    const row = { codigo, momento, fecha: hoy(), fecha_hora: ahora(), aplicador: String(r.aplicador || "").slice(0, 80), duracion_seg: Number(r.duracion_seg) || 0, ...items, ...puntajes(key, items), observaciones: String(r.observaciones || "").slice(0, 500) };
+    // orden en que se presentaron las frases (el postest las baraja); solo se guarda si es una permutación válida de los ítems
+    const codigos = INS[key].items.map((it) => it.codigo);
+    const orden = Array.isArray(r.orden) && r.orden.length === codigos.length && new Set(r.orden).size === codigos.length && r.orden.every((c) => codigos.includes(c)) ? r.orden : undefined;
+    const row = { codigo, momento, fecha: hoy(), fecha_hora: ahora(), aplicador: String(r.aplicador || "").slice(0, 80), duracion_seg: Number(r.duracion_seg) || 0, ...items, ...puntajes(key, items), ...(orden ? { orden } : {}), observaciones: String(r.observaciones || "").slice(0, 500) };
     const k = llave(codigo, momento);
     const previo = (await store(s).get(k, { type: "json" })) ?? (await store(s).get(antigua(codigo, momento), { type: "json" }));
     await store(s).setJSON(k, row);
