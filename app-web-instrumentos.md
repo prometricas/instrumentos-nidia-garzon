@@ -16,7 +16,7 @@
 - **Datos:** Netlify Blobs (sin costo en créditos). Cada publicación a producción gasta 15 de los 300 créditos mensuales; las vistas previas no. Las aplicaciones se guardan con clave `E03-Pretest` (las antiguas `E03|Pretest` se siguen leyendo y migran al reescribir; en Windows el almacén local no las mostraba).
 
 ## Configuración en Netlify
-- Variable `APP_CLAVE` (clave del aplicador). La clave no se guarda en el código ni en este documento.
+- Variable `APP_CLAVE` (clave del aplicador). La clave no se guarda en el código ni en este documento: para entrar al sitio (https://instrumentos-nidia.netlify.app/) desde un chat, pedírsela al usuario o leerla en su computador en `C:\App_web_Nidia\.env` (línea `APP_CLAVE=`), sin copiarla en documentos, memoria ni mensajes.
 - Variable `FIRMA_SECRETA` (recomendada, cualquier texto largo): firma los enlaces de acudientes; permite cambiar la clave sin invalidar los enlaces enviados. Definirla antes de enviar enlaces reales (al definirla cambian todos los enlaces).
 - Seguridad: 5 claves incorrectas en 10 minutos desde una misma dirección bloquean el acceso 5 minutos (cada fallo espera 1,5 s); cabeceras CSP y de marcos en `netlify.toml`; `datos` ya no carga la bitácora (solo la copia de seguridad o `/api/bitacora`).
 - Proyecto público; insignia "Powered by Netlify" apagada en Project configuration → General.
