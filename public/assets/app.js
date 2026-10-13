@@ -137,7 +137,7 @@ $('#btnAddP').addEventListener('click', async () => {
   const falta = (id, texto) => { $(id).closest('.campo').classList.add('falta'); faltan.push(texto); };
   if (!row.codigo) falta('#pCodigo', 'el código');
   else if (!/^[A-Z0-9]{1,8}$/.test(row.codigo)) falta('#pCodigo', 'un código válido (solo letras y números, máximo 8)');
-  else if (D.participantes.some((p) => p.codigo === row.codigo)) falta('#pCodigo', `otro código (${row.codigo} ya existe)`);
+  else if (D.participantes.some((p) => p.codigo === row.codigo)) { const d = D.participantes.find((p) => p.codigo === row.codigo); falta('#pCodigo', `otro código: ${row.codigo} ya lo tiene ${nom(d)}; para dárselo a este estudiante cambie primero el código de ${nom(d)} desde su ficha`); }
   else if ((D.papelera || []).some((p) => p.codigo === row.codigo)) falta('#pCodigo', `otro código (${row.codigo} está en la papelera)`);
   if (!row.nombre) falta('#pNombre', 'el nombre');
   if (!row.apellido) falta('#pApellido', 'el apellido');
@@ -187,13 +187,14 @@ function verEstudiante(codigo, editar = false) {
     <p class="guia" style="margin:0">${esc(p.codigo)} · ${esc(p.sexo)} · ${esc(p.edad)} años · registrado el ${esc(p.fecha_registro)}${p.observaciones ? ` · ${esc(p.observaciones)}` : ''}</p>
     <p class="guia consent ${consentido(codigo) ? 'ok' : 'falta'}" style="margin:2px 0 0">${consentido(codigo) ? `Consentimiento informado del acudiente: aceptado el ${esc(reg('cff', codigo).fecha)} (${esc(reg('cff', codigo).informante.toLowerCase())}) · cuestionario familiar respondido` : 'Consentimiento informado del acudiente: pendiente (lo acepta al responder su enlace)'}</p></div></div>
     <form class="editar ${editar ? '' : 'oculto'}" id="fichaEdit"><div class="fila">
+      <div class="campo" style="max-width:110px"><label for="eCodigo">Código</label><input id="eCodigo" value="${esc(p.codigo)}" maxlength="8" style="text-transform:uppercase"></div>
       <div class="campo" style="flex:1.4"><label for="eNombre">Nombre</label><input id="eNombre" value="${esc(p.nombre)}"></div>
       <div class="campo" style="flex:1.4"><label for="eApellido">Apellido</label><input id="eApellido" value="${esc(p.apellido)}"></div>
       <div class="campo"><label for="eGrupo">Grupo</label><select id="eGrupo">${op(GRUPOS, p.grupo)}</select></div>
       <div class="campo"><label for="eSexo">Sexo</label><select id="eSexo">${op(['Femenino', 'Masculino'], p.sexo)}</select></div>
       <div class="campo" style="max-width:90px"><label for="eEdad">Edad</label><input id="eEdad" type="number" min="5" max="12" value="${esc(p.edad)}"></div></div>
       <div class="campo" style="margin-top:10px"><label for="eObs">Observaciones (opcional)</label><input id="eObs" value="${esc(p.observaciones || '')}" placeholder="Por ejemplo: repite el grado, usa gafas, se retiró en octubre"></div>
-      <p class="guia" style="margin:10px 0;font-size:.88em">El código ${esc(p.codigo)} no se cambia: es el identificador que une todas sus aplicaciones.</p>
+      <p class="guia" style="margin:10px 0;font-size:.88em">El código une todas sus aplicaciones y lo siguen si lo cambia; no puede ser el de otro estudiante. Al cambiarlo, el enlace del acudiente también cambia (reenvíelo si aún no ha respondido).</p>
       <div class="fila"><button class="btn" type="submit" id="eGuardar">Guardar cambios</button><button class="btn sec" type="button" id="eCancelar">Cancelar</button></div><div id="eMsg" style="margin-top:10px"></div></form>
     <div class="pruebas">${['EQI', 'ESMS', 'CFF'].map((k) => fichaPrueba(k, codigo)).join('')}</div>`;
   $('#ficha').classList.remove('oculto');
@@ -201,9 +202,10 @@ function verEstudiante(codigo, editar = false) {
   $('#eCancelar').addEventListener('click', () => verEstudiante(codigo, false));
   $('#fichaEdit').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const row = { ...p, nombre: $('#eNombre').value.trim(), apellido: $('#eApellido').value.trim(), grupo: $('#eGrupo').value, sexo: $('#eSexo').value, edad: $('#eEdad').value, observaciones: $('#eObs').value.trim() };
-    if (!row.nombre || !row.apellido || !row.edad) return ($('#eMsg').innerHTML = '<div class="aviso mal">Nombre, apellido y edad son obligatorios.</div>');
-    try { await api('participante', { method: 'PUT', body: { row } }); toast('Datos actualizados'); await cargar(); verEstudiante(codigo, false); ir(vista); } catch (err) { $('#eMsg').innerHTML = `<div class="aviso mal">${esc(err.message)}</div>`; }
+    const nuevo = $('#eCodigo').value.trim().toUpperCase();
+    const row = { ...p, codigo: nuevo, nombre: $('#eNombre').value.trim(), apellido: $('#eApellido').value.trim(), grupo: $('#eGrupo').value, sexo: $('#eSexo').value, edad: $('#eEdad').value, observaciones: $('#eObs').value.trim() };
+    if (!row.codigo || !row.nombre || !row.apellido || !row.edad) return ($('#eMsg').innerHTML = '<div class="aviso mal">Código, nombre, apellido y edad son obligatorios.</div>');
+    try { await api('participante', { method: 'PUT', body: { row, ...(nuevo !== p.codigo ? { anterior: p.codigo } : {}) } }); toast(nuevo !== p.codigo ? `Datos actualizados: ${p.codigo} pasa a ser ${nuevo}` : 'Datos actualizados'); await cargar(); verEstudiante(nuevo, false); ir(vista); } catch (err) { $('#eMsg').innerHTML = `<div class="aviso mal">${esc(err.message)}</div>`; }
   });
   $('#fichaCuerpo').querySelectorAll('[data-aplicar]').forEach((b) => b.addEventListener('click', () => irAplicar(b.dataset.k, b.dataset.c, b.dataset.m)));
   $('#fichaCuerpo').querySelectorAll('[data-acudientes]').forEach((b) => b.addEventListener('click', () => { $('#ficha').classList.add('oculto'); origen = 'estudiantes'; grupoActivo = p.grupo; localStorage.setItem('grupoActivo', grupoActivo); ir('familias'); }));
@@ -285,7 +287,7 @@ function renderKid() {
   $('#kProg').style.width = (100 * done / nIt) + '%';
   $('#kCount').textContent = it.prac ? '' : `${done + 1} de ${nIt}`; // en las frases de práctica no se muestra contador
   const icon = ins.id === 'EQI' ? iconSure : iconFace;
-  const frase = '"' + it.texto.replace(/\.\s*$/, '') + '"';
+  const frase = '"' + it.texto.trim().replace(/\.\s*$/, '') + '".'; // la frase va entre comillas y el punto final, después de la comilla de cierre (ortografía española)
   $('#kBody').innerHTML = `<p class="kid-q">${esc(ins.pregunta)}</p><p class="kid-stmt ${it.prac ? 'prac' : ''}">${esc(frase)}</p>
     <div class="escala">${ins.escala.map((e) => `<button class="opt ${resp[it.codigo] === e.valor ? 'sel' : ''}" data-v="${e.valor}"><span class="ico">${icon(e.valor)}</span><span class="lab">${esc(e.etiqueta)}</span><span class="sub">${esc(e.sub)}</span></button>`).join('')}</div>
 `;

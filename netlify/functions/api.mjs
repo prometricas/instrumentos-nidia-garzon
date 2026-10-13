@@ -143,9 +143,19 @@ export default async (req) => {
     if (!["Femenino", "Masculino"].includes(r.sexo)) return json({ error: "Seleccione el sexo" }, 400);
     const row = { codigo, nombre: String(r.nombre || "").trim().slice(0, 60), apellido: String(r.apellido || "").trim().slice(0, 60), grupo: r.grupo, sexo: r.sexo, edad: Number(r.edad) || "", fecha_registro: r.fecha_registro || hoy(), observaciones: String(r.observaciones || "").slice(0, 300) };
     const existia = await store("participantes").get(codigo, { type: "json" });
-    if (body.nuevo) { // el código identifica al estudiante en todas las pruebas: nunca se reutiliza
-      if (existia) return json({ error: `Ya existe un estudiante con el código ${codigo}` }, 409);
-      if (await store("papelera").get(codigo, { type: "json" })) return json({ error: `El código ${codigo} pertenece a un estudiante de la papelera; recupérelo o use otro código` }, 409);
+    const anterior = String(body.anterior || "").trim().toUpperCase(); // cambio de código desde la ficha
+    if (body.nuevo || (anterior && anterior !== codigo)) { // el código identifica al estudiante en todas las pruebas: no puede repetirse ni reutilizarse
+      if (existia) return json({ error: `El código ${codigo} ya lo tiene ${nomDe(existia)}. Para dárselo a ${body.nuevo ? "un estudiante nuevo" : "este estudiante"}, cambie primero el código de ${nomDe(existia)}.` }, 409);
+      if (await store("papelera").get(codigo, { type: "json" })) return json({ error: `El código ${codigo} es de un estudiante que está en la papelera; recupérelo o elimínelo definitivamente antes de usar ese código.` }, 409);
+    }
+    if (anterior && anterior !== codigo) { // el estudiante y todos sus registros pasan al nuevo código
+      if (!(await store("participantes").get(anterior, { type: "json" }))) return json({ error: "Estudiante no registrado" }, 404);
+      let n = 0;
+      for (const s of REGS) for (const k of llaves(s, anterior)) { const r = await store(s).get(k, { type: "json" }); if (r) { await store(s).setJSON(s === "cff" ? codigo : llave(codigo, r.momento), { ...r, codigo }); await store(s).delete(k); n++; } }
+      await store("participantes").setJSON(codigo, row);
+      await store("participantes").delete(anterior);
+      await bitacora("edicion", `Participante ${anterior} pasa a ser ${codigo} (${row.nombre} ${row.apellido}) con ${n} registro(s)`);
+      return json({ ok: true, row, movidos: n });
     }
     await store("participantes").setJSON(codigo, row);
     await bitacora(existia ? "edicion" : "registro", `Participante ${codigo} ${row.nombre} ${row.apellido} (${row.grupo})`);
