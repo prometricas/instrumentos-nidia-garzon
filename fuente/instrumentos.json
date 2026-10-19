@@ -112,7 +112,7 @@
         "col": "Em16",
         "dimension": "Adaptabilidad",
         "inverso": false,
-        "texto": "Puedo tener muchas maneras de responder una pregunta difícil cuando yo quiero."
+        "texto": "Si quiero, puedo pensar en varias formas de responder una pregunta difícil."
       },
       {
         "codigo": "IE17R",
@@ -133,7 +133,7 @@
         "col": "Em19",
         "dimension": "Adaptabilidad",
         "inverso": false,
-        "texto": "Puedo usar fácilmente diversos modos de resolver los problemas."
+        "texto": "Puedo resolver un mismo problema de varias maneras."
       },
       {
         "codigo": "IE21",
@@ -147,7 +147,7 @@
         "col": "Em22",
         "dimension": "Adaptabilidad",
         "inverso": false,
-        "texto": "Cuando respondo preguntas difíciles, trato de pensar en muchas soluciones."
+        "texto": "Si una forma de resolver un problema no sirve, pruebo otra."
       },
       {
         "codigo": "IE23",
