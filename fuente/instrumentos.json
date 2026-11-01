@@ -462,10 +462,10 @@
     "id": "CFF",
     "hoja": "CFCSAL_F",
     "nombre": "CFCSAL-F",
-    "titulo": "Cuestionario de factores contextuales socioemocionales del aprendizaje lectoescritor, Forma Familia (12 reactivos)",
-    "variable": "Factores contextuales socioemocionales (hogar)",
+    "titulo": "Cuestionario de Factores Contextuales Socioemocionales del Aprendizaje Lectoescritor, Forma Familia (12 reactivos, versión situacional de octubre de 2026)",
+    "variable": "Acompañamiento familiar lector",
     "fuente": "Garzón Peña (2026), elaboración propia",
-    "instruccion_aplicador": "Lo responde la madre, el padre o el acudiente del estudiante, una sola vez, desde el enlace que le envía la investigadora. Marca la frecuencia con que ocurre lo planteado en su casa.",
+    "instruccion_aplicador": "Lo responde la madre, el padre o el acudiente del estudiante, una sola vez, desde el enlace que le envía la investigadora. Describe situaciones habituales de la casa en las últimas cuatro semanas y marca con qué frecuencia ocurren; 6 de las 12 frases son de puntuación inversa.",
     "consentimiento": {
       "titulo": "Consentimiento informado",
       "texto": "Este cuestionario hace parte de la investigación doctoral «Factores socioemocionales y su incidencia en la lectoescritura», de la Universidad CESUMA, que se desarrolla en la I. E. Julio César Turbay Ayala. Sus respuestas son confidenciales, se usan solo con fines académicos y no afectan las calificaciones de su hijo o hija. Participar es voluntario y puede dejar de responder en cualquier momento. Si tiene preguntas, puede comunicarse con la docente investigadora Nidia Marcela Garzón Peña.",
@@ -476,7 +476,7 @@
       {
         "valor": 1,
         "etiqueta": "Nunca",
-        "sub": ""
+        "sub": "o no se da el caso"
       },
       {
         "valor": 2,
@@ -500,85 +500,85 @@
         "codigo": "F311",
         "col": "F01",
         "dimension": "3.1 Ambiente alfabetizador del hogar",
-        "inverso": false,
-        "texto": "En mi casa hay libros o revistas al alcance de mi hijo o hija."
+        "inverso": true,
+        "texto": "En casa, los cuentos, revistas u otros textos se guardan en lugares donde el niño necesita ayuda de un adulto para alcanzarlos."
       },
       {
         "codigo": "F312",
         "col": "F02",
         "dimension": "3.1 Ambiente alfabetizador del hogar",
         "inverso": false,
-        "texto": "En mi casa se destina un momento del día para actividades de lectura."
+        "texto": "En casa se abre un cuento o una revista para pasar el rato, aunque no haya una tarea de lectura del colegio."
       },
       {
         "codigo": "F313",
         "col": "F03",
         "dimension": "3.1 Ambiente alfabetizador del hogar",
-        "inverso": false,
-        "texto": "En mi casa hay lápices, cuadernos u hojas disponibles para que mi hijo o hija escriba."
+        "inverso": true,
+        "texto": "Cuando el niño quiere escribir algo por su cuenta, primero hay que buscar un lápiz o una hoja para que pueda empezar."
       },
       {
         "codigo": "F314",
         "col": "F04",
         "dimension": "3.1 Ambiente alfabetizador del hogar",
         "inverso": false,
-        "texto": "En mi casa los adultos leen delante de mi hijo o hija."
+        "texto": "Durante las actividades diarias, el niño ve a algún adulto leer mensajes, recetas o instrucciones para resolver asuntos de la casa."
       },
       {
         "codigo": "F321",
         "col": "F05",
         "dimension": "3.2 Lectura compartida y mediación familiar",
         "inverso": false,
-        "texto": "Leo cuentos u otros textos junto con mi hijo o hija."
+        "texto": "Cuando el niño encuentra un cuento que le interesa, alguien en casa se sienta a mirarlo con él durante un rato."
       },
       {
         "codigo": "F322",
         "col": "F06",
         "dimension": "3.2 Lectura compartida y mediación familiar",
-        "inverso": false,
-        "texto": "Le hago preguntas a mi hijo o hija sobre lo que leímos."
+        "inverso": true,
+        "texto": "Después de ver o escuchar un cuento en casa, se guarda el texto y se sigue con otra actividad sin conversar sobre la historia."
       },
       {
         "codigo": "F323",
         "col": "F07",
         "dimension": "3.2 Lectura compartida y mediación familiar",
         "inverso": false,
-        "texto": "Converso con mi hijo o hija sobre las palabras nuevas que aparecen en los textos."
+        "texto": "Cuando aparece una palabra desconocida en un cuento, alguien en casa habla con el niño sobre lo que esa palabra significa."
       },
       {
         "codigo": "F324",
         "col": "F08",
         "dimension": "3.2 Lectura compartida y mediación familiar",
-        "inverso": false,
-        "texto": "Animo a mi hijo o hija a escribir mensajes, listas o notas en casa."
+        "inverso": true,
+        "texto": "Cuando se escribe una lista de compras o se deja un recado en casa, una persona adulta lo hace sin que participe el niño."
       },
       {
         "codigo": "F331",
         "col": "F09",
         "dimension": "3.3 Apoyo emocional ante las dificultades",
-        "inverso": false,
-        "texto": "Cuando a mi hijo o hija le cuesta leer, lo animo a seguir intentándolo."
+        "inverso": true,
+        "texto": "Si el niño se detiene porque no logra leer una palabra, el texto suele guardarse para continuar la actividad en otro momento."
       },
       {
         "codigo": "F332",
         "col": "F10",
         "dimension": "3.3 Apoyo emocional ante las dificultades",
         "inverso": false,
-        "texto": "Reconozco el esfuerzo de mi hijo o hija aunque todavía se equivoque al leer."
+        "texto": "Cuando el niño se equivoca al leer una frase, alguien en casa le muestra una palabra o una parte que sí pudo leer bien."
       },
       {
         "codigo": "F333",
         "col": "F11",
         "dimension": "3.3 Apoyo emocional ante las dificultades",
         "inverso": true,
-        "texto": "Me molesto con mi hijo o hija cuando se equivoca al escribir."
+        "texto": "Cuando el niño tarda en escribir una palabra, una persona adulta suele terminarla por él para que la actividad pueda continuar."
       },
       {
         "codigo": "F334",
         "col": "F12",
         "dimension": "3.3 Apoyo emocional ante las dificultades",
         "inverso": false,
-        "texto": "Le permito a mi hijo o hija decidir cómo organizar su tiempo de tarea de lectura."
+        "texto": "Cuando una tarea tiene varias partes de lectura o escritura, el niño suele escoger con cuál de esas partes quiere comenzar."
       }
     ],
     "puntajes": [
@@ -617,17 +617,17 @@
       {
         "titulo": "El hogar y la lectura",
         "dimension": "3.1 Ambiente alfabetizador del hogar",
-        "intro": "Sobre los materiales y momentos de lectura en su casa."
+        "intro": "Situaciones relacionadas con los textos, los materiales y los momentos disponibles en la vida cotidiana."
       },
       {
         "titulo": "Leer y escribir juntos",
         "dimension": "3.2 Lectura compartida y mediación familiar",
-        "intro": "Sobre lo que hacen juntos con libros, palabras y escritos."
+        "intro": "Situaciones en las que se comparten textos, conversaciones y producciones escritas."
       },
       {
         "titulo": "Cuando le cuesta",
         "dimension": "3.3 Apoyo emocional ante las dificultades",
-        "intro": "Sobre cómo acompaña a su hijo o hija cuando leer o escribir se le dificulta."
+        "intro": "Situaciones habituales ante los intentos, los errores y las decisiones del niño o la niña al leer y escribir."
       }
     ],
     "tabla": "Acompañamiento familiar"

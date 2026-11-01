@@ -163,6 +163,7 @@ table.datos tr:last-child td{border-bottom:0}
 .fam .ops{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .fam .ops button{border:1px solid var(--linea);background:#fff;border-radius:10px;padding:10px 4px;font-size:.88em;line-height:1.2;min-height:50px}
 .fam .ops button.sel{background:var(--azul);color:#fff;border-color:var(--azul)}
+.fam .ops button small{display:block;font-size:.76em;color:var(--tinta-2);line-height:1.15;margin-top:2px} .fam .ops button.sel small{color:#DCE5F6}
 .fam .item.falta{border-color:var(--naranja);box-shadow:0 0 0 3px var(--naranja-suave)}
 .fam .consentimiento h3{margin:0 0 6px;color:var(--azul);font-size:1.05em}
 .fam .consentimiento p{margin:0 0 12px;color:var(--tinta-2);font-size:.95em;line-height:1.55}

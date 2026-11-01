@@ -12,7 +12,7 @@ function render() {
   window.scrollTo(0, 0);
   if (paso < 0) {
     $('#main').innerHTML = `<h2>Acudiente de ${quien()}</h2>
-      <p class="guia">Gracias por participar. Le haremos ${ins.items.length} preguntas breves, en ${SEC.length} partes, sobre la lectura y la escritura en su casa. Toma unos 5 minutos y no hay respuestas buenas ni malas.</p>
+      <p class="guia">Gracias por participar. Le haremos ${ins.items.length} preguntas breves, en ${SEC.length} partes, sobre la lectura y la escritura en su casa. Cada frase describe una situación: marque con qué frecuencia ocurre, pensando en las últimas cuatro semanas. Toma unos 5 minutos y no hay respuestas buenas ni malas.</p>
       ${info.respondido ? `<div class="aviso nota">Este cuestionario ya fue respondido el ${esc(info.fecha)}. Si lo envía de nuevo, reemplazará las respuestas anteriores.</div>` : ''}
       <div class="tarjeta consentimiento"><h3>${esc(ins.consentimiento.titulo)}</h3><p>${esc(ins.consentimiento.texto)}</p><label class="check" for="acepto"><input type="checkbox" id="acepto"> ${esc(ins.consentimiento.acepto)}</label></div>
       <div class="tarjeta"><div class="campo"><label for="quien">Quién responde</label><select id="quien" class="vacio"><option value="" disabled selected>Seleccione quién responde</option><option>Madre</option><option>Padre</option><option>Acudiente</option></select></div></div>
@@ -31,7 +31,7 @@ function render() {
   }
   const s = SEC[paso], ultimo = paso === SEC.length - 1;
   $('#main').innerHTML = `${barra()}<div class="seccion"><h3>${esc(s.titulo)}</h3><p class="intro">Parte ${paso + 1} de ${SEC.length} · ${esc(s.intro)} Marque con qué frecuencia ocurre.</p>
-    ${s.items.map((it) => `<div class="item" id="it-${it.codigo}"><div class="txt">${esc(it.texto)}</div><div class="ops">${ins.escala.map((e) => `<button data-c="${it.codigo}" data-v="${e.valor}" class="${resp[it.codigo] === e.valor ? 'sel' : ''}">${esc(e.etiqueta)}</button>`).join('')}</div></div>`).join('')}
+    ${s.items.map((it) => `<div class="item" id="it-${it.codigo}"><div class="txt">${esc(it.texto)}</div><div class="ops">${ins.escala.map((e) => `<button data-c="${it.codigo}" data-v="${e.valor}" class="${resp[it.codigo] === e.valor ? 'sel' : ''}">${esc(e.etiqueta)}${e.sub ? `<small>${esc(e.sub)}</small>` : ''}</button>`).join('')}</div></div>`).join('')}
     ${ultimo ? '<div class="tarjeta"><div class="campo"><label for="obs">Comentarios (opcional)</label><textarea id="obs" rows="2"></textarea></div></div>' : ''}
     <div id="msg"></div></div>
     <div class="pie"><button class="btn sec grande" id="atras">Atrás</button><button class="btn grande ${ultimo ? 'naranja' : ''}" id="sig">${ultimo ? 'Enviar respuestas' : 'Siguiente'}</button></div>`;
