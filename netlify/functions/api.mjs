@@ -72,7 +72,8 @@ const MOMENTOS = ["Pretest", "Postest"];
 // Las versiones anteriores usaban "E03|Pretest"; se siguen leyendo y borrando para no dejar registros huérfanos.
 const llave = (codigo, m) => `${codigo}-${m}`;
 const antigua = (codigo, m) => `${codigo}|${m}`;
-const llaves = (s, codigo) => (s === "cff" ? [codigo] : MOMENTOS.flatMap((m) => [llave(codigo, m), antigua(codigo, m)]));
+// cff: la clave es el código; se incluyen también las claves con momento de la primera versión (cuando el cuestionario familiar tenía pretest y postest)
+const llaves = (s, codigo) => (s === "cff" ? [codigo] : []).concat(MOMENTOS.flatMap((m) => [llave(codigo, m), antigua(codigo, m)]));
 
 export default async (req) => {
   const url = new URL(req.url);
@@ -217,7 +218,7 @@ export default async (req) => {
   if (ruta === "registro" && req.method === "DELETE") {
     const s = url.searchParams.get("store"), codigo = String(url.searchParams.get("codigo") || "").toUpperCase(), momento = url.searchParams.get("momento");
     if (!KEY[s] || (s !== "cff" && !MOMENTOS.includes(momento))) return json({ error: "Parámetros inválidos" }, 400);
-    for (const k of s === "cff" ? [codigo] : [llave(codigo, momento), antigua(codigo, momento)]) await store(s).delete(k);
+    for (const k of s === "cff" ? llaves(s, codigo) : [llave(codigo, momento), antigua(codigo, momento)]) await store(s).delete(k);
     await bitacora("eliminacion", `${INS[KEY[s]].nombre} ${codigo}${s === "cff" ? "" : " " + momento}`);
     return json({ ok: true });
   }
